@@ -69,6 +69,13 @@ All notable changes to this project are documented here. Format based on
   `AH_TOKEN` actually buys: which pinned collections are Red Hat certified
   versus validated versus community, and why the supported content — not the
   YAML in this repo — is the thing an AAP subscription pays for.
+- **Windows dev-container preflight (runbook 00).** A go/no-go section placed
+  before the container-engine setup: PowerShell checks for Windows build, WSL
+  presence/version, virtualization, the required optional features, and a WSL
+  group-policy block, plus how to read the result (enable WSL2 and work inside
+  the WSL2 filesystem, or fall back to Codespaces / a shared Linux dev host).
+  Includes a capturable PASS/FAIL summary block so a blocked desktop becomes a
+  documented record rather than a verbal one.
 
 ### Notes / decisions
 
