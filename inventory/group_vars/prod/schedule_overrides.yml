@@ -3,8 +3,9 @@
 # group_vars/prod/schedule_overrides.yml — example: site-aware schedules
 # ============================================================================
 # When curating exported schedules (runbook 03), use the aap_site_role variable
-# so work-triggers only fire on the active site. The same pattern applies to
-# notification templates, inventory source syncs, and project update schedules.
+# (set in each side's connection.yml: "active" or "passive") so work-triggers
+# only fire on the active site. The same pattern applies to notification
+# templates, inventory source syncs, and project update schedules.
 #
 # Uncomment and adapt once you have real curated objects.
 # ============================================================================

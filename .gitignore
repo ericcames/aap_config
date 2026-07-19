@@ -11,14 +11,9 @@ collections/ansible_collections/
 .ansible/
 
 # ----------------------------------------------------------------------------
-# Secrets — never commit. Two complementary secret channels, both gitignored:
+# Secrets — vault password files (the one secret that can't be vaulted).
+# All other secrets live in vault-encrypted group_vars/<env>/secrets.yml.
 # ----------------------------------------------------------------------------
-# 1) Connection secrets sourced into the shell. Real file is
-#    gitignored; the committed template is docs/dev-environment.sh.example
-#    (different filename, NOT matched). No leading slash — matches in any dir.
-dev-environment.sh
-
-# 2) Vault password files used to encrypt config/*/secrets.yml.
 .vault_pass
 .vault_password
 *.vault_pass

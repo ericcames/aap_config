@@ -59,8 +59,14 @@ Full design in **[`docs/phase-3-plan.md`](docs/phase-3-plan.md)**. Summary:
   creates nothing to leak or clean up.
 - **No 2.4→2.5 conversion.** Source and targets are all gateway-era (2.5+): initial
   testing on AAP 2.6, production on AAP 2.7. Same object model, no format transform.
-- **Active/passive prod via `aap_site_role` env var, not Git.** The Red Hat COP
-  recommends pushing identical config to both sides simultaneously and using an
-  environment variable to control schedules/notifications/webhooks. Failover is
-  an env-var change, not a commit. Two parallel CI jobs in `deploy-prod.yml`, two
-  GitHub Environments (`prod_active`, `prod_passive`). See `docs/references.md`.
+- **Active/passive prod via `aap_site_role` in `connection.yml`.** The Red Hat
+  COP recommends pushing identical config to both sides simultaneously; a single
+  variable controls schedules/notifications/webhooks. Each side's committed
+  `connection.yml` sets `aap_site_role: active` or `passive`. Two parallel CI
+  jobs in `deploy-prod.yml`, two GitHub Environments (`prod_active`,
+  `prod_passive`). See `docs/references.md`.
+- **Unified secrets under ansible-vault.** All secrets — connection credentials
+  AND CaC object values — live in vault-encrypted `group_vars/<env>/secrets.yml`,
+  following the COP `aap_configuration_template` pattern. One vault password per
+  env unlocks everything. CI needs only `VAULT_PASSWORD` per GitHub Environment.
+  Eliminated `docs/dev-environment.sh` and env-var lookups in `aap_settings.yml`.

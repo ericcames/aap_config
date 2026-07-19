@@ -55,8 +55,8 @@ you see it.
    Shared and per-env lists merge via `dispatch_include_wildcard_vars: true` and
    the `*_all` / `*_<env>` variable-suffix convention (e.g. `controller_projects_all`
    + `controller_projects_dev`). Production uses `--limit prod_active` /
-   `--limit prod_passive`; the `aap_site_role` variable (from `AAP_SITE_ROLE`
-   env var) controls whether schedules and notifications are enabled
+   `--limit prod_passive`; the `aap_site_role` variable (set in each side's
+   `connection.yml`) controls whether schedules and notifications are enabled
    ([COP pattern](https://www.redhat.com/en/blog/automation-controller-active-passive-architecture-cac)).
 3. **No project-local `ansible.cfg`.** It would shadow the user's `~/.ansible.cfg`
    (which holds their Automation Hub token). The dev container writes an
@@ -68,10 +68,13 @@ you see it.
 5. **Playbooks target the inventory group, not `hosts: localhost`.** Each env's
    host is an inventory entry with `ansible_connection: local` — it is just the
    anchor that makes `group_vars` load; the work is local API calls.
-6. **Secrets live in exactly two gitignored places:** connection secrets in
-   `docs/dev-environment.sh` (sourced into the shell; template is the committed
-   `.example`), and committed CaC secrets in `inventory/group_vars/<env>/secrets.yml`
-   **ansible-vault encrypted**. Never write a secret value anywhere else.
+6. **All secrets live in one place:** `inventory/group_vars/<env>/secrets.yml`,
+   **ansible-vault encrypted**. This includes connection credentials
+   (`aap_username`, `aap_password`) AND CaC object secrets (`vaulted_*`).
+   Non-secret connection settings (hostname, cert validation) live in the
+   committed `connection.yml` in the same directory. Each env has a
+   `.example` template showing the format. This follows the COP
+   `aap_configuration_template` pattern.
 7. **Never commit** customer/company names, RHDP URLs, cluster/instance IDs,
    tokens, passwords, or keys. Exported credential fields are templated to
    `{{ vaulted_* }}` placeholders by `secrets_as_variables: true` — keep them that
@@ -80,21 +83,38 @@ you see it.
 ## How to run things
 
 ```bash
-# One-time per shell: load connection secrets.
-cp docs/dev-environment.sh.example docs/dev-environment.sh   # then fill it in
-source docs/dev-environment.sh
+# One-time setup per env: copy the .example files, fill in values, encrypt.
+# See the /vault-secrets skill or docs/runbooks/04-secrets.md for details.
+#   cp inventory/group_vars/<env>/connection.yml.example inventory/group_vars/<env>/connection.yml
+#   cp inventory/group_vars/<env>/secrets.yml.example   inventory/group_vars/<env>/secrets.yml
+#   # fill in real values, then:
+#   ansible-vault encrypt inventory/group_vars/<env>/secrets.yml --vault-id <env>@prompt
 
-# Export from the Azure production AAP into exports/azure-prod/.
-ansible-playbook playbooks/export.yml -i inventory --limit azure
+# Vault password files — avoid retyping the password every run.
+# Store one file per env (just the password, one line, chmod 600):
+#   mkdir -p ~/secrets && chmod 700 ~/secrets
+#   echo 'your-vault-password' > ~/secrets/.vault_pass_<env> && chmod 600 ~/secrets/.vault_pass_<env>
+# Then use @<path> instead of @prompt:
+#   --vault-id <env>@~/secrets/.vault_pass_<env>
+# CI does the same thing: the VAULT_PASSWORD GitHub secret is written to a temp
+# file by the deploy workflow and cleaned up afterward.
+
+# Export from the Azure production AAP into exports/azure/.
+ansible-playbook playbooks/export.yml -i inventory --limit azure \
+  --vault-id azure@~/secrets/.vault_pass_azure
 
 # Apply config to an on-prem env (dev/qa/prod). --limit picks the env's group_vars.
 ansible-playbook playbooks/config.yml   -i inventory --limit dev --vault-id dev@prompt
 ansible-playbook playbooks/validate.yml -i inventory --limit dev --vault-id dev@prompt  # check mode
 
 # Production active/passive (COP-recommended pattern).
-# Both sides get the same config; AAP_SITE_ROLE controls schedules/notifications.
-AAP_SITE_ROLE=active  ansible-playbook playbooks/config.yml -i inventory --limit prod_active  --vault-id prod@prompt
-AAP_SITE_ROLE=passive ansible-playbook playbooks/config.yml -i inventory --limit prod_passive --vault-id prod@prompt
+# Both sides get the same config; aap_site_role (in connection.yml) controls schedules.
+ansible-playbook playbooks/config.yml -i inventory --limit prod_active  --vault-id prod@prompt
+ansible-playbook playbooks/config.yml -i inventory --limit prod_passive --vault-id prod@prompt
+
+# Troubleshooting — pipe long runs through tee so you can grep the log:
+#   ansible-playbook ... 2>&1 | tee /tmp/export.log | tail -10
+#   grep -n 'FAILED\|fatal' /tmp/export.log
 
 # Lint exactly as CI does.
 yamllint .

@@ -1,0 +1,4 @@
+---
+# On-prem AAP 2.7 prod-active. Replace the placeholder with the real gateway URL.
+aap_hostname: "https://aap-prod-active.example.internal"
+aap_site_role: active

@@ -1,0 +1,5 @@
+---
+# Azure managed AAP 2.7 (export source). Replace the placeholder with the real
+# gateway URL, then copy this file to connection.yml.
+aap_hostname: "https://controller-<id>.apps.<cluster>.rhdp.net"
+aap_validate_certs: true

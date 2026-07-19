@@ -18,10 +18,10 @@ skim [`README.md`](README.md) and [`ROADMAP.md`](ROADMAP.md).
   `controller-<id>.apps.<cluster>.rhdp.net`)
 - Real values in exported credential files — they must stay `{{ vaulted_* }}`
 
-Connection secrets go in `docs/dev-environment.sh` (copied from
-`docs/dev-environment.sh.example`, **gitignored**). Committed CaC secrets go in
-ansible-vault-encrypted `inventory/group_vars/<env>/secrets.yml`. Audit every
-diff before pushing. The pre-commit hook and CI run
+All secrets — connection credentials AND CaC object values — go in
+vault-encrypted `inventory/group_vars/<env>/secrets.yml`. Non-secret connection
+settings (hostname, cert validation) go in the committed `connection.yml` in the
+same directory. Audit every diff before pushing. The pre-commit hook and CI run
 `utilities/check-vault-encrypted.sh` + `utilities/scan-exports.sh`.
 
 ## The Ansible standard that trips people up

@@ -12,11 +12,11 @@
 # with --limit dev loads group_vars/aap/* (shared) merged with group_vars/dev/*
 # (deltas + vault secrets), combined by dispatch_include_wildcard_vars.
 #
-# AUTH: basic auth via aap_username / aap_password (from group_vars/aap, which
-# read the sourced CONTROLLER_* env / CI environment secrets). We deliberately do
-# NOT mint an OAuth token here: dispatch supports basic auth directly, and not
-# creating a token means there is nothing to leak or clean up. (export.yml mints
-# a token only because filetree_create requires an OAuth token.)
+# AUTH: basic auth via aap_username / aap_password (from vault-encrypted
+# group_vars/<env>/secrets.yml). We deliberately do NOT mint an OAuth token here:
+# dispatch supports basic auth directly, and not creating a token means there is
+# nothing to leak or clean up. (export.yml mints a token only because
+# filetree_create requires an OAuth token.)
 # ============================================================================
 - name: Apply AAP configuration to {{ env_name | default('the target env') }}
   hosts: "{{ target_group | default('aap') }}"
@@ -29,9 +29,9 @@
           - aap_username | length > 0
           - aap_password | length > 0
         fail_msg: >-
-          CONTROLLER_HOST / CONTROLLER_USERNAME / CONTROLLER_PASSWORD are not set
-          for env '{{ env_name | default("?") }}'. Locally: source the right
-          docs/dev-environment.sh. In CI: the environment secrets are missing.
+          aap_hostname / aap_username / aap_password are not set for env
+          '{{ env_name | default("?") }}'. Set up connection.yml and
+          vault-encrypted secrets.yml — see docs/runbooks/04-secrets.md.
 
     - name: Apply all objects via the dispatch role
       ansible.builtin.include_role:

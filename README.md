@@ -28,8 +28,8 @@ assistant** (GitHub Copilot or Claude Code) helping at every step.
        ├── dev   (auto on merge)
        ├── qa    (manual + approval)
        └── prod  (manual + approval)   on-prem AAP 2.7 containerized
-            ├── prod-active   (AAP_SITE_ROLE=active)
-            └── prod-passive  (AAP_SITE_ROLE=passive)
+            ├── prod-active   (aap_site_role: active)
+            └── prod-passive  (aap_site_role: passive)
 ```
 
 ## Start here
@@ -65,8 +65,8 @@ Work through the numbered runbooks in [`docs/runbooks/`](docs/runbooks/):
   Red Hat Services standard the kit exists to demonstrate.
 - **No project-local `ansible.cfg`** (it would shadow your real one). The dev
   container writes one in the container home.
-- **Secrets in two gitignored places only:** `docs/dev-environment.sh` for
-  connection secrets, vault-encrypted `inventory/group_vars/<env>/secrets.yml` for
-  committed CaC secrets.
+- **All secrets vault-encrypted** in `inventory/group_vars/<env>/secrets.yml` —
+  connection credentials AND CaC object secrets. One vault password per env
+  unlocks everything (COP `aap_configuration_template` pattern).
 - **Newest collections, pinned once** in
   [`collections/requirements.yml`](collections/requirements.yml).

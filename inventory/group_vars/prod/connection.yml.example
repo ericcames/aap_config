@@ -1,0 +1,4 @@
+---
+# Shared production settings (inherited by both prod_active and prod_passive).
+# Per-side hostname and aap_site_role go in prod_active/ and prod_passive/.
+aap_validate_certs: true

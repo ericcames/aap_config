@@ -5,9 +5,9 @@ name: Deploy prod
 # should have REQUIRED REVIEWERS so a human approves before anything is applied.
 #
 # Both sides are deployed IN PARALLEL from the same commit — the COP-recommended
-# pattern. The AAP_SITE_ROLE env var controls whether schedules, notifications,
-# and webhooks are enabled on each side. Failover is an env-var change, not a
-# Git commit.
+# pattern. Connection credentials and aap_site_role are in vault-encrypted
+# group_vars and committed connection.yml files — NOT in GitHub secrets. The only
+# GitHub Environment secret needed is VAULT_PASSWORD.
 #
 # See: docs/references.md → Active/passive CaC blog series.
 on:
@@ -20,12 +20,6 @@ jobs:
   deploy-prod-active:
     runs-on: [self-hosted, linux, aap]
     environment: prod_active
-    env:
-      CONTROLLER_HOST: ${{ vars.AAP_HOSTNAME }}
-      CONTROLLER_USERNAME: ${{ secrets.AAP_USERNAME }}
-      CONTROLLER_PASSWORD: ${{ secrets.AAP_PASSWORD }}
-      AAP_VALIDATE_CERTS: "true"
-      AAP_SITE_ROLE: "active"
     steps:
       - uses: actions/checkout@v4
 
@@ -59,12 +53,6 @@ jobs:
   deploy-prod-passive:
     runs-on: [self-hosted, linux, aap]
     environment: prod_passive
-    env:
-      CONTROLLER_HOST: ${{ vars.AAP_HOSTNAME }}
-      CONTROLLER_USERNAME: ${{ secrets.AAP_USERNAME }}
-      CONTROLLER_PASSWORD: ${{ secrets.AAP_PASSWORD }}
-      AAP_VALIDATE_CERTS: "true"
-      AAP_SITE_ROLE: "passive"
     steps:
       - uses: actions/checkout@v4
 

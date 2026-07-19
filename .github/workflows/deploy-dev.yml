@@ -2,9 +2,13 @@
 name: Deploy dev
 # Auto-applies config to the on-prem DEV environment when config/inventory or
 # playbooks change on main. Runs on a self-hosted runner that can reach the dev
-# gateway. Requires a GitHub Environment named "dev" holding:
-#   secrets:  AAP_USERNAME, AAP_PASSWORD, VAULT_PASSWORD
-#   variable: AAP_HOSTNAME
+# gateway.
+#
+# Connection credentials (hostname, username, password) are in the repo's
+# vault-encrypted inventory/group_vars/dev/secrets.yml and committed
+# connection.yml — NOT in GitHub secrets. The only GitHub Environment secret
+# needed is VAULT_PASSWORD to decrypt them at runtime.
+#
 # See docs/github-setup.md.
 on:
   push:
@@ -22,11 +26,6 @@ jobs:
   deploy:
     runs-on: [self-hosted, linux, aap]
     environment: dev
-    env:
-      CONTROLLER_HOST: ${{ vars.AAP_HOSTNAME }}
-      CONTROLLER_USERNAME: ${{ secrets.AAP_USERNAME }}
-      CONTROLLER_PASSWORD: ${{ secrets.AAP_PASSWORD }}
-      AAP_VALIDATE_CERTS: "false"
     steps:
       - uses: actions/checkout@v4
 
