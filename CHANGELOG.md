@@ -31,6 +31,14 @@ All notable changes to this project are documented here. Format based on
   (self-hosted runner, per-environment secrets, required-reviewer gates on
   qa/prod). `docs/github-setup.md` admin checklist.
 
+- **`DEMO.md` — a 10-minute demo fast path** for technical audiences. Runs the
+  loop as four acts (export → curate → review → apply) with the payoff being the
+  object appearing in AAP, rather than walking through runbooks 00–07. Includes a
+  pre-flight checklist (the demo degrades cleanly to Acts 2–3 when no AAP is
+  reachable), a deliberate secret-commit that the pre-commit hook rejects, and
+  answers to the questions the room actually asks. Linked from `README.md` →
+  Start here.
+
 - **Cross-tool agent skills, and three new ones.** The repo's skills use the open
   `SKILL.md` format and already worked in **both** Claude Code and GitHub Copilot
   CLI (which reads project skills from `.claude/skills/`) — but nothing said so,
