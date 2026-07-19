@@ -1,5 +1,8 @@
 # Runbook 02 — Export from the production AAP
 
+> **Skill:** `/export-aap` runs this whole runbook for you, in Claude Code or GitHub
+> Copilot CLI. Read the steps first, then let it drive.
+
 ## You will need
 
 The dev container open (runbook 01), and connection details for the **Azure

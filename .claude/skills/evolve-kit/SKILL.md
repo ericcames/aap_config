@@ -65,6 +65,9 @@ Follow the standards in `AGENTS.md`. This mirrors `docs/runbooks/06-evolve-kit.m
 
 ## Do not
 
+- Do not use this skill for a change that is not a design/convention decision —
+  for ordinary edits that just need to reach `main`, use `/branch-pr`, which is
+  steps 6-9 above without the research and cross-reference work.
 - Do not skip the research step — the COP may already have a recommended pattern.
 - Do not commit without running `yamllint` and `ansible-lint` first.
 - Do not push directly to `main` — always use a branch and PR.

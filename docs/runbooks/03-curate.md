@@ -1,5 +1,8 @@
 # Runbook 03 — Curate objects into group_vars
 
+> **Skill:** `/curate-config` runs this whole runbook for you, in Claude Code or GitHub
+> Copilot CLI. Read the steps first, then let it drive.
+
 ## You will need
 
 A completed export in `exports/azure/` (runbook 02).
@@ -29,8 +32,8 @@ environments:
 2. **Copy the objects you want to keep** into the right file, e.g.
    `inventory/group_vars/aap/controller_projects.yml`, and **rename the top key**
    from `controller_projects:` to `controller_projects_all:`.
-   > **AI Assist:** the rename prompt in PROMPTS.md → rb03 tells you the exact key
-   > and directory.
+   > **AI Assist:** [PROMPTS.md → rb03](../ai/PROMPTS.md#rb03) — the rename prompt
+   > tells you the exact key and directory.
 
 3. **See what you changed:**
    ```bash

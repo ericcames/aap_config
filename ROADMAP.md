@@ -21,7 +21,8 @@ shims, secret-hygiene utilities, README/CHANGELOG/ROADMAP.
 - `utilities/` secret guards + skeleton generator ✅
 - `.github/workflows/lint.yml` PR gate ✅
 - Runbooks 00–05 (prereqs → dev container → export → curate → secrets → PR)
-- `.claude/skills/` for export / curate / vault
+- `.claude/skills/` — cross-tool agent skills (Claude Code + Copilot CLI)
+  covering runbooks 00–06 ✅
 - **Verify:** run against an RHDP AAP instance, then the real Azure 2.7 instance;
   `scan-exports.sh` clean; dry-run the runbooks as a trainee.
 
@@ -30,6 +31,7 @@ shims, secret-hygiene utilities, README/CHANGELOG/ROADMAP.
 - `playbooks/config.yml` + `validate.yml` ✅
 - `deploy-dev.yml` / `deploy-qa.yml` / `deploy-prod.yml` ✅
 - `docs/github-setup.md` admin checklist ✅
+- `/apply-config` skill (validate in check mode → apply) ✅
 - Self-hosted runner setup doc
 - Runbooks 06–08 (CI lint → deploy dev → promote qa/prod)
 - **Verify:** containerized AAP 2.7 dev + runner; merge a PR adding one job
@@ -75,6 +77,17 @@ Full design in **[`docs/phase-3-plan.md`](docs/phase-3-plan.md)**. Summary:
   following the COP `aap_configuration_template` pattern. One vault password per
   env unlocks everything. CI needs only `VAULT_PASSWORD` per GitHub Environment.
   Eliminated `docs/dev-environment.sh` and env-var lookups in `aap_settings.yml`.
+- **Agent skills stay in `.claude/skills/`, and are cross-tool.** `SKILL.md` is an
+  open standard: Claude Code reads `.claude/skills/` natively, and GitHub Copilot
+  CLI reads project skills from `.github/skills`, `.claude/skills`, or
+  `.agents/skills`. `.claude/skills/` is therefore the only path **both** tools
+  are documented to read, so the files stay put and only the labeling changed —
+  the directory name is a historical misnomer, not a scoping statement. Moving to
+  `.agents/skills/` is deferred: Claude Code's support for that path is
+  unverified, and "additive only" forbids trading a working path for an unproven
+  one. Frontmatter is restricted to `name` + `description` (optional `license`);
+  any other key risks breaking cross-tool loading, which the `skills-frontmatter`
+  CI job enforces. Division of labor: `docs/ai/PROMPTS.md` explains, skills do.
 - **BeyondTrust is a documented alternative, not a replacement; ansible-vault
   stays the default.** AAP 2.6/2.7 ships no BeyondTrust credential plugin, so the
   `credential_input_sources` path is unavailable — the pattern instead uses the

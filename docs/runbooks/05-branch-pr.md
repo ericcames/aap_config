@@ -1,5 +1,8 @@
 # Runbook 05 — Branch, pull request, merge
 
+> **Skill:** `/branch-pr` runs this whole runbook for you, in Claude Code or GitHub
+> Copilot CLI. Read the steps first, then let it drive.
+
 ## You will need
 
 Committed curated objects and an encrypted `secrets.yml` (runbooks 03–04).
