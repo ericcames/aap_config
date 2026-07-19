@@ -79,10 +79,19 @@ push, open a PR, and merge.
 
 10. **Wait for Lint checks** (green), then **merge.**
 
+11. **Clean up the branch.** Switch back to `main`, pull the merge, and delete
+    the feature branch locally and on GitHub:
+    ```bash
+    git switch main && git pull
+    git branch -d descriptive-branch-name
+    git push origin --delete descriptive-branch-name
+    ```
+
 ## How you know it worked
 
 The PR shows the Lint checks passing. After merge, your design change is on
-`main` and all cross-references (AGENTS.md, CHANGELOG, etc.) are consistent.
+`main`, all cross-references (AGENTS.md, CHANGELOG, etc.) are consistent, and
+the feature branch is gone from both your machine and GitHub.
 
 ## If it went wrong
 

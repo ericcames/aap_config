@@ -56,6 +56,13 @@ Follow the standards in `AGENTS.md`. This mirrors `docs/runbooks/06-evolve-kit.m
    Confirm no secrets, no customer data, group_vars only. Wait for the Lint
    checks to pass, then merge.
 
+9. **Clean up:**
+   ```
+   git switch main && git pull
+   git branch -d <branch>
+   git push origin --delete <branch>
+   ```
+
 ## Do not
 
 - Do not skip the research step — the COP may already have a recommended pattern.
