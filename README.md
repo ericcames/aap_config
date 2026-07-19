@@ -79,3 +79,26 @@ Work through the numbered runbooks in [`docs/runbooks/`](docs/runbooks/):
   unlocks everything (COP `aap_configuration_template` pattern).
 - **Newest collections, pinned once** in
   [`collections/requirements.yml`](collections/requirements.yml).
+
+## Where the subscription fits
+
+Setting `AH_TOKEN` in runbook 00 is not a packaging detail — it is the moment
+this kit reaches into your **Ansible Automation Platform subscription**. The
+content it pulls is the subscription:
+
+| What the kit installs | Source | What you get |
+|---|---|---|
+| `ansible.platform`, `ansible.controller` | Red Hat **certified** content (Automation Hub) | Built and supported by Red Hat, with a support lifecycle and a path to open a case |
+| `infra.aap_configuration`, `infra.aap_configuration_extended` | Red Hat **validated** content (Automation Hub) | Red Hat–tested opinionated patterns — the config-as-code roles this kit is built on |
+| Anything from galaxy.ansible.com | Community | No Red Hat support commitment; you own the risk |
+
+The modules that create every object in `inventory/group_vars/` — job templates,
+projects, credentials, gateway settings — come from the certified collections. A
+community collection can do similar work, but when it breaks against a new AAP
+release, there is no case to open and no committed fix. That difference, plus
+support for the platform itself, is what an AAP subscription buys.
+
+Without a token the dev container still builds, and the runbooks still read
+correctly — you just cannot install the certified content, so nothing deploys.
+That is the honest shape of the dependency, and it is worth understanding early
+rather than at go-live.

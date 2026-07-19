@@ -65,6 +65,10 @@ All notable changes to this project are documented here. Format based on
   in the cloud with no local container engine, WSL, or admin rights. Documents
   setting `AH_TOKEN` (and optional `AH_URL`) as Codespaces secrets — names only,
   never values — plus prebuilds and when to prefer Codespaces over local.
+- **"Where the subscription fits" README section.** Makes explicit what
+  `AH_TOKEN` actually buys: which pinned collections are Red Hat certified
+  versus validated versus community, and why the supported content — not the
+  YAML in this repo — is the thing an AAP subscription pays for.
 
 ### Notes / decisions
 
