@@ -34,6 +34,15 @@ assistant** (GitHub Copilot or Claude Code) helping at every step.
 
 ## Start here
 
+**No local install?** Launch the dev container in the cloud — no Docker/Podman,
+no WSL, no admin rights:
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/ericcames/aap_config)
+
+Set `AH_TOKEN` once as a Codespaces secret and every codespace comes up ready.
+See [Running in GitHub Codespaces](docs/codespaces.md). Otherwise, set up locally
+with runbooks 00–01 below.
+
 Work through the numbered runbooks in [`docs/runbooks/`](docs/runbooks/):
 
 | # | Runbook | You will learn |
