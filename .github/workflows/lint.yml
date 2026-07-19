@@ -1,0 +1,66 @@
+---
+name: Lint
+# PR gate. yamllint + ansible-lint + the two secret-hygiene guards + an AGENTS.md
+# staleness check. No secrets: ansible-lint runs offline (certified collections
+# aren't installed in CI; .ansible-lint mocks what can't resolve).
+#
+# GitHub Enterprise Server without hosted runners? Change `runs-on: ubuntu-latest`
+# to `runs-on: [self-hosted, linux]` — that is the only change needed.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  yamllint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install yamllint
+      - run: yamllint .
+
+  ansible-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install ansible-lint
+      - run: ansible-lint
+
+  secret-guards:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Vault-encryption guard
+        run: bash utilities/check-vault-encrypted.sh
+      - name: Export secret-leak guard
+        run: bash utilities/scan-exports.sh
+
+  agents-md-fresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: AGENTS.md names every tracked top-level directory
+        run: |
+          missing=0
+          # Only consider git-tracked directories, so gitignored caches
+          # (.ansible/, collections/ansible_collections/) never trip this.
+          for d in $(git ls-files | grep '/' | cut -d/ -f1 | sort -u); do
+            if ! grep -q "\`$d/\`\|/$d/\| $d/" AGENTS.md; then
+              echo "AGENTS.md does not mention top-level dir: $d/"
+              missing=1
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            echo "Update AGENTS.md's directory map in this PR."
+            exit 1
+          fi
+          echo "AGENTS.md directory map is current."

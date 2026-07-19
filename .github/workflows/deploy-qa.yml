@@ -1,0 +1,53 @@
+---
+name: Deploy qa
+# Manual promotion to QA. workflow_dispatch only: you trigger it from the Actions
+# tab after dev looks good. The "qa" GitHub Environment should have REQUIRED
+# REVIEWERS configured, so this run pauses for approval before it touches QA.
+# Environment "qa" holds:
+#   secrets:  AAP_USERNAME, AAP_PASSWORD, VAULT_PASSWORD
+#   variable: AAP_HOSTNAME
+# See docs/github-setup.md.
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, linux, aap]
+    environment: qa
+    env:
+      CONTROLLER_HOST: ${{ vars.AAP_HOSTNAME }}
+      CONTROLLER_USERNAME: ${{ secrets.AAP_USERNAME }}
+      CONTROLLER_PASSWORD: ${{ secrets.AAP_PASSWORD }}
+      AAP_VALIDATE_CERTS: "false"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ansible-core (pinned to the AAP 2.7 stream)
+        run: pip install --user "ansible-core>=2.18,<2.19"
+
+      - name: Install pinned collections
+        run: ansible-galaxy collection install -r collections/requirements.yml
+
+      - name: Write the vault password to a temp file
+        run: |
+          umask 077
+          printf '%s' "${{ secrets.VAULT_PASSWORD }}" > "$RUNNER_TEMP/vp"
+
+      - name: Validate (check mode)
+        run: >-
+          ansible-playbook playbooks/validate.yml
+          -i inventory --limit qa
+          --vault-id qa@"$RUNNER_TEMP/vp"
+
+      - name: Apply
+        run: >-
+          ansible-playbook playbooks/config.yml
+          -i inventory --limit qa
+          --vault-id qa@"$RUNNER_TEMP/vp"
+
+      - name: Remove the vault password file
+        if: always()
+        run: rm -f "$RUNNER_TEMP/vp"

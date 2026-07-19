@@ -1,0 +1,33 @@
+# ============================================================================
+# .devcontainer/Containerfile — aap_config dev container
+# ============================================================================
+# A lightweight Ansible control node for running the export/config playbooks as
+# LOCAL API calls. Deliberately NOT an execution-environment and NOT
+# ansible-navigator: everything here is connection: local, and EE-in-container on
+# Docker/Podman Desktop for Windows is the #1 support burden for this audience.
+# Execution environments are introduced conceptually later (runbook 10).
+#
+# Base: Red Hat UBI9 + Python 3.12 (matches the Red Hat platform story).
+# ============================================================================
+FROM registry.access.redhat.com/ubi9/python-312:latest
+
+# ansible-core is pinned to the 2.18 stream to match the AAP 2.7 execution
+# environment baseline, so what a trainee runs locally behaves like AAP.
+# TODO(Risk 4): confirm the exact minor against the AAP 2.7 ee-supported image
+#   podman run --rm registry.redhat.io/ansible-automation-platform-27/ee-supported-rhel9 ansible --version
+# and tighten this pin if it differs. Recorded in CHANGELOG.
+ARG ANSIBLE_CORE_VERSION=">=2.18,<2.19"
+
+USER 0
+RUN dnf -y install git openssh-clients jq && dnf clean all
+
+USER 1001
+RUN python3 -m pip install --no-cache-dir --upgrade pip \
+ && python3 -m pip install --no-cache-dir \
+      "ansible-core${ANSIBLE_CORE_VERSION}" \
+      ansible-lint \
+      yamllint
+
+# Collections are installed at post-create (not build time) so requirements.yml
+# bumps don't force an image rebuild, and because the Automation Hub token isn't
+# available during the build.

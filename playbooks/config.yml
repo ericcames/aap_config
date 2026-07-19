@@ -1,0 +1,38 @@
+---
+# ============================================================================
+# playbooks/config.yml — apply config-as-code to an on-prem AAP environment
+# ============================================================================
+# Priority 2 of the kit. Applies the objects defined in inventory/group_vars/ to
+# the environment chosen with --limit. Idempotent — safe to re-run.
+#
+#   ansible-playbook playbooks/config.yml -i inventory --limit dev --vault-id dev@prompt
+#
+# HOW VARS ARRIVE: implicitly, from inventory/group_vars/. There is deliberately
+# NO vars_files / include_vars here (see AGENTS.md -> Ansible standards). Running
+# with --limit dev loads group_vars/aap/* (shared) merged with group_vars/dev/*
+# (deltas + vault secrets), combined by dispatch_include_wildcard_vars.
+#
+# AUTH: basic auth via aap_username / aap_password (from group_vars/aap, which
+# read the sourced CONTROLLER_* env / CI environment secrets). We deliberately do
+# NOT mint an OAuth token here: dispatch supports basic auth directly, and not
+# creating a token means there is nothing to leak or clean up. (export.yml mints
+# a token only because filetree_create requires an OAuth token.)
+# ============================================================================
+- name: Apply AAP configuration to {{ env_name | default('the target env') }}
+  hosts: "{{ target_group | default('aap') }}"
+  gather_facts: false
+  tasks:
+    - name: Fail early if connection credentials are not available
+      ansible.builtin.assert:
+        that:
+          - aap_hostname | length > 0
+          - aap_username | length > 0
+          - aap_password | length > 0
+        fail_msg: >-
+          CONTROLLER_HOST / CONTROLLER_USERNAME / CONTROLLER_PASSWORD are not set
+          for env '{{ env_name | default("?") }}'. Locally: source the right
+          docs/dev-environment.sh. In CI: the environment secrets are missing.
+
+    - name: Apply all objects via the dispatch role
+      ansible.builtin.include_role:
+        name: infra.aap_configuration.dispatch

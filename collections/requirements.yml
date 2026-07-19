@@ -1,0 +1,35 @@
+---
+# ============================================================================
+# collections/requirements.yml — the SINGLE source of truth for collection pins
+# ============================================================================
+# Consumed by:
+#   - .devcontainer/post-create.sh  (installs into the container's ~/.ansible)
+#   - .github/workflows/deploy-*.yml (installs on the self-hosted runner)
+#
+# There is deliberately NO galaxy.yml in this repo — v2 is a config-as-code
+# project, not a collection, so this file is the only place versions live.
+#
+# Pins verified against console.redhat.com validated content on 2026-07-18:
+#   infra.aap_configuration           latest 4.7.0
+#   infra.aap_configuration_extended  latest 4.9.1
+# Scope is controller + gateway objects only, so ansible.hub / ansible.eda /
+# ansible.posix / ansible.utils are intentionally NOT pinned here.
+# ============================================================================
+collections:
+  # dispatch role + all controller_*/gateway_* object roles (the import side).
+  - name: infra.aap_configuration
+    version: "4.7.0"
+
+  # filetree_create (export), object_diff (drift). The base collection ships
+  # these role dirs as EMPTY stubs — the working roles live only here.
+  - name: infra.aap_configuration_extended
+    version: "4.9.1"
+
+  # Platform gateway modules + ansible.platform.token (preferred over
+  # ansible.controller wherever a module exists).
+  - name: ansible.platform
+    version: "2.7.20260604"
+
+  # Controller modules required by the infra controller_* roles.
+  - name: ansible.controller
+    version: "4.8.0"

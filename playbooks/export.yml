@@ -1,0 +1,83 @@
+---
+# ============================================================================
+# playbooks/export.yml — export controller + gateway objects to the working tree
+# ============================================================================
+# Priority 1 of the kit. Runs from the trainee's dev container as LOCAL API calls
+# against the production Azure managed AAP 2.7. It writes a filetree under
+# exports/ — it does NOT touch git. The trainee reviews, commits, and opens a PR
+# by hand (runbook 02/03/05); that is the point.
+#
+# Prereqs (runbook 02):
+#   cp docs/dev-environment.sh.example docs/dev-environment.sh   # fill in
+#   source docs/dev-environment.sh                               # CONTROLLER_* env
+#   ansible-playbook playbooks/export.yml -i inventory --limit azure
+#
+# Auth: mints a short-lived read-scoped ansible.platform.token and ALWAYS deletes
+# it in the always: block (hard rule — no stale tokens).
+# ============================================================================
+- name: Export AAP controller + gateway objects to exports/
+  hosts: "{{ export_group | default('azure') }}"
+  gather_facts: false
+  # aap_hostname / aap_username / aap_password / aap_validate_certs come from
+  # group_vars/aap/aap_settings.yml (which reads the sourced CONTROLLER_* env).
+  tasks:
+    - name: Fail early if connection credentials are not sourced
+      ansible.builtin.assert:
+        that:
+          - aap_hostname | length > 0
+          - aap_username | length > 0
+          - aap_password | length > 0
+        fail_msg: >-
+          CONTROLLER_HOST / CONTROLLER_USERNAME / CONTROLLER_PASSWORD are not set.
+          Run:  cp docs/dev-environment.sh.example docs/dev-environment.sh
+          then edit it and:  source docs/dev-environment.sh
+          See docs/runbooks/02-export.md.
+      run_once: true
+
+    - name: Export with an auto-cleaned read token
+      block:
+        - name: Mint a short-lived read token
+          ansible.platform.token:
+            aap_hostname: "{{ aap_hostname }}"
+            aap_username: "{{ aap_username }}"
+            aap_password: "{{ aap_password }}"
+            aap_validate_certs: "{{ aap_validate_certs }}"
+            scope: read
+            description: "aap_config export.yml (temporary)"
+            state: present
+          register: export_token
+
+        - name: Run filetree_create (controller + gateway scope only)
+          vars:
+            aap_oauthtoken: "{{ aap_token.token }}"
+            output_path: "{{ playbook_dir }}/../exports/{{ export_name | default(env_name) }}"
+            # Aggregate tags — both are valid per the role's valid_tags. No
+            # hub/EDA in this kit's scope.
+            input_tag:
+              - controller
+              - gateway
+            # Emit {{ vaulted_* }} placeholders for secret fields, never values.
+            secrets_as_variables: true
+            # Keep the per-organization tree; it is easier to review than a flat
+            # dump during curation (runbook 03).
+            flatten_output: false
+            # Optional: export a single org by name. Leave omitted for everything.
+            organization_filter: "{{ org_filter | default(omit) }}"
+          ansible.builtin.include_role:
+            name: infra.aap_configuration_extended.filetree_create
+      always:
+        - name: Delete the temporary token
+          ansible.platform.token:
+            aap_hostname: "{{ aap_hostname }}"
+            aap_validate_certs: "{{ aap_validate_certs }}"
+            existing_token: "{{ aap_token }}"
+            state: absent
+          when: aap_token is defined
+
+    - name: Tell the trainee what to do next
+      ansible.builtin.debug:
+        msg:
+          - "Export written to exports/{{ export_name | default(env_name) }}/"
+          - "Next: run  bash utilities/scan-exports.sh  then review the diff in VS Code."
+          - "Then curate objects into inventory/group_vars/ (docs/runbooks/03-curate.md)."
+      run_once: true

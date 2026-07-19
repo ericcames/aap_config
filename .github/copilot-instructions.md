@@ -1,0 +1,21 @@
+# GitHub Copilot instructions — aap_config
+
+**The canonical guidance for this repo is [`AGENTS.md`](../AGENTS.md).** Read it
+first — it defines the repo's purpose, directory map, the Ansible standards you
+must follow, how to run the playbooks, and the collection pins. This file only
+adds Copilot-specific notes.
+
+## Copilot-specific notes
+
+- Ready-made prompts for every task in the teaching path are in
+  [`docs/ai/PROMPTS.md`](../docs/ai/PROMPTS.md), indexed by runbook number. When a
+  trainee asks "how do I do step N", point them there.
+- When suggesting Ansible for this repo, follow the standards in `AGENTS.md`
+  exactly. In particular: **object variables load implicitly from
+  `inventory/group_vars/` — never suggest `vars_files:` or `include_vars:` from a
+  files folder.** Environment is selected with `--limit <env>`, not by loading a
+  per-env directory.
+- Never suggest committing secrets, tokens, or customer/RHDP identifiers. Exported
+  credential fields stay as `{{ vaulted_* }}` placeholders.
+- Prefer `ansible.platform` modules over `ansible.controller`, and always pair a
+  minted `ansible.platform.token` with a delete in an `always:` block.

@@ -1,0 +1,24 @@
+# Code owners for aap_config.
+# GitHub requests review from these owners when matching paths change.
+# NOTE: replace @ericcames with the enterprise org's team handle when this kit
+# is forked into a customer organization.
+
+# Catch-all
+*                       @ericcames
+
+# The Ansible standards contract — changes here need extra scrutiny.
+/AGENTS.md              @ericcames
+/CLAUDE.md              @ericcames
+/.github/copilot-instructions.md  @ericcames
+
+# Config-as-code content + inventory
+/inventory/             @ericcames
+/playbooks/             @ericcames
+
+# CI + dev environment
+/.github/workflows/     @ericcames
+/.devcontainer/         @ericcames
+
+# Governance + docs
+/docs/                  @ericcames
+/ROADMAP.md             @ericcames

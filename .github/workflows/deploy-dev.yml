@@ -1,0 +1,58 @@
+---
+name: Deploy dev
+# Auto-applies config to the on-prem DEV environment when config/inventory or
+# playbooks change on main. Runs on a self-hosted runner that can reach the dev
+# gateway. Requires a GitHub Environment named "dev" holding:
+#   secrets:  AAP_USERNAME, AAP_PASSWORD, VAULT_PASSWORD
+#   variable: AAP_HOSTNAME
+# See docs/github-setup.md.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "inventory/**"
+      - "playbooks/**"
+      - "collections/requirements.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, linux, aap]
+    environment: dev
+    env:
+      CONTROLLER_HOST: ${{ vars.AAP_HOSTNAME }}
+      CONTROLLER_USERNAME: ${{ secrets.AAP_USERNAME }}
+      CONTROLLER_PASSWORD: ${{ secrets.AAP_PASSWORD }}
+      AAP_VALIDATE_CERTS: "false"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ansible-core (pinned to the AAP 2.7 stream)
+        run: pip install --user "ansible-core>=2.18,<2.19"
+
+      - name: Install pinned collections
+        run: ansible-galaxy collection install -r collections/requirements.yml
+
+      - name: Write the vault password to a temp file
+        run: |
+          umask 077
+          printf '%s' "${{ secrets.VAULT_PASSWORD }}" > "$RUNNER_TEMP/vp"
+
+      - name: Validate (check mode)
+        run: >-
+          ansible-playbook playbooks/validate.yml
+          -i inventory --limit dev
+          --vault-id dev@"$RUNNER_TEMP/vp"
+
+      - name: Apply
+        run: >-
+          ansible-playbook playbooks/config.yml
+          -i inventory --limit dev
+          --vault-id dev@"$RUNNER_TEMP/vp"
+
+      - name: Remove the vault password file
+        if: always()
+        run: rm -f "$RUNNER_TEMP/vp"

@@ -1,0 +1,32 @@
+{
+  "name": "AAP Config-as-Code",
+  "build": {
+    "dockerfile": "Containerfile"
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "22"
+    }
+  },
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "containerEnv": {
+    "ANSIBLE_FORCE_COLOR": "1"
+  },
+  "remoteEnv": {
+    "AH_TOKEN": "${localEnv:AH_TOKEN}"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "redhat.ansible",
+        "redhat.vscode-yaml",
+        "GitHub.copilot",
+        "GitHub.copilot-chat"
+      ],
+      "settings": {
+        "files.eol": "\n"
+      }
+    }
+  }
+}

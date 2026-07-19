@@ -1,0 +1,27 @@
+---
+# ============================================================================
+# group_vars/aap/aap_settings.yml — settings shared by EVERY environment
+# ============================================================================
+# Loaded automatically for any host under the `aap` group (azure, dev, qa, prod)
+# because this directory is named for that group. No include_vars needed.
+#
+# Connection credentials are NOT here — they come from the environment
+# (docs/dev-environment.sh, sourced) or per-env group_vars, never committed.
+# ============================================================================
+
+# The AAP hostname/credentials resolve from the sourced connection secrets.
+# Keeping them as env lookups means no customer hostname is committed.
+aap_hostname: "{{ lookup('ansible.builtin.env', 'CONTROLLER_HOST') }}"
+aap_username: "{{ lookup('ansible.builtin.env', 'CONTROLLER_USERNAME') }}"
+aap_password: "{{ lookup('ansible.builtin.env', 'CONTROLLER_PASSWORD') }}"
+
+# Certificate validation. On-prem dev/qa may use self-signed certs; override to
+# false in that env's group_vars if needed. Default is secure.
+aap_validate_certs: "{{ (lookup('ansible.builtin.env', 'AAP_VALIDATE_CERTS') | default('true', true)) | bool }}"
+
+# Let the dispatch role merge suffix-named variables so shared objects
+# (controller_projects_all) combine with per-env ones (controller_projects_dev).
+dispatch_include_wildcard_vars: true
+
+# Do not log object bodies (which may contain resolved secrets) by default.
+aap_configuration_secure_logging: true

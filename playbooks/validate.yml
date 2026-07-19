@@ -1,0 +1,31 @@
+---
+# ============================================================================
+# playbooks/validate.yml — dry-run the config apply (check mode)
+# ============================================================================
+# Same inputs and auth as config.yml, but runs the dispatch role in check mode so
+# it reports what WOULD change without changing anything. Used by:
+#   - the PR/deploy workflows as a pre-apply gate
+#   - humans who want a safe preview
+#
+#   ansible-playbook playbooks/validate.yml -i inventory --limit dev --vault-id dev@prompt
+#
+# Vars arrive implicitly from inventory/group_vars/ (no vars_files/include_vars).
+# ============================================================================
+- name: Validate (check mode) AAP configuration for {{ env_name | default('the target env') }}
+  hosts: "{{ target_group | default('aap') }}"
+  gather_facts: false
+  check_mode: true
+  tasks:
+    - name: Fail early if connection credentials are not available
+      ansible.builtin.assert:
+        that:
+          - aap_hostname | length > 0
+          - aap_username | length > 0
+          - aap_password | length > 0
+        fail_msg: >-
+          CONTROLLER_HOST / CONTROLLER_USERNAME / CONTROLLER_PASSWORD are not set
+          for env '{{ env_name | default("?") }}'.
+
+    - name: Dispatch in check mode (reports intended changes, applies nothing)
+      ansible.builtin.include_role:
+        name: infra.aap_configuration.dispatch

@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# ============================================================================
+# docs/dev-environment.sh.example
+# ============================================================================
+# Template for local connection credentials. Copy to docs/dev-environment.sh
+# (gitignored), fill in values, then:  source docs/dev-environment.sh
+#
+# NEVER commit docs/dev-environment.sh — it holds real credentials.
+#
+# One shell = one active AAP connection. Point these at the AAP you are talking
+# to right now: the Azure production instance when exporting, or an on-prem
+# dev/qa/prod gateway when applying config locally.
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# AAP connection — used by export.yml, config.yml, validate.yml.
+# The CONTROLLER_* names match how an AAP job-template credential injects them,
+# so the same playbooks run unchanged inside AAP later (runbook 10).
+# ----------------------------------------------------------------------------
+export CONTROLLER_HOST=""            # gateway URL, e.g. https://controller-<id>.apps.<cluster>.rhdp.net — NO trailing slash
+export CONTROLLER_USERNAME="admin"
+export CONTROLLER_PASSWORD=""
+
+# Certificate validation. Public managed AAP (Azure) has a valid CA — keep true.
+# On-prem dev/qa with self-signed certs: set to "false".
+export AAP_VALIDATE_CERTS="true"
+
+# ----------------------------------------------------------------------------
+# Automation Hub token (optional here) — normally provided to the dev container
+# via the AH_TOKEN host env var or the post-create prompt. Set it here only if
+# you prefer sourcing it. Get one at console.redhat.com -> Automation Hub -> API token.
+# ----------------------------------------------------------------------------
+# export AH_TOKEN=""
+# export AH_URL="https://console.redhat.com/api/automation-hub/content/validated/"

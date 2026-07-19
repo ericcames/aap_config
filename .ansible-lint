@@ -1,0 +1,23 @@
+---
+# ansible-lint config for the CI lint gate (.github/workflows/lint.yml).
+# CI runs offline (no Automation Hub token), so the certified collections in
+# collections/requirements.yml are NOT installed there. Declare the modules and
+# roles we call from them, otherwise syntax-check fails with
+# "couldn't resolve module/action". Locally they resolve because the collections
+# are installed in the dev container; CI is the clean case these mocks cover.
+profile: basic
+
+mock_modules:
+  # Platform gateway — token lifecycle in export.yml / config.yml / validate.yml.
+  - ansible.platform.token
+
+mock_roles:
+  # Import side (config.yml / validate.yml).
+  - infra.aap_configuration.dispatch
+  # Export side (export.yml).
+  - infra.aap_configuration_extended.filetree_create
+
+exclude_paths:
+  - collections/ansible_collections/   # vendored collections, if any
+  - exports/                           # machine-generated export output
+  - .github/

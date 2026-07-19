@@ -1,0 +1,51 @@
+# ============================================================================
+# .gitignore — aap_config
+# ============================================================================
+
+# Ansible — collections installed from collections/requirements.yml.
+# They install into the container/runner ~/.ansible, but ignore a local copy
+# too in case anyone installs with `-p collections/`.
+collections/ansible_collections/
+
+# Ansible — local cache dirs created by ansible / ansible-lint.
+.ansible/
+
+# ----------------------------------------------------------------------------
+# Secrets — never commit. Two complementary secret channels, both gitignored:
+# ----------------------------------------------------------------------------
+# 1) Connection secrets sourced into the shell (AMZL pattern). Real file is
+#    gitignored; the committed template is docs/dev-environment.sh.example
+#    (different filename, NOT matched). No leading slash — matches in any dir.
+dev-environment.sh
+
+# 2) Vault password files used to encrypt config/*/secrets.yml.
+.vault_pass
+.vault_password
+*.vault_pass
+.vault-password
+*.vault-password
+
+# Raw OAuth tokens, if any ever get written to disk.
+*.token
+
+# ----------------------------------------------------------------------------
+# Exports — raw filetree_create output. The tree IS committed for review and
+# history, BUT *_settings exports can embed SSO/client secrets that
+# secrets_as_variables does not template out — so those are excluded and the
+# trainee curates them by hand (runbook 03).
+# ----------------------------------------------------------------------------
+exports/**/*_settings*
+exports/**/*settings*.yaml
+exports/**/*settings*.yml
+
+# Claude Code per-project state (memory, transcripts, settings) — ignored,
+# EXCEPT repo-shipped skills, which are part of the kit.
+.claude/*
+!.claude/skills/
+
+# OS / editor cruft
+.DS_Store
+*.swp
+*~
+__pycache__/
+*.py[cod]
