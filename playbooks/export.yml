@@ -8,9 +8,9 @@
 # by hand (runbook 02/03/05); that is the point.
 #
 # Prereqs (runbook 02):
-#   cp docs/dev-environment.sh.example docs/dev-environment.sh   # fill in
-#   source docs/dev-environment.sh                               # CONTROLLER_* env
-#   ansible-playbook playbooks/export.yml -i inventory --limit azure
+#   Set up connection.yml + vault-encrypted secrets.yml for the target env
+#   (see /vault-secrets skill or docs/runbooks/04-secrets.md).
+#   ansible-playbook playbooks/export.yml -i inventory --limit azure --vault-id azure@prompt
 #
 # Auth: mints a short-lived read-scoped ansible.platform.token and ALWAYS deletes
 # it in the always: block (hard rule — no stale tokens).
@@ -18,8 +18,8 @@
 - name: Export AAP controller + gateway objects to exports/
   hosts: "{{ export_group | default('azure') }}"
   gather_facts: false
-  # aap_hostname / aap_username / aap_password / aap_validate_certs come from
-  # group_vars/aap/aap_settings.yml (which reads the sourced CONTROLLER_* env).
+  # aap_hostname / aap_validate_certs come from group_vars/<env>/connection.yml.
+  # aap_username / aap_password come from group_vars/<env>/secrets.yml (vault).
   tasks:
     - name: Fail early if connection credentials are not sourced
       ansible.builtin.assert:
@@ -28,10 +28,9 @@
           - aap_username | length > 0
           - aap_password | length > 0
         fail_msg: >-
-          CONTROLLER_HOST / CONTROLLER_USERNAME / CONTROLLER_PASSWORD are not set.
-          Run:  cp docs/dev-environment.sh.example docs/dev-environment.sh
-          then edit it and:  source docs/dev-environment.sh
-          See docs/runbooks/02-export.md.
+          aap_hostname / aap_username / aap_password are not set for env
+          '{{ env_name | default("?") }}'. Set up connection.yml and
+          vault-encrypted secrets.yml — see docs/runbooks/04-secrets.md.
       run_once: true
 
     - name: Export with an auto-cleaned read token
@@ -56,13 +55,17 @@
             input_tag:
               - controller
               - gateway
+            # Workaround: include_role evaluates tags: at parse time, before
+            # the role's defaults load. Pass valid_tags explicitly.
+            valid_tags:
+              - all
+              - controller
+              - gateway
             # Emit {{ vaulted_* }} placeholders for secret fields, never values.
             secrets_as_variables: true
             # Keep the per-organization tree; it is easier to review than a flat
             # dump during curation (runbook 03).
             flatten_output: false
-            # Optional: export a single org by name. Leave omitted for everything.
-            organization_filter: "{{ org_filter | default(omit) }}"
           ansible.builtin.include_role:
             name: infra.aap_configuration_extended.filetree_create
       always:

@@ -39,8 +39,9 @@ it: `ansible-playbook playbooks/export.yml -i inventory --limit azure`. What doe
 ```
 
 ```
-The export failed with an assertion about CONTROLLER_HOST not being set. Explain
-what I forgot to do and how `source docs/dev-environment.sh` fixes it.
+The export failed with an assertion about aap_hostname not being set. Explain
+what I forgot to do — I need connection.yml and vault-encrypted secrets.yml in
+the right group_vars directory. Walk me through setting them up.
 ```
 
 ## Runbook 03 — curate into group_vars {#rb03}

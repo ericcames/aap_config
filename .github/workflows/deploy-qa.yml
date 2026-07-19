@@ -3,9 +3,10 @@ name: Deploy qa
 # Manual promotion to QA. workflow_dispatch only: you trigger it from the Actions
 # tab after dev looks good. The "qa" GitHub Environment should have REQUIRED
 # REVIEWERS configured, so this run pauses for approval before it touches QA.
-# Environment "qa" holds:
-#   secrets:  AAP_USERNAME, AAP_PASSWORD, VAULT_PASSWORD
-#   variable: AAP_HOSTNAME
+#
+# Connection credentials are in vault-encrypted group_vars — the only GitHub
+# Environment secret needed is VAULT_PASSWORD.
+#
 # See docs/github-setup.md.
 on:
   workflow_dispatch: {}
@@ -17,11 +18,6 @@ jobs:
   deploy:
     runs-on: [self-hosted, linux, aap]
     environment: qa
-    env:
-      CONTROLLER_HOST: ${{ vars.AAP_HOSTNAME }}
-      CONTROLLER_USERNAME: ${{ secrets.AAP_USERNAME }}
-      CONTROLLER_PASSWORD: ${{ secrets.AAP_PASSWORD }}
-      AAP_VALIDATE_CERTS: "false"
     steps:
       - uses: actions/checkout@v4
 

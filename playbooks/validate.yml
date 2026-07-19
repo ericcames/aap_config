@@ -23,8 +23,9 @@
           - aap_username | length > 0
           - aap_password | length > 0
         fail_msg: >-
-          CONTROLLER_HOST / CONTROLLER_USERNAME / CONTROLLER_PASSWORD are not set
-          for env '{{ env_name | default("?") }}'.
+          aap_hostname / aap_username / aap_password are not set for env
+          '{{ env_name | default("?") }}'. Set up connection.yml and
+          vault-encrypted secrets.yml — see docs/runbooks/04-secrets.md.
 
     - name: Dispatch in check mode (reports intended changes, applies nothing)
       ansible.builtin.include_role:

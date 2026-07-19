@@ -9,19 +9,14 @@ Follow the standards in `AGENTS.md`. This mirrors `docs/runbooks/02-export.md`.
 
 ## Steps
 
-1. Confirm connection secrets are loaded. The playbook reads `CONTROLLER_HOST`,
-   `CONTROLLER_USERNAME`, `CONTROLLER_PASSWORD` (via `group_vars/aap`). If not set,
-   tell the user to:
-   ```
-   cp docs/dev-environment.sh.example docs/dev-environment.sh   # then fill in
-   source docs/dev-environment.sh
-   ```
-   Never print or store these values.
+1. Confirm the env's vault-encrypted `secrets.yml` and committed `connection.yml`
+   exist in `inventory/group_vars/<env>/`. If not, tell the user to set them up
+   first (use the `/vault-secrets` skill or `docs/runbooks/04-secrets.md`).
 
 2. Run the export (default target is the `azure` group; override with
    `-e export_group=<group>` and `-e export_name=<dir>` if needed):
    ```
-   ansible-playbook playbooks/export.yml -i inventory --limit azure
+   ansible-playbook playbooks/export.yml -i inventory --limit azure --vault-id azure@prompt
    ```
    Scope is controller + gateway only (`input_tag: [controller, gateway]`), with
    `secrets_as_variables: true` so secrets export as `{{ vaulted_* }}`. A read

@@ -1,0 +1,5 @@
+---
+# On-prem AAP 2.7 qa (standalone). Replace the placeholder with the real
+# gateway URL, then copy this file to connection.yml.
+aap_hostname: "https://aap-qa.example.internal"
+aap_validate_certs: true

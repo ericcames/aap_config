@@ -30,7 +30,7 @@ KEYS='password|token|secret|ssh_key_data|ssh_key_unlock|become_password|vault_pa
 # obvious template. Flag anything else on a secret key line.
 hits="$(grep -rInE "^[[:space:]]*(${KEYS}):[[:space:]]*" "$EXPORTS" 2>/dev/null \
   | grep -vE ":[[:space:]]*(\"\{\{[[:space:]]*vaulted_|'\{\{[[:space:]]*vaulted_|\{\{[[:space:]]*vaulted_)" \
-  | grep -vE ":[[:space:]]*(\"\"|''|~|null|)[[:space:]]*$" \
+  | grep -vE ":[[:space:]]*(\"\"|''|~|null|true|false|)[[:space:]]*$" \
   | grep -vE ":[[:space:]]*\{\{" \
   || true)"
 

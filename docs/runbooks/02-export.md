@@ -12,23 +12,38 @@ commit but secrets are not.
 
 ## Steps
 
-1. **Create your local secrets file** from the template (it is gitignored):
+1. **Set up your connection and secrets files** (if not already done — see
+   [runbook 04](04-secrets.md) for full details):
    ```bash
-   cp docs/dev-environment.sh.example docs/dev-environment.sh
+   cp inventory/group_vars/azure/connection.yml.example inventory/group_vars/azure/connection.yml
+   cp inventory/group_vars/azure/secrets.yml.example   inventory/group_vars/azure/secrets.yml
    ```
-   Edit `docs/dev-environment.sh` and fill in `CONTROLLER_HOST`,
-   `CONTROLLER_USERNAME`, `CONTROLLER_PASSWORD`. Keep `AAP_VALIDATE_CERTS="true"`
-   for the Azure instance. (During initial testing you may point these at an AAP
-   2.6 instance instead — the export works identically on 2.6 and 2.7.)
+   Fill in the real hostname in `connection.yml` and real username/password in
+   `secrets.yml`. Then encrypt the secrets:
+   ```bash
+   ansible-vault encrypt inventory/group_vars/azure/secrets.yml --vault-id azure@prompt
+   ```
+   (During initial testing you may point at an AAP 2.6 instance — the export
+   works identically on 2.6 and 2.7.)
 
-2. **Load it into your shell:**
+2. **Optional: save your vault password to a file** so you don't retype it
+   every run:
    ```bash
-   source docs/dev-environment.sh
+   mkdir -p ~/secrets && chmod 700 ~/secrets
+   echo 'your-vault-password' > ~/secrets/.vault_pass_azure && chmod 600 ~/secrets/.vault_pass_azure
    ```
+   Then use `@~/secrets/.vault_pass_azure` instead of `@prompt` below. CI does
+   the same thing — the `VAULT_PASSWORD` GitHub secret is written to a temp file
+   by each deploy workflow.
 
 3. **Run the export:**
    ```bash
-   ansible-playbook playbooks/export.yml -i inventory --limit azure
+   ansible-playbook playbooks/export.yml -i inventory --limit azure --vault-id azure@prompt
+   ```
+   Or with a vault password file (step 2):
+   ```bash
+   ansible-playbook playbooks/export.yml -i inventory --limit azure \
+     --vault-id azure@~/secrets/.vault_pass_azure
    ```
    > **AI Assist:** [PROMPTS.md → rb02](../ai/PROMPTS.md#rb02) — ask it to explain
    > the command before you run it.
@@ -46,12 +61,14 @@ real password. `scan-exports.sh` prints OK.
 
 ## If it went wrong
 
-- **Assertion: CONTROLLER_HOST not set** → you didn't `source
-  docs/dev-environment.sh` in *this* terminal. Re-run step 2.
-- **Auth/401** → wrong username/password, or the URL has a trailing slash (remove
-  it).
-- **TLS certificate error** → the instance uses a private CA; only then set
-  `AAP_VALIDATE_CERTS="false"` and re-source.
+- **Assertion: aap_hostname not set** → `connection.yml` is missing or empty.
+  Re-run step 1.
+- **Vault password error** → you didn't pass `--vault-id azure@prompt`, or the
+  password doesn't match what you used to encrypt.
+- **Auth/401** → wrong username/password in `secrets.yml`, or the URL has a
+  trailing slash (remove it).
+- **TLS certificate error** → the instance uses a private CA; set
+  `aap_validate_certs: false` in `connection.yml`.
 - **`scan-exports.sh` FAILED** → a real secret leaked (rare). Re-run the export;
   if it persists, remove the value by hand and report it.
 

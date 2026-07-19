@@ -30,18 +30,18 @@ each with:
 
 | Kind | Name | Value |
 |------|------|-------|
-| Variable | `AAP_HOSTNAME` | that env's gateway URL (prod sides: the specific node, not a VIP) |
-| Secret | `AAP_USERNAME` | service account username |
-| Secret | `AAP_PASSWORD` | service account password |
 | Secret | `VAULT_PASSWORD` | the ansible-vault password for that env's `secrets.yml` |
+
+That's it — connection credentials (hostname, username, password) are in the
+repo's vault-encrypted `inventory/group_vars/<env>/secrets.yml` and committed
+`connection.yml` files, not in GitHub secrets. The vault password is the single
+key that unlocks everything.
 
 > **Production active/passive:** `deploy-prod.yml` runs two parallel jobs — one
 > per side. Each job uses its own GitHub Environment (`prod_active`,
-> `prod_passive`) with its own `AAP_HOSTNAME` pointing at the specific node. The
-> `AAP_SITE_ROLE` env var is set by the workflow (`active` / `passive`) and
-> controls whether schedules and notifications are enabled. See
-> [`docs/references.md`](references.md) for the COP blog series that describes
-> this pattern.
+> `prod_passive`). Connection details and `aap_site_role` come from each side's
+> committed `connection.yml`. See [`docs/references.md`](references.md) for the
+> COP blog series.
 
 On **qa**, **prod_active**, and **prod_passive**, add **required reviewers** so
 a deploy pauses for human approval. `dev` needs no reviewer (it deploys
@@ -68,15 +68,11 @@ for env in dev qa prod_active prod_passive; do
   gh api -X PUT "repos/$ORG_REPO/environments/$env" >/dev/null
 done
 
-# Per-environment values (repeat per env; example for dev).
-gh variable set AAP_HOSTNAME  --env dev  --repo "$ORG_REPO" --body "https://aap-dev.example.internal"
-gh secret   set AAP_USERNAME  --env dev  --repo "$ORG_REPO"
-gh secret   set AAP_PASSWORD  --env dev  --repo "$ORG_REPO"
-gh secret   set VAULT_PASSWORD --env dev --repo "$ORG_REPO"
-
-# Production active/passive — each side has its own hostname + credentials.
-gh variable set AAP_HOSTNAME  --env prod_active  --repo "$ORG_REPO" --body "https://aap-prod-active.example.internal"
-gh variable set AAP_HOSTNAME  --env prod_passive --repo "$ORG_REPO" --body "https://aap-prod-passive.example.internal"
+# Per-environment vault password (the only secret needed — everything else is
+# in the repo's vault-encrypted group_vars).
+for env in dev qa prod_active prod_passive; do
+  gh secret set VAULT_PASSWORD --env "$env" --repo "$ORG_REPO"
+done
 ```
 
 ## Discovery checklist (before you build Phase 2)

@@ -1,0 +1,3 @@
+---
+aap_hostname: "https://aap-aap.apps.cluster-2dhg8-2.dyn.redhatworkshops.io"
+aap_validate_certs: true

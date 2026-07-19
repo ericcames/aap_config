@@ -6,6 +6,8 @@ extends: default
 ignore: |
   collections/ansible_collections/
   exports/
+  # Vault-encrypted files are binary blobs, not valid YAML.
+  inventory/group_vars/*/secrets.yml
 
 rules:
   # Exported object definitions and long env-var lookups run past 80; keep
