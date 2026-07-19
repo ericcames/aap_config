@@ -105,7 +105,7 @@ to reuse. Decide at build time.
 ## 3e. Team plugin extraction
 
 Extract the reusable standards assets so the whole team can demo/enforce them
-across repos (dc1.azure, AMZL-dailydemo, …), the way `aap-skills` already packages
+across the team's other demo repos, the way `aap-skills` already packages
 demo skills:
 
 - The `.claude/skills/` (export-aap, curate-config, vault-secrets) → a shared

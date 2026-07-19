@@ -45,7 +45,7 @@ Full design in **[`docs/phase-3-plan.md`](docs/phase-3-plan.md)**. Summary:
   template, EE intro)
 - **Team plugin:** extract `.claude/skills/` + the `AGENTS.md` standards into a
   shareable plugin (like `aap-skills`) so the whole team can demo/enforce the
-  same standards across repos (dc1.azure, AMZL-dailydemo, …).
+  same standards across the team's other demo repos.
 
 ## Decisions log
 

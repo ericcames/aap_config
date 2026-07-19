@@ -13,7 +13,7 @@ collections/ansible_collections/
 # ----------------------------------------------------------------------------
 # Secrets — never commit. Two complementary secret channels, both gitignored:
 # ----------------------------------------------------------------------------
-# 1) Connection secrets sourced into the shell (AMZL pattern). Real file is
+# 1) Connection secrets sourced into the shell. Real file is
 #    gitignored; the committed template is docs/dev-environment.sh.example
 #    (different filename, NOT matched). No leading slash — matches in any dir.
 dev-environment.sh
