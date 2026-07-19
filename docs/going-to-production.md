@@ -38,7 +38,8 @@ validating drift between sites, and rehearsing recovery.
 **Scale and adoption.** Onboarding a team onto config-as-code — consistent
 standards, a smooth path for less-technical users, and support as usage grows.
 This is where a TAM's adoption planning and best-practice guidance is most
-valuable.
+valuable. The [adoption plan template](tam-adoption-plan.md) is a one-page
+starting point to fill in with your TAM.
 
 ## How to engage
 
