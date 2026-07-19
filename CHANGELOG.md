@@ -31,6 +31,19 @@ All notable changes to this project are documented here. Format based on
   (self-hosted runner, per-environment secrets, required-reviewer gates on
   qa/prod). `docs/github-setup.md` admin checklist.
 
+- **BeyondTrust secrets-management design** (`docs/secrets-beyondtrust.md`).
+  Documented pattern for environments that manage secrets in BeyondTrust Password
+  Safe: at deploy time each env's `secrets.yml` shrinks to the vault-encrypted
+  OAuth bootstrap and `vaulted_*` values become lazy `secrets_safe_lookup` calls
+  in a committed `secrets_lookup.yml`; at job runtime a custom credential type
+  injects those credentials as environment variables. Explains why AAP's
+  `credential_input_sources` path is unavailable (AAP 2.6/2.7 ships no BeyondTrust
+  credential plugin). Adds `beyondtrust.yml.example` and
+  `secrets_lookup.yml.example` for dev/qa/prod. **Design and inert templates
+  only** — the `beyondtrust.secrets_safe` collection is deliberately not pinned
+  until it can be verified against a live Password Safe. ansible-vault remains the
+  default and environments can mix. Decision recorded in `ROADMAP.md`.
+
 - **Active/passive production topology.** Restructured `prod` inventory group
   into `prod_active` and `prod_passive` child groups following the Red Hat COP
   pattern. Config is pushed to both sides simultaneously; the `aap_site_role`
