@@ -1,0 +1,23 @@
+---
+# ============================================================================
+# group_vars/prod/aap_site_role.yml — active/passive site-role variable
+# ============================================================================
+# Both prod_active and prod_passive inherit this file (they are children of the
+# prod group). The AAP_SITE_ROLE env var is set per-side:
+#
+#   - In CI: each GitHub Environment (prod_active, prod_passive) sets it.
+#   - Locally: set it in docs/dev-environment.sh before running a playbook.
+#
+# Curated object definitions use this variable to conditionally enable or
+# disable work-trigger and outbound-signal objects:
+#
+#   enabled: "{{ aap_site_role == 'active' }}"
+#
+# Failover: change the env var (or the LB header), not Git. The passive side
+# already has the full config — enable its schedules and it is production.
+#
+# This is the Red Hat COP-recommended pattern for active/passive CaC.
+# See: docs/references.md → Active/passive CaC blog series.
+# ============================================================================
+
+aap_site_role: "{{ lookup('ansible.builtin.env', 'AAP_SITE_ROLE', default='active') }}"

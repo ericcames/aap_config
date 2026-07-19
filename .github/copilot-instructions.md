@@ -19,3 +19,10 @@ adds Copilot-specific notes.
   credential fields stay as `{{ vaulted_* }}` placeholders.
 - Prefer `ansible.platform` modules over `ansible.controller`, and always pair a
   minted `ansible.platform.token` with a delete in an `always:` block.
+- When the user wants to add or change a convention, pattern, or architecture
+  decision, follow the full evolve-kit cycle documented in
+  [`docs/runbooks/06-evolve-kit.md`](../docs/runbooks/06-evolve-kit.md): research
+  the COP-recommended approach → plan → implement → update cross-references
+  (CHANGELOG, AGENTS.md, ROADMAP, references.md) → lint → commit → push → PR →
+  merge. Prompts for each step are in
+  [`docs/ai/PROMPTS.md → rb06`](../docs/ai/PROMPTS.md#rb06).

@@ -86,7 +86,26 @@ I accidentally committed directly to `main` instead of a branch. Walk me through
 fixing this safely, one command at a time, explaining each before I run it.
 ```
 
-## Runbook 06+ — CI, deploy, approvals {#rb06}
+## Runbook 06 — evolve the kit {#rb06}
+
+```
+I want to change how this kit handles <topic>. Walk me through the full cycle:
+research the COP-recommended approach, plan the changes, implement, update
+CHANGELOG/AGENTS.md, lint, commit, push, and open a PR.
+```
+
+```
+I've made changes across inventory, CI workflows, and docs. Walk me through
+staging specific files, writing a good commit message, pushing to a branch, and
+opening a pull request with `gh pr create`.
+```
+
+```
+Explain what the Red Hat Communities of Practice (COP) is and where to find
+their recommended patterns for AAP config-as-code.
+```
+
+## Runbook 07+ — CI, deploy, approvals {#rb07}
 
 ```
 Explain what a GitHub Actions "status check" is and why a pull request can be

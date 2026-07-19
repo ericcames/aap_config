@@ -8,9 +8,11 @@ specific notes. Eric's global rules in `~/.claude/CLAUDE.md` also apply.
 ## Claude-specific notes
 
 - **Repo-shipped skills** live in `.claude/skills/` and mirror the runbooks:
-  `/export-aap`, `/curate-config`, `/vault-secrets`. Prefer following a skill over
-  improvising — it keeps you aligned with what a trainee is taught to do. Skills
-  reference `docs/runbooks/` rather than duplicating steps.
+  `/export-aap`, `/curate-config`, `/vault-secrets`, `/evolve-kit`. Prefer
+  following a skill over improvising — it keeps you aligned with what a trainee
+  is taught to do. Skills reference `docs/runbooks/` rather than duplicating
+  steps. When making a design change (new convention, architecture decision),
+  use `/evolve-kit` for the full research → plan → implement → PR cycle.
 - **The standards in AGENTS.md are hard rules**, not preferences. The most common
   way to get this repo wrong is to reach for `vars_files:`/`include_vars:` to load
   object definitions — don't. Variables come from `inventory/group_vars/` by group
