@@ -34,6 +34,10 @@ assistant** (GitHub Copilot or Claude Code) helping at every step.
 
 ## Start here
 
+**Just want to see the loop working?** [`DEMO.md`](DEMO.md) runs export → review →
+apply straight through to the payoff in about 10 minutes, for a technical
+audience — no need to work through the runbooks first.
+
 **No local install?** Launch the dev container in the cloud — no Docker/Podman,
 no WSL, no admin rights:
 
