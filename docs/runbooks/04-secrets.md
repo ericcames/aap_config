@@ -1,5 +1,8 @@
 # Runbook 04 — Secrets and the vault
 
+> **Skill:** `/vault-secrets` runs this whole runbook for you, in Claude Code or GitHub
+> Copilot CLI. Read the steps first, then let it drive.
+
 ## You will need
 
 Curated objects in `inventory/group_vars/` (runbook 03). Some will reference

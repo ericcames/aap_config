@@ -1,5 +1,8 @@
 # Runbook 01 — Open the dev container
 
+> **Skill:** `/setup-workstation` runs this whole runbook (it covers runbooks 00–01) for you, in Claude Code or GitHub
+> Copilot CLI. Read the steps first, then let it drive.
+
 ## You will need
 
 Runbook 00 complete (GitHub login, container runtime, VS Code). If you prefer a

@@ -31,6 +31,23 @@ All notable changes to this project are documented here. Format based on
   (self-hosted runner, per-environment secrets, required-reviewer gates on
   qa/prod). `docs/github-setup.md` admin checklist.
 
+- **Cross-tool agent skills, and three new ones.** The repo's skills use the open
+  `SKILL.md` format and already worked in **both** Claude Code and GitHub Copilot
+  CLI (which reads project skills from `.claude/skills/`) — but nothing said so,
+  and `.github/copilot-instructions.md` pointed Copilot users only at copy-paste
+  prompts. Added `AGENTS.md` → **Repo-shipped skills**: the seven-skill table, the
+  cross-tool mechanism, the skills-vs-prompts division of labor (prompts explain,
+  skills do), and the frontmatter contract for adding one. `CLAUDE.md` and the
+  Copilot shim now point there instead of carrying their own lists; `README.md`
+  gains a Skill column; `docs/ai/PROMPTS.md` and each runbook gain skill pointers.
+  New skills: **`/apply-config`** (dry-run `validate.yml` in check mode, then
+  apply `config.yml` — the deploy path had no skill), **`/branch-pr`** (runbook
+  05), and **`/setup-workstation`** (runbooks 00–01). New `skills-frontmatter` CI
+  job: `yamllint` cannot see Markdown frontmatter, so a non-portable key — the one
+  failure mode that silently breaks loading in a tool — previously shipped
+  unnoticed. Skills stay in `.claude/skills/`; decision and the deferred
+  `.agents/skills` option recorded in `ROADMAP.md`.
+
 - **BeyondTrust secrets-management design** (`docs/secrets-beyondtrust.md`).
   Documented pattern for environments that manage secrets in BeyondTrust Password
   Safe: at deploy time each env's `secrets.yml` shrinks to the vault-encrypted

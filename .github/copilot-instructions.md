@@ -7,9 +7,19 @@ adds Copilot-specific notes.
 
 ## Copilot-specific notes
 
+- **This repo ships agent skills, and you can use them.** Copilot CLI reads
+  project skills from `.claude/skills/`, where this kit's seven live:
+  `/setup-workstation`, `/export-aap`, `/curate-config`, `/vault-secrets`,
+  `/branch-pr`, `/apply-config`, `/evolve-kit`. They load automatically in this
+  repo — the directory is named for Claude Code for historical reasons, but it is
+  one of the project skill directories Copilot CLI reads, and these skills are
+  written to be tool-neutral. What each one does is in
+  [`AGENTS.md` → Repo-shipped skills](../AGENTS.md#repo-shipped-skills). When a
+  task matches a skill, run the skill rather than improvising.
 - Ready-made prompts for every task in the teaching path are in
-  [`docs/ai/PROMPTS.md`](../docs/ai/PROMPTS.md), indexed by runbook number. When a
-  trainee asks "how do I do step N", point them there.
+  [`docs/ai/PROMPTS.md`](../docs/ai/PROMPTS.md), indexed by runbook number. Point
+  trainees there when they want a step **explained**; point them at the matching
+  skill when they want it **done**.
 - When suggesting Ansible for this repo, follow the standards in `AGENTS.md`
   exactly. In particular: **object variables load implicitly from
   `inventory/group_vars/` — never suggest `vars_files:` or `include_vars:` from a

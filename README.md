@@ -45,16 +45,16 @@ with runbooks 00–01 below.
 
 Work through the numbered runbooks in [`docs/runbooks/`](docs/runbooks/):
 
-| # | Runbook | You will learn |
-|---|---------|----------------|
-| 00 | Prerequisites | accounts, Docker/Podman Desktop, VS Code, Copilot seat check |
-| 01 | Dev container | clone, "Reopen in Container" |
-| 02 | Export | run `export.yml`, the working tree, `.gitignore` |
-| 03 | Curate into group_vars | `git status`/`diff`/`add`/`commit` |
-| 04 | Secrets & vault | why secrets never go in Git |
-| 05 | Branch → PR → merge | branches, pull requests, review |
-| 06 | Evolve the kit | research → plan → implement → PR for design changes |
-| 07+ | CI, deploy, approvals, drift | GitHub Actions end-to-end |
+| # | Runbook | You will learn | Skill |
+|---|---------|----------------|-------|
+| 00 | Prerequisites | accounts, Docker/Podman Desktop, VS Code, Copilot seat check | `/setup-workstation` |
+| 01 | Dev container | clone, "Reopen in Container" | `/setup-workstation` |
+| 02 | Export | run `export.yml`, the working tree, `.gitignore` | `/export-aap` |
+| 03 | Curate into group_vars | `git status`/`diff`/`add`/`commit` | `/curate-config` |
+| 04 | Secrets & vault | why secrets never go in Git | `/vault-secrets` |
+| 05 | Branch → PR → merge | branches, pull requests, review | `/branch-pr` |
+| 06 | Evolve the kit | research → plan → implement → PR for design changes | `/evolve-kit` |
+| 07+ | CI, deploy, approvals, drift | GitHub Actions end-to-end | `/apply-config` |
 
 Standing this kit up on a customer's or internal GitHub Enterprise instance? See
 [Duplicating into enterprise GitHub](docs/duplicating-into-enterprise-github.md).
@@ -68,7 +68,14 @@ Ready to run this in production at enterprise scale? See
   reads it automatically; `CLAUDE.md` and `.github/copilot-instructions.md` point
   to it.
 - Ready-to-paste AI prompts for each runbook are in
-  [`docs/ai/PROMPTS.md`](docs/ai/PROMPTS.md).
+  [`docs/ai/PROMPTS.md`](docs/ai/PROMPTS.md) — use them to get a step
+  **explained**.
+- **Repo-shipped skills** in [`.claude/skills/`](.claude/skills/) run each
+  runbook for you. They use the open `SKILL.md` format and work in **both**
+  Claude Code and GitHub Copilot CLI — Copilot CLI reads `.claude/skills/` as a
+  project skills directory — so `/export-aap`, `/curate-config`,
+  `/apply-config`, … work in either tool. Full list:
+  [`AGENTS.md` → Repo-shipped skills](AGENTS.md#repo-shipped-skills).
 - Contributing: [`CONTRIBUTING.md`](CONTRIBUTING.md). Roadmap:
   [`ROADMAP.md`](ROADMAP.md).
 

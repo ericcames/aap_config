@@ -44,6 +44,47 @@ jobs:
       - name: Export secret-leak guard
         run: bash utilities/scan-exports.sh
 
+  skills-frontmatter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Skills stay portable across Claude Code and Copilot CLI
+        # yamllint is blind to Markdown frontmatter, so nothing else catches a
+        # SKILL.md that stops loading. Copilot CLI accepts only name/description/
+        # license; an extra key is the likeliest way to silently break one tool.
+        run: |
+          bad=0
+          for f in .claude/skills/*/SKILL.md; do
+            dir=$(basename "$(dirname "$f")")
+            if [ "$(head -n1 "$f")" != "---" ]; then
+              echo "$f: must start with '---' frontmatter"; bad=1; continue
+            fi
+            # Frontmatter = lines between the first '---' and the next one.
+            fm=$(awk 'NR>1{if($0=="---")exit; print}' "$f")
+            name=$(printf '%s\n' "$fm" | sed -n 's/^name:[[:space:]]*//p')
+            desc=$(printf '%s\n' "$fm" | sed -n 's/^description:[[:space:]]*//p')
+            [ -n "$name" ] || { echo "$f: missing 'name:'"; bad=1; }
+            [ -n "$desc" ] || { echo "$f: missing 'description:'"; bad=1; }
+            if [ -n "$name" ] && [ "$name" != "$dir" ]; then
+              echo "$f: name '$name' does not match directory '$dir'"; bad=1
+            fi
+            # Only top-level keys; indented lines are continuations.
+            for k in $(printf '%s\n' "$fm" | sed -n 's/^\([a-zA-Z_-]*\):.*/\1/p'); do
+              case "$k" in
+                name|description|license) ;;
+                *) echo "$f: key '$k' is not portable — use only name/description/license"; bad=1 ;;
+              esac
+            done
+            if ! grep -q "/$dir\`" AGENTS.md; then
+              echo "AGENTS.md does not list skill: /$dir"; bad=1
+            fi
+          done
+          if [ "$bad" -ne 0 ]; then
+            echo "See AGENTS.md -> Repo-shipped skills for the frontmatter contract."
+            exit 1
+          fi
+          echo "All skills are portable and listed in AGENTS.md."
+
   agents-md-fresh:
     runs-on: ubuntu-latest
     steps:

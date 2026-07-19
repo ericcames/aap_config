@@ -1,5 +1,8 @@
 # Runbook 06 — Evolve the kit
 
+> **Skill:** `/evolve-kit` runs this whole runbook for you, in Claude Code or GitHub
+> Copilot CLI. Read the steps first, then let it drive.
+
 ## You will need
 
 A working dev container (runbook 01) and familiarity with branches and PRs

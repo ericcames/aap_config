@@ -36,7 +36,40 @@ prompt.
 | `playbooks/` | `export.yml`, `config.yml`, `validate.yml` |
 | `utilities/` | Secret-hygiene helper scripts run locally + in CI |
 | `docs/` | `runbooks/` teaching path, `ai/PROMPTS.md`, architecture, github-setup, `references.md` (COP links), images |
-| `.claude/` | Repo-shipped Claude Code skills mirroring the runbooks |
+| `.claude/` | Repo-shipped **agent skills** (`skills/`) in the open `SKILL.md` format — read by **both** Claude Code and GitHub Copilot CLI; see [Repo-shipped skills](#repo-shipped-skills) |
+
+## Repo-shipped skills
+
+`.claude/skills/` holds seven **agent skills** — one `SKILL.md` per directory, in
+the open SKILL.md format (frontmatter is exactly `name` + `description`). They are
+**cross-tool**: Claude Code loads `.claude/skills/` natively, and GitHub Copilot
+CLI reads project skills from `.github/skills`, **`.claude/skills`**, or
+`.agents/skills`. Same files, both tools. Invoke one with `/<name>`, or just
+describe the task — both tools match on the `description`.
+
+| Skill | Mirrors | Use it to |
+|-------|---------|-----------|
+| `/setup-workstation` | runbooks 00–01 | Preflight a laptop, install tooling, `gh` login, clone, open the dev container |
+| `/export-aap` | runbook 02 | Export controller + gateway objects into `exports/` |
+| `/curate-config` | runbook 03 | Promote exports into `inventory/group_vars/` with `_all` / `_<env>` keys |
+| `/vault-secrets` | runbook 04 | Create and encrypt an env's `secrets.yml`, set up `connection.yml` |
+| `/branch-pr` | runbook 05 | Branch → commit → push → PR → review → merge → clean up |
+| `/evolve-kit` | runbook 06 | Full design-change cycle: research → plan → implement → PR |
+| `/apply-config` | `playbooks/config.yml` + `validate.yml` | Dry-run in check mode, then apply config to dev/qa/prod |
+
+**Skills vs. prompts.** [`docs/ai/PROMPTS.md`](docs/ai/PROMPTS.md) is for
+**learning** — copy-paste prompts that ask an assistant to *explain* a step, in
+any chat window, so the trainee then runs the command themselves. Skills are for
+**doing** — they carry this repo's standards and exact commands so the assistant
+executes the procedure the same way every time. Most runbook steps have both.
+Prefer following a skill over improvising.
+
+**Adding a skill.** One directory per skill: `.claude/skills/<name>/SKILL.md`,
+directory name identical to `name`. Frontmatter is limited to `name` +
+`description` (optional `license`) — **any other key is not portable across tools
+and can stop the skill loading**. Body: a "Follow the standards in `AGENTS.md`"
+line naming what it mirrors, numbered **Steps**, and a **## Do not** list. Add a
+row to the table above in the same PR; CI checks that every skill is listed here.
 
 ## Ansible standards — rules an AI MUST follow here
 
