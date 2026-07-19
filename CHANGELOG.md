@@ -101,6 +101,18 @@ All notable changes to this project are documented here. Format based on
   collection currency), escalation paths, and success measures. Linked from the
   "Scale and adoption" workstream in `going-to-production.md`.
 
+### Fixed
+
+- **Dev container image would not build.** `devcontainer.json` requested the
+  `ghcr.io/devcontainers/features/github-cli` feature, whose install script is
+  apt-only and fails on this UBI9 base (`apt-get: command not found`, exit 127).
+  Dropped the feature and installed `gh` from the official pinned release tarball
+  (`ARG GH_VERSION`, arch-detected) in the `Containerfile` instead. Separately,
+  the `node` feature failed with `usermod: user '1001' does not exist` because
+  `USER 1001` gave it a numeric id where it needs a name — switched to
+  `USER default`, UBI9's uid-1001 application user. Affected every clean build
+  (Docker Desktop, Podman, devcontainer CLI, Codespaces), not just Codespaces.
+
 ### Notes / decisions
 
 - **ansible-core pin (Risk 4 — CLOSED, measured).** Initial testing targets

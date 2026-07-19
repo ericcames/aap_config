@@ -20,10 +20,37 @@ FROM registry.access.redhat.com/ubi9/python-312:latest
 #   podman run --rm registry.redhat.io/ansible-automation-platform-26/ee-supported-rhel9 ansible --version
 ARG ANSIBLE_CORE_VERSION=">=2.16,<2.17"
 
-USER 0
-RUN dnf -y install git openssh-clients jq && dnf clean all
+# The GitHub CLI is installed here from the official release tarball rather than
+# via ghcr.io/devcontainers/features/github-cli. That feature's install script is
+# apt-only, so on this UBI9 base it fails the build outright:
+#   ./install.sh: line 101: apt-get: command not found   (exit 127)
+# Do NOT re-add the feature. (The node feature is fine — it supports dnf.)
+# Bump this pin the way ANSIBLE_CORE_VERSION is bumped; releases are at
+#   https://github.com/cli/cli/releases
+ARG GH_VERSION=2.96.0
 
-USER 1001
+USER 0
+RUN dnf -y install git openssh-clients jq tar && dnf clean all
+
+# Arch-detected so an arm64 host doesn't silently get an x86_64 binary.
+RUN set -eux; \
+    case "$(uname -m)" in \
+      x86_64)  gh_arch=amd64 ;; \
+      aarch64) gh_arch=arm64 ;; \
+      *) echo "unsupported arch: $(uname -m)" >&2; exit 1 ;; \
+    esac; \
+    curl -fsSL -o /tmp/gh.tar.gz \
+      "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_${gh_arch}.tar.gz"; \
+    tar -xzf /tmp/gh.tar.gz -C /usr/local --strip-components=1; \
+    rm -f /tmp/gh.tar.gz; \
+    gh --version
+
+# Named, not numeric: dev container features receive this value as
+# _DEV_CONTAINERS_IMAGE_USER and pass it to usermod, which needs a real user
+# name. With "USER 1001" the node feature dies on "usermod: user '1001' does not
+# exist". "default" is UBI9's uid-1001 application user, so this is the same
+# account either way.
+USER default
 RUN python3 -m pip install --no-cache-dir --upgrade pip \
  && python3 -m pip install --no-cache-dir \
       "ansible-core${ANSIBLE_CORE_VERSION}" \

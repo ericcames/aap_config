@@ -198,7 +198,7 @@ before anything else.
 
 ### File ownership note
 
-Because the container runs as a non-root user (`USER 1001` in
+Because the container runs as a non-root user (`USER default`, uid 1001, in
 [`.devcontainer/Containerfile`](../../.devcontainer/Containerfile)), rootless
 Podman maps it into a high subuid range, and files it writes into the
 bind-mounted repo (for example under `exports/`) can end up owned by an
