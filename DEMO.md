@@ -22,7 +22,7 @@ something you don't have.
 | **A source AAP** (export from) | Act 1 live |
 | **A target AAP** (apply to) | Act 4 live |
 | **Neither** | Everything except Act 1 and Act 4 — see [No AAP handy](#no-aap-handy) |
-| **GitHub Actions** — nothing to set up | Act 3 live. The five PR checks in `lint.yml` run on GitHub-hosted runners, so they work on this repo as-is. Only demoing a **deploy workflow actually firing** needs setup: a self-hosted runner labelled `self-hosted, linux, aap` plus the four GitHub Environments and their `VAULT_PASSWORD` secrets ([`docs/github-setup.md`](docs/github-setup.md)). Act 4 applies locally on purpose, so the demo never depends on that. |
+| **GitHub Actions** — nothing to set up | Act 3 live. The five PR checks in `lint.yml` run on GitHub-hosted runners, so they work on this repo as-is. Only demoing a **deploy workflow actually firing** needs setup: a self-hosted runner labeled `self-hosted, linux, aap` plus the four GitHub Environments and their `VAULT_PASSWORD` secrets ([`docs/github-setup.md`](docs/github-setup.md)). Act 4 applies locally on purpose, so the demo never depends on that. |
 
 > Demoing from a copy in a customer's **GitHub Enterprise Server**? GHES has no
 > hosted runners by default, so even the lint checks need a self-hosted runner —
@@ -183,7 +183,7 @@ git restore --staged inventory/group_vars/dev/secrets.yml
 rm inventory/group_vars/dev/secrets.yml
 ```
 
-> Practise this bit. `dev/secrets.yml` normally does not exist — the `>` creates
+> Practice this bit. `dev/secrets.yml` normally does not exist — the `>` creates
 > it — which is why cleanup is `rm` and **not** `git checkout --`, which fails on
 > an untracked file. If your demo environment *does* have a real `dev/secrets.yml`,
 > pick a different env or you will overwrite it. Never type a real credential
