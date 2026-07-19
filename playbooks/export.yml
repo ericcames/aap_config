@@ -21,6 +21,38 @@
   # aap_hostname / aap_validate_certs come from group_vars/<env>/connection.yml.
   # aap_username / aap_password come from group_vars/<env>/secrets.yml (vault).
   tasks:
+    - name: Preflight — check for CRLF line endings in connection.yml
+      vars:
+        connection_file: "{{ inventory_dir }}/group_vars/{{ env_name }}/connection.yml"
+      ansible.builtin.assert:
+        that:
+          - lookup('file', connection_file) is not search('\r')
+        fail_msg: >-
+          {{ connection_file }} contains Windows-style CRLF line endings.
+          This breaks YAML parsing and vault decrypt. Fix (inside the
+          container): sed -i 's/\r$//' {{ connection_file }}
+          See docs/runbooks/02-export.md → Windows workstation checklist.
+      run_once: true
+
+    - name: Preflight — check that required collections are installed
+      ansible.builtin.command:
+        cmd: ansible-galaxy collection list infra.aap_configuration_extended
+      register: _collection_check
+      changed_when: false
+      failed_when: false
+      run_once: true
+
+    - name: Preflight — fail if collections missing
+      ansible.builtin.assert:
+        that:
+          - _collection_check.rc == 0
+        fail_msg: >-
+          Required collection infra.aap_configuration_extended is not
+          installed. This usually means AH_TOKEN was not set when the dev
+          container started. Fix: re-run
+          bash .devcontainer/post-create.sh inside the container.
+      run_once: true
+
     - name: Fail early if connection credentials are not sourced
       ansible.builtin.assert:
         that:
