@@ -5,6 +5,9 @@
 # roles we call from them, otherwise syntax-check fails with
 # "couldn't resolve module/action". Locally they resolve because the collections
 # are installed in the dev container; CI is the clean case these mocks cover.
+# CI runs without an Automation Hub token, so don't auto-install collections.
+# The mock_modules / mock_roles below cover everything the playbooks reference.
+offline: true
 profile: basic
 
 mock_modules:
