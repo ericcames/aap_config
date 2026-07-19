@@ -30,8 +30,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install ansible-core (pinned to the AAP 2.7 stream)
-        run: pip install --user "ansible-core>=2.18,<2.19"
+      - name: Install ansible-core (AAP 2.6 test baseline; bump to 2.18 at 2.7 cutover)
+        run: pip install --user "ansible-core>=2.16,<2.17"
 
       - name: Install pinned collections
         run: ansible-galaxy collection install -r collections/requirements.yml

@@ -16,9 +16,13 @@ A **configuration-as-code starter kit** that teaches sysadmins to:
 2. **Load** them into on-prem **AAP 2.7 containerized** — dev → qa → prod — via
    **GitHub Actions** (Priority 2).
 
-Source and target are both AAP 2.7, so no 2.4→2.5 format conversion is involved.
-Audience: sysadmins with little Git/software-dev experience, on Windows desktops
-using a **VS Code Dev Container**. Every runbook step embeds an AI-assist prompt.
+Source and targets are all **gateway-era (AAP 2.5+)** — initial testing runs
+against **AAP 2.6**, production is **AAP 2.7** — so no 2.4→2.5 format conversion is
+involved and the object model is identical across them. The toolchain is pinned to
+ansible-core 2.16 (the AAP 2.6 EE baseline) for now; it bumps to 2.18 at the 2.7
+cutover. Audience: sysadmins with little Git/software-dev experience, on Windows
+desktops using a **VS Code Dev Container**. Every runbook step embeds an AI-assist
+prompt.
 
 ## Directory map
 

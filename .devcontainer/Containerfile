@@ -11,12 +11,14 @@
 # ============================================================================
 FROM registry.access.redhat.com/ubi9/python-312:latest
 
-# ansible-core is pinned to the 2.18 stream to match the AAP 2.7 execution
-# environment baseline, so what a trainee runs locally behaves like AAP.
-# TODO(Risk 4): confirm the exact minor against the AAP 2.7 ee-supported image
-#   podman run --rm registry.redhat.io/ansible-automation-platform-27/ee-supported-rhel9 ansible --version
-# and tighten this pin if it differs. Recorded in CHANGELOG.
-ARG ANSIBLE_CORE_VERSION=">=2.18,<2.19"
+# ansible-core is pinned to the 2.16 stream to match the AAP 2.6 execution
+# environment baseline (measured: the 2.6 ee-supported-rhel9 image ships
+# ansible-core 2.16.17), because initial testing targets AAP 2.6. All pinned
+# collections require only ">=2.16.0", so this satisfies them.
+# CUTOVER TO 2.7: bump to ">=2.18,<2.19" (the AAP 2.7 EE baseline) when the
+# on-prem environments move to 2.7. See CHANGELOG / ROADMAP.
+#   podman run --rm registry.redhat.io/ansible-automation-platform-26/ee-supported-rhel9 ansible --version
+ARG ANSIBLE_CORE_VERSION=">=2.16,<2.17"
 
 USER 0
 RUN dnf -y install git openssh-clients jq && dnf clean all

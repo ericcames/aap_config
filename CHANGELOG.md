@@ -31,12 +31,16 @@ All notable changes to this project are documented here. Format based on
   (self-hosted runner, per-environment secrets, required-reviewer gates on
   qa/prod). `docs/github-setup.md` admin checklist.
 
-### Notes / to confirm
+### Notes / decisions
 
-- **ansible-core pin (Risk 4):** pinned to the `>=2.18,<2.19` stream to match the
-  AAP 2.7 EE baseline. Confirm the exact minor against the 2.7 ee-supported image
-  (`podman run --rm registry.redhat.io/ansible-automation-platform-27/ee-supported-rhel9 ansible --version`)
-  when registry credentials are available, and tighten if it differs.
+- **ansible-core pin (Risk 4 — CLOSED, measured).** Initial testing targets
+  **AAP 2.6**, whose `ee-supported-rhel9` image ships **ansible-core 2.16.17**
+  (measured 2026-07-18). All pinned collections require only `>=2.16.0`, so the
+  dev container and deploy runners are pinned to the `>=2.16,<2.17` stream.
+  **Cutover:** bump to `>=2.18,<2.19` (the AAP 2.7 EE baseline) when the on-prem
+  environments move to 2.7.
 - **Collection versions verified** against console.redhat.com validated content on
   2026-07-18: `infra.aap_configuration` latest 4.7.0, `infra.aap_configuration_extended`
-  latest 4.9.1.
+  latest 4.9.1. These track the newest content and support AAP 2.5+, so they work
+  against the 2.6 test gateway. (Known-good 2.6-EE fallbacks if a 2.6-specific
+  issue appears: `ansible.platform` 2.6.20251106, `ansible.controller` 4.7.9.)

@@ -18,7 +18,8 @@ commit but secrets are not.
    ```
    Edit `docs/dev-environment.sh` and fill in `CONTROLLER_HOST`,
    `CONTROLLER_USERNAME`, `CONTROLLER_PASSWORD`. Keep `AAP_VALIDATE_CERTS="true"`
-   for the Azure instance.
+   for the Azure instance. (During initial testing you may point these at an AAP
+   2.6 instance instead — the export works identically on 2.6 and 2.7.)
 
 2. **Load it into your shell:**
    ```bash
