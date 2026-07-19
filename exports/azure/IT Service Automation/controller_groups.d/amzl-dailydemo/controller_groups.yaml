@@ -1,0 +1,13 @@
+---
+controller_groups:
+  - name: linux
+    description: '{%- raw -%}
+
+
+      {%- endraw -%}'
+    inventory: amzl-dailydemo
+    variables:
+      ansible_connection: ssh
+      ansible_port: 22
+    hosts: []
+...

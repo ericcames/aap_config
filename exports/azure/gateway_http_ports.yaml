@@ -1,0 +1,7 @@
+---
+gateway_http_ports:
+  - name: "port-8000"
+    number: "8000"
+    use_https: false
+    is_api_port: true
+...

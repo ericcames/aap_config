@@ -1,0 +1,6 @@
+---
+controller_inventories:
+  - name: "amzl-dailydemo"
+    organization: "IT Service Automation"
+    prevent_instance_group_fallback: false
+...

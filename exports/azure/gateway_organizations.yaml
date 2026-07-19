@@ -1,0 +1,10 @@
+---
+gateway_organizations:
+  - name: "Default"
+    description: |-
+      {%- raw -%}
+      The default organization for Ansible Automation Platform
+      {%- endraw -%}
+  - name: "Ansible Product Demos (APD)"
+  - name: "IT Service Automation"
+...

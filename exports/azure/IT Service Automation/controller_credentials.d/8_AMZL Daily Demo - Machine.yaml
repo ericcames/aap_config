@@ -1,0 +1,10 @@
+---
+controller_credentials:
+  - name: "AMZL Daily Demo - Machine"
+    credential_type: "Machine"
+    organization: "IT Service Automation"
+    inputs:
+      username: ec2-user
+      ssh_key_data: "{{ vaulted_controller_credentials_amzl_daily_demo___machine_ssh_key_data }}"
+
+...

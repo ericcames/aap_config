@@ -1,0 +1,11 @@
+---
+controller_credentials:
+  - name: "AMZL Daily Demo - Controller"
+    credential_type: "Red Hat Ansible Automation Platform"
+    organization: "IT Service Automation"
+    inputs:
+      host: https://aap-aap.apps.cluster-2dhg8-2.dyn.redhatworkshops.io
+      password: "{{ vaulted_controller_credentials_amzl_daily_demo___controller_password }}"
+      username: admin
+
+...

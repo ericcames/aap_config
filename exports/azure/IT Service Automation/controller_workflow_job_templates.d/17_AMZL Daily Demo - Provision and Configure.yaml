@@ -1,0 +1,78 @@
+---
+controller_workflows:
+  - name: "AMZL Daily Demo - Provision and Configure"
+    organization: "IT Service Automation"
+    simplified_workflow_nodes:
+      - identifier: "provision"
+        workflow_job_template: "AMZL Daily Demo - Provision and Configure"
+        unified_job_template: "AMZL Daily Demo - 1 Provision VM (AWS)"
+        limit: ""
+        organization: "IT Service Automation"
+        all_parents_must_converge: false
+        success_nodes:
+          - "patch"
+      - identifier: "patch"
+        workflow_job_template: "AMZL Daily Demo - Provision and Configure"
+        unified_job_template: "AMZL Daily Demo - 2 Patch to Release"
+        limit: ""
+        organization: "IT Service Automation"
+        all_parents_must_converge: false
+        success_nodes:
+          - "harden"
+      - identifier: "harden"
+        workflow_job_template: "AMZL Daily Demo - Provision and Configure"
+        unified_job_template: "AMZL Daily Demo - 3 Security Hardening"
+        limit: ""
+        organization: "IT Service Automation"
+        all_parents_must_converge: false
+        success_nodes:
+          - "devops_user"
+      - identifier: "devops_user"
+        workflow_job_template: "AMZL Daily Demo - Provision and Configure"
+        unified_job_template: "AMZL Daily Demo - 4 Create devops User"
+        limit: ""
+        organization: "IT Service Automation"
+        all_parents_must_converge: false
+        success_nodes:
+          - "docker_web"
+      - identifier: "docker_web"
+        workflow_job_template: "AMZL Daily Demo - Provision and Configure"
+        unified_job_template: "AMZL Daily Demo - 5 Deploy Docker Webserver"
+        limit: ""
+        organization: "IT Service Automation"
+        all_parents_must_converge: false
+    ask_variables_on_launch: false
+    allow_simultaneous: false
+    scm_branch: ""
+    limit: ""
+    ask_limit_on_launch: false
+    ask_inventory_on_launch: false
+    webhook_service: ""
+    extra_vars: ""
+    survey_enabled: true
+    survey_spec:
+      name: ""
+      spec:
+        - type: multiplechoice
+          choices:
+            - "{%- raw -%}small{%- endraw -%}"
+            - "{%- raw -%}medium{%- endraw -%}"
+            - "{%- raw -%}large{%- endraw -%}"
+          default: "{%- raw -%}medium{%- endraw -%}"
+          required: true
+          variable: vm_size
+          question_name: "{%- raw -%}VM size{%- endraw -%}"
+          question_description: "{%- raw -%}Amazon Linux 2023 t-shirt size on AWS{%- endraw -%}"
+        - type: multiplechoice
+          choices:
+            - "{%- raw -%}latest{%- endraw -%}"
+            - "{%- raw -%}2023.12.20260629{%- endraw -%}"
+            - "{%- raw -%}2023.12.20260622{%- endraw -%}"
+            - "{%- raw -%}2023.12.20260611{%- endraw -%}"
+          default: "{%- raw -%}2023.12.20260622{%- endraw -%}"
+          required: true
+          variable: amzl_target_release
+          question_name: "{%- raw -%}Target release{%- endraw -%}"
+          question_description: "{%- raw -%}AL2023 release to patch to ('latest' for newest, or pin to a specific tested release){%- endraw -%}"
+      description: "Amazon Linux 2023 VM size and target patch release"
+...

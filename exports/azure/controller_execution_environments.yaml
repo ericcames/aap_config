@@ -1,0 +1,27 @@
+---
+controller_execution_environments:
+  - name: "AMZL Daily Demo - EE"
+    description: |-
+      {%- raw -%}
+      AMZL Daily Demo EE v1.0.0 (base ee-minimal-rhel9:2.17.14) — Terraform 1.15.6 · amazon.aws · ansible.posix · community.docker · ansible.controller
+      {%- endraw -%}
+    organization: "IT Service Automation"
+    image: "quay.io/zigfreed/amzl-dailydemo-ee:v1.0.0"
+    pull: "missing"
+  - name: "Minimal execution environment"
+    organization:  # Leave this empty organization to let the object_diff role to work properly
+    image: "registry.redhat.io/ansible-automation-platform-26/ee-minimal-rhel9@sha256:112bfdd3d0df6bb023cb951be8cdc5ed634fddd0be7e8ec017e56b6961e67f19"
+    pull: ""
+  - name: "Default execution environment"
+    organization:  # Leave this empty organization to let the object_diff role to work properly
+    image: "registry.redhat.io/ansible-automation-platform-26/ee-supported-rhel9@sha256:d2b8837d6594d62f855f90c17044837e9eb5fd8b547a4668a1679f498537de3f"
+    pull: ""
+  - name: "Control Plane Execution Environment"
+    organization:  # Leave this empty organization to let the object_diff role to work properly
+    image: "registry.redhat.io/ansible-automation-platform-26/ee-supported-rhel9@sha256:d2b8837d6594d62f855f90c17044837e9eb5fd8b547a4668a1679f498537de3f"
+    pull: ""
+  - name: "Product Demos EE"
+    organization:  # Leave this empty organization to let the object_diff role to work properly
+    image: "quay.io/ansible-product-demos/apd-ee-25:latest"
+    pull: "missing"
+...
