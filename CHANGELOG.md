@@ -95,6 +95,11 @@ All notable changes to this project are documented here. Format based on
   approvals, `prod-active`/`prod-passive` HA, and scale/adoption — and how to
   engage Red Hat Consulting or a TAM for that work. Deliberately describes
   what's involved rather than how to implement it. Linked from the README.
+- **`docs/tam-adoption-plan.md`.** One-page fill-in template for the moment a
+  team scales onto config-as-code: baseline, adoption goals, onboarding cohorts,
+  best-practice checkpoints (standards, secrets, promotion gates, drift,
+  collection currency), escalation paths, and success measures. Linked from the
+  "Scale and adoption" workstream in `going-to-production.md`.
 
 ### Notes / decisions
 
