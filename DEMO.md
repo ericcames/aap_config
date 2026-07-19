@@ -15,13 +15,20 @@ Two questions decide which version of this demo you give. Answer them honestly �
 the failure mode for this demo is discovering mid-session that a step needs
 something you don't have.
 
-**1. Do you have a reachable AAP instance?**
+**1. What can you reach?**
 
-| | What you can run |
+| What you have | What you can run |
 |---|---|
 | **A source AAP** (export from) | Act 1 live |
 | **A target AAP** (apply to) | Act 4 live |
 | **Neither** | Everything except Act 1 and Act 4 — see [No AAP handy](#no-aap-handy) |
+| **GitHub Actions** — nothing to set up | Act 3 live. The five PR checks in `lint.yml` run on GitHub-hosted runners, so they work on this repo as-is. Only demoing a **deploy workflow actually firing** needs setup: a self-hosted runner labelled `self-hosted, linux, aap` plus the four GitHub Environments and their `VAULT_PASSWORD` secrets ([`docs/github-setup.md`](docs/github-setup.md)). Act 4 applies locally on purpose, so the demo never depends on that. |
+
+> Demoing from a copy in a customer's **GitHub Enterprise Server**? GHES has no
+> hosted runners by default, so even the lint checks need a self-hosted runner —
+> a one-line `runs-on:` change, noted at the top of
+> [`.github/workflows/lint.yml`](.github/workflows/lint.yml). Demo from your own
+> GitHub repo and this does not come up.
 
 **2. Has this repo been through the loop already?** If `inventory/group_vars/aap/`
 holds nothing but `aap_settings.yml`, no objects have been curated yet, so Act 2
