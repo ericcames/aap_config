@@ -56,6 +56,9 @@ Work through the numbered runbooks in [`docs/runbooks/`](docs/runbooks/):
 | 06 | Evolve the kit | research → plan → implement → PR for design changes |
 | 07+ | CI, deploy, approvals, drift | GitHub Actions end-to-end |
 
+Standing this kit up on a customer's or internal GitHub Enterprise instance? See
+[Duplicating into enterprise GitHub](docs/duplicating-into-enterprise-github.md).
+
 ## For AI assistants and contributors
 
 - **[`AGENTS.md`](AGENTS.md)** is the canonical guidance — the repo layout, the

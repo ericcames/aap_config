@@ -83,6 +83,12 @@ All notable changes to this project are documented here. Format based on
   (the container runs as `USER 1001`). The `--userns=keep-id` workaround is
   documented as local, uncommitted guidance only — it errors under Docker, so it
   must not go into the shared `devcontainer.json`.
+- **`docs/duplicating-into-enterprise-github.md`.** How to copy this kit into
+  GitHub Enterprise Cloud or Enterprise Server: a clean-slate copy (recommended,
+  single fresh commit) versus a full-history mirror, plus the repo settings a
+  git copy does not bring — Actions secrets, environments and their approval
+  rules, self-hosted runners for on-prem AAP reach, and branch protection.
+  Linked from the README.
 
 ### Notes / decisions
 
