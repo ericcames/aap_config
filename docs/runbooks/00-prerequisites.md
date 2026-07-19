@@ -14,6 +14,102 @@
 
 What each account/tool is for, and how to confirm your Copilot seat works.
 
+## Preflight: can this Windows desktop run the dev container?
+
+The dev container needs a Linux backend on Windows. Both Docker Desktop and
+Podman Desktop run their containers on **WSL2** (or Hyper-V). On a locked-down
+corporate desktop, WSL2 or hardware virtualization is sometimes disabled by IT
+policy or firmware — and if it is, the dev container will not start at all.
+
+Run this check **first**, before installing a container engine. It takes two
+minutes and tells you whether this desktop can use the local dev-container path
+or needs the fallback further down.
+
+> Not on Windows? Skip this section — go straight to your platform's container
+> setup below.
+
+### Run the checks
+
+Open **PowerShell** and run:
+
+```powershell
+winver                              # Windows 10 2004+ or Windows 11 required
+wsl --status                        # is WSL present? what is the default version?
+wsl --version                       # WSL app version — blank means not installed
+systeminfo | findstr /i "Hyper-V"   # virtualization / Hyper-V requirements
+```
+
+Then the two checks that decide it in a managed environment (the second needs an
+elevated / admin PowerShell):
+
+```powershell
+# Are the required Windows features available and enabled?
+Get-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux, VirtualMachinePlatform
+
+# Is WSL disabled by group policy? (no output / not-found = not policy-blocked)
+Get-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WSL" -ErrorAction SilentlyContinue
+```
+
+Also confirm you can run commands as **administrator** (or that IT can enable
+the features for you via Intune/GPO) — `wsl --install` requires elevation.
+
+### Reading the result
+
+**WSL2 is available or can be enabled** → you are good, and you should prefer
+WSL2. Enable it if needed:
+
+```powershell
+wsl --install     # installs WSL2 + a default Linux distro (reboot after)
+```
+
+Then clone the repo **inside** the WSL2 filesystem (e.g. under your Linux home,
+`\\wsl$\...`), not on the Windows `C:` drive, and open the dev container from
+there. This gives much faster file I/O, correct line endings and permissions,
+and a real Linux shell as a fallback. Continue with the container-engine setup
+below.
+
+**WSL2 and Hyper-V are blocked by policy or firmware** → the local dev-container
+path will not work on this desktop. Do not invest in the local setup; switch to
+one of these instead:
+
+- **[GitHub Codespaces](../codespaces.md)** — the same `.devcontainer` runs in
+  the cloud with no local engine, WSL, or admin rights required. This is the
+  smoothest fallback because the kit's dev container config is reused as-is.
+- **A shared Linux dev host** — a jump host or VM (for example RHEL or Fedora)
+  where users run the dev container, or the tooling directly, over SSH.
+
+Decide this **before** building out the local runbook flow, so a desktop that
+can never run the container is caught at the start rather than midway through.
+
+### Capture the result
+
+If the desktop fails, the answer is worth recording rather than repeating from
+memory. Paste this block into PowerShell (elevated, so the feature check
+returns) and it prints a short PASS/FAIL summary you can drop into a ticket or
+send to whoever is helping you with the rollout:
+
+```powershell
+$os   = Get-CimInstance Win32_OperatingSystem
+$cs   = Get-CimInstance Win32_ComputerSystem
+$wsl  = (Get-Command wsl.exe -ErrorAction SilentlyContinue) -ne $null
+$feat = Get-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux, VirtualMachinePlatform -ErrorAction SilentlyContinue
+$pol  = Get-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WSL" -ErrorAction SilentlyContinue
+$adm  = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+
+"aap_config dev-container preflight — $(Get-Date -Format s)"
+"  OS                : $($os.Caption) build $($os.BuildNumber)"
+"  Virtualization    : $(if ($cs.HypervisorPresent) { 'PASS (hypervisor present)' } else { 'FAIL (not enabled in firmware/BIOS)' })"
+"  WSL command       : $(if ($wsl) { 'PASS' } else { 'FAIL (not installed)' })"
+foreach ($f in $feat) { "  Feature $($f.FeatureName) : $($f.State)" }
+"  WSL group policy  : $(if ($pol) { 'FAIL (policy key present — ask IT)' } else { 'PASS (no policy block)' })"
+"  Admin rights      : $(if ($adm) { 'PASS' } else { 'NOT ELEVATED (re-run as admin to be sure)' })"
+```
+
+Any `FAIL` on virtualization or the WSL policy key means this desktop needs
+Codespaces or a shared Linux host, not a local container engine. Send the block
+as-is — it says exactly which control is blocking, which is what IT needs to act
+on.
+
 ## Steps
 
 1. **Install a container runtime.** Docker Desktop is simplest; Podman Desktop is
