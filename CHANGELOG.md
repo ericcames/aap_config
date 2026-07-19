@@ -60,6 +60,11 @@ All notable changes to this project are documented here. Format based on
   one secret per environment (`VAULT_PASSWORD`). Deleted `docs/dev-environment.sh`
   (AH_TOKEN handled by dev container). Moved `aap_site_role` from env-var lookup
   to plain values in per-side `connection.yml`.
+- **GitHub Codespaces entry path.** New `docs/codespaces.md` and an "Open in
+  Codespaces" badge in the README, so a user can launch the same `.devcontainer`
+  in the cloud with no local container engine, WSL, or admin rights. Documents
+  setting `AH_TOKEN` (and optional `AH_URL`) as Codespaces secrets — names only,
+  never values — plus prebuilds and when to prefer Codespaces over local.
 
 ### Notes / decisions
 
