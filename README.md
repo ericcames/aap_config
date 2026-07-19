@@ -58,6 +58,8 @@ Work through the numbered runbooks in [`docs/runbooks/`](docs/runbooks/):
 
 Standing this kit up on a customer's or internal GitHub Enterprise instance? See
 [Duplicating into enterprise GitHub](docs/duplicating-into-enterprise-github.md).
+Ready to run this in production at enterprise scale? See
+[Going to production](docs/going-to-production.md).
 
 ## For AI assistants and contributors
 

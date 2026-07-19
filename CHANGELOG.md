@@ -89,6 +89,12 @@ All notable changes to this project are documented here. Format based on
   git copy does not bring — Actions secrets, environments and their approval
   rules, self-hosted runners for on-prem AAP reach, and branch protection.
   Linked from the README.
+- **`docs/going-to-production.md`.** Scope-level outline of what an enterprise
+  rollout involves beyond the runbooks — enterprise GitHub landing and
+  governance, CI/CD runners, secrets and vault governance, environments and
+  approvals, `prod-active`/`prod-passive` HA, and scale/adoption — and how to
+  engage Red Hat Consulting or a TAM for that work. Deliberately describes
+  what's involved rather than how to implement it. Linked from the README.
 
 ### Notes / decisions
 
