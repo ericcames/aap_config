@@ -75,6 +75,13 @@ you see it.
    committed `connection.yml` in the same directory. Each env has a
    `.example` template showing the format. This follows the COP
    `aap_configuration_template` pattern.
+   Environments backed by an external secrets manager follow
+   [`docs/secrets-beyondtrust.md`](docs/secrets-beyondtrust.md): `secrets.yml`
+   then holds only the BeyondTrust OAuth bootstrap credentials — still
+   vault-encrypted, same guards — and the `vaulted_*` values become lazy lookups
+   in a committed `secrets_lookup.yml`. That pattern is **designed, not
+   implemented**; do not write lookup-backed config against it until the
+   collection is pinned. Vault stays the default.
 7. **Never commit** customer/company names, RHDP URLs, cluster/instance IDs,
    tokens, passwords, or keys. Exported credential fields are templated to
    `{{ vaulted_* }}` placeholders by `secrets_as_variables: true` — keep them that

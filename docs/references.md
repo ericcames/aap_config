@@ -19,6 +19,17 @@ External resources that shaped this kit's design. Grouped by topic.
 | [`aap_configuration_template`](https://github.com/redhat-cop/aap_configuration_template) | COP starter template for multi-environment CaC repos. Uses `config/all/` + `config/<env>/` layout (this kit uses the inventory `group_vars` variant of the same pattern). |
 | [Automation Good Practices](https://github.com/redhat-cop/automation-good-practices) | COP-wide good practices covering naming, AAP CaC, Git workflow, testing, CI/CD, and security. |
 
+## External secrets management (BeyondTrust)
+
+Background for [`secrets-beyondtrust.md`](secrets-beyondtrust.md).
+
+| Resource | Description |
+|----------|-------------|
+| [`beyondtrust.secrets_safe` collection](https://galaxy.ansible.com/ui/repo/published/beyondtrust/secrets_safe/) | The certified collection providing `secrets_safe_lookup`. Canonical source for option names (`api_url`, `retrieval_type`, `client_id`, `client_secret`, `secret_list`, `verify_ca`) and return shape — check here before implementing. |
+| [Password Safe — Ansible integration](https://docs.beyondtrust.com/bips/docs/ps-ansible) | BeyondTrust's own integration guide: OAuth setup, managed-account vs. Secrets Safe retrieval, certificate auth, supported versions (BeyondInsight/Password Safe 23.1+, ansible-core 2.14+). |
+| [AAP secret management system](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/html/configuring_automation_execution/assembly-controller-secret-management) | AAP's built-in external-secret linkage and the list of supported credential plugins — the basis for "there is no BeyondTrust plugin, so `credential_input_sources` is unavailable". |
+| [AAP custom credential types](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.5/html/using_automation_execution/controller-credentials) | Input fields and injectors — the mechanism behind the runtime-layer credential type. |
+
 ## Creating a CaC pipeline
 
 | Resource | Description |

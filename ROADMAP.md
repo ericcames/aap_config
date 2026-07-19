@@ -46,6 +46,11 @@ Full design in **[`docs/phase-3-plan.md`](docs/phase-3-plan.md)**. Summary:
 - **Team plugin:** extract `.claude/skills/` + the `AGENTS.md` standards into a
   shareable plugin (like `aap-skills`) so the whole team can demo/enforce the
   same standards across the team's other demo repos.
+- **BeyondTrust secrets pattern:** implement the design in
+  [`docs/secrets-beyondtrust.md`](docs/secrets-beyondtrust.md) once a Password
+  Safe instance is available to test against — pin `beyondtrust.secrets_safe`,
+  confirm the lookup's option names and return shape, verify the credential-type
+  injector rendering, and extend the `/vault-secrets` skill.
 
 ## Decisions log
 
@@ -70,3 +75,15 @@ Full design in **[`docs/phase-3-plan.md`](docs/phase-3-plan.md)**. Summary:
   following the COP `aap_configuration_template` pattern. One vault password per
   env unlocks everything. CI needs only `VAULT_PASSWORD` per GitHub Environment.
   Eliminated `docs/dev-environment.sh` and env-var lookups in `aap_settings.yml`.
+- **BeyondTrust is a documented alternative, not a replacement; ansible-vault
+  stays the default.** AAP 2.6/2.7 ships no BeyondTrust credential plugin, so the
+  `credential_input_sources` path is unavailable — the pattern instead uses the
+  certified `beyondtrust.secrets_safe` lookup at two layers: deploy time (each
+  env's `secrets.yml` shrinks to the vault-encrypted BeyondTrust OAuth bootstrap;
+  `vaulted_*` object values become lazy lookups in a committed
+  `secrets_lookup.yml`) and job runtime (a custom credential type injecting those
+  credentials as env vars). Vault remains the bootstrap layer, so CI still needs
+  only `VAULT_PASSWORD` per environment. Environments can mix — dev/qa on vault,
+  prod on Password Safe. Design in
+  [`docs/secrets-beyondtrust.md`](docs/secrets-beyondtrust.md); implementation
+  (including the collection pin) deferred until a live Password Safe exists.

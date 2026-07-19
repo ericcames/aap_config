@@ -52,4 +52,12 @@ pre-commit hook will now let you commit it; it would have blocked a plaintext fi
 - **Lost the vault password** → you can't decrypt; regenerate the secrets file and
   re-encrypt with a new password.
 
+## Alternative: an external secrets manager
+
+If your environment keeps secrets in **BeyondTrust Password Safe**, `secrets.yml`
+shrinks to the BeyondTrust OAuth credentials (still vault-encrypted) and the
+`vaulted_*` values resolve from Password Safe at run time. The design is in
+[`docs/secrets-beyondtrust.md`](../secrets-beyondtrust.md) — captured, not yet
+implemented. The steps above remain the default, and environments can mix.
+
 Next: [05-branch-pr.md](05-branch-pr.md).

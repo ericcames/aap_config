@@ -1,0 +1,17 @@
+---
+# BeyondTrust Password Safe — non-secret settings shared by prod_active and
+# prod_passive.
+#
+# ONLY for environments that manage secrets in Password Safe instead of
+# ansible-vault. See docs/secrets-beyondtrust.md. If prod uses the default vault
+# flow (runbook 04), ignore this file.
+#
+# Copy to beyondtrust.yml and replace the placeholder host. Committed in
+# plaintext — it holds no secrets. The OAuth client ID/secret live in the
+# vault-encrypted secrets.yml as vaulted_bt_client_id / vaulted_bt_client_secret.
+#
+# Both prod sides read the same Password Safe. If your topology gives each site
+# its own Password Safe endpoint, move bt_api_url into prod_active/ and
+# prod_passive/ alongside aap_site_role.
+bt_api_url: "https://passwordsafe.example.com/BeyondTrust/api/public/v3"
+bt_verify_ca: true

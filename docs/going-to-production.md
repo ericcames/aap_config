@@ -26,6 +26,12 @@ reach and isolation.
 **Secrets and vault governance.** The kit vault-encrypts every secret. In
 production you decide how vault passwords and connection credentials are stored,
 who holds them, and how they rotate — across dev, qa, and prod, and across teams.
+If you already run an enterprise secrets manager, it can back the kit's `vaulted_*`
+values so the vault holds only the bootstrap credential and rotation happens in
+one place. [BeyondTrust Password Safe](secrets-beyondtrust.md) is designed out in
+detail; the same two-layer shape applies to any external manager, though vaults
+with a native AAP credential plugin (CyberArk, HashiCorp, Azure Key Vault) can use
+AAP's built-in external-secret linkage instead of a lookup.
 
 **Environments and approvals.** Mapping the kit's dev/qa/prod flow onto GitHub
 environments with the right protection rules and required reviewers, so

@@ -88,5 +88,12 @@ The pre-commit hook and CI refuse an unencrypted `secrets.yml`. Use
 `utilities/list-vaulted-vars.sh` to see which `vaulted_*` variables your
 curated objects need.
 
+Environments that manage secrets in **BeyondTrust Password Safe** instead keep
+only the BeyondTrust OAuth credentials in `secrets.yml` and define the `vaulted_*`
+values as lookups in a committed `secrets_lookup.yml` (templates:
+`beyondtrust.yml.example`, `secrets_lookup.yml.example`). That pattern is
+designed but not yet implemented — see
+[`docs/secrets-beyondtrust.md`](../../docs/secrets-beyondtrust.md).
+
 This follows the [COP `aap_configuration_template`](https://github.com/redhat-cop/aap_configuration_template)
 pattern. See [`docs/references.md`](../../docs/references.md) for more.

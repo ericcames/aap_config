@@ -1,0 +1,12 @@
+---
+# BeyondTrust Password Safe — non-secret settings for qa.
+#
+# ONLY for environments that manage secrets in Password Safe instead of
+# ansible-vault. See docs/secrets-beyondtrust.md. If qa uses the default vault
+# flow (runbook 04), ignore this file.
+#
+# Copy to beyondtrust.yml and replace the placeholder host. Committed in
+# plaintext — it holds no secrets. The OAuth client ID/secret live in the
+# vault-encrypted secrets.yml as vaulted_bt_client_id / vaulted_bt_client_secret.
+bt_api_url: "https://passwordsafe.example.com/BeyondTrust/api/public/v3"
+bt_verify_ca: true
