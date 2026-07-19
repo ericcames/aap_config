@@ -30,13 +30,18 @@ nothing installed on Windows directly.
    container-local `~/.ansible.cfg` and installs the pinned collections. *(You can
    skip and re-run `bash .devcontainer/post-create.sh` later.)*
 
+   > No prompt appeared? That is the good case — it only asks when `AH_TOKEN` is
+   > unset. In [Codespaces](../codespaces.md) with the secret configured, or
+   > locally if you exported the variable before launching VS Code, the
+   > collections install unattended.
+
 4. When it finishes, it prints **"Next step: open docs/runbooks/02"**.
 
 ## How you know it worked
 
 Inside the container terminal:
 ```bash
-ansible --version                       # shows ansible-core 2.18.x
+ansible --version                       # shows ansible-core 2.16.x
 ansible-galaxy collection list | grep infra.aap_configuration   # shows 4.7.0
 ```
 

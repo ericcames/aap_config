@@ -10,7 +10,7 @@ All notable changes to this project are documented here. Format based on
 - **Phase 0 scaffold.** New greenfield config-as-code starter kit for AAP 2.7.
   - `AGENTS.md` canonical AI/standards guidance, with thin `CLAUDE.md` and
     `.github/copilot-instructions.md` shims.
-  - Dev container (`.devcontainer/`): UBI9 + Python 3.12, ansible-core 2.18
+  - Dev container (`.devcontainer/`): UBI9 + Python 3.12, ansible-core 2.16
     stream, `post-create.sh` (container-local `~/.ansible.cfg`, collection
     install, Copilot CLI, secret-hygiene pre-commit hook).
   - `collections/requirements.yml` — single source of truth, pinned to
@@ -120,6 +120,13 @@ All notable changes to this project are documented here. Format based on
   `rh_validated`, `community`) with the same token on both hub entries, adds
   `AH_CERTIFIED_URL` / `AH_VALIDATED_URL` overrides for private hubs, and keeps
   honouring `AH_URL` as an alias for the validated endpoint.
+- **Docs claimed the wrong ansible-core version.** Runbook 01's verification step
+  said `2.18.x` and the Phase 0 entry above said "2.18 stream", but the container
+  pins `>=2.16,<2.17` and builds `ansible-core 2.16.19` — a user following the
+  runbook would think a working container was broken. Both corrected to match the
+  `Containerfile` and the accurate Notes entry below. Runbook 01 also no longer
+  presents the Automation Hub token prompt as unconditional; it only appears when
+  `AH_TOKEN` is unset.
 
 ### Notes / decisions
 
