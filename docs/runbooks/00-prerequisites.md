@@ -189,6 +189,12 @@ Get a token at console.redhat.com → Automation Hub → API token. To avoid doi
 this every time, add the `export` line to your `~/.bashrc` (note: this stores the
 token in a plaintext dotfile — only do it on a machine you trust).
 
+One token covers both Automation Hub endpoints the kit uses: certified content
+(`content/published/`, for `ansible.platform` and `ansible.controller`) and
+validated content (`content/validated/`, for the `infra.aap_configuration*`
+roles). If you point at a customer's private hub, override them with
+`AH_CERTIFIED_URL` and `AH_VALIDATED_URL` in the same shell.
+
 ### 3. SELinux and bind mounts
 
 Fedora runs SELinux in enforcing mode. Podman relabels the mounted repo
