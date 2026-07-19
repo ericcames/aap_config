@@ -112,6 +112,14 @@ All notable changes to this project are documented here. Format based on
   `USER 1001` gave it a numeric id where it needs a name — switched to
   `USER default`, UBI9's uid-1001 application user. Affected every clean build
   (Docker Desktop, Podman, devcontainer CLI, Codespaces), not just Codespaces.
+- **Certified collections could not install.** `post-create.sh` configured a
+  single Automation Hub server on the *validated* endpoint plus community
+  Galaxy, but `ansible.platform` and `ansible.controller` are *certified*
+  content (`content/published/`) and are not on public Galaxy — so neither
+  server could supply them. Now writes three servers (`rh_certified`,
+  `rh_validated`, `community`) with the same token on both hub entries, adds
+  `AH_CERTIFIED_URL` / `AH_VALIDATED_URL` overrides for private hubs, and keeps
+  honouring `AH_URL` as an alias for the validated endpoint.
 
 ### Notes / decisions
 

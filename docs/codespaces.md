@@ -21,8 +21,12 @@ secrets** instead of relying on each user's shell:
    Codespaces**.
 2. Add a secret named `AH_TOKEN` (your Automation Hub API token from
    console.redhat.com → Automation Hub → API token).
-3. If you use a customer's private hub, also add `AH_URL` (the same override
-   `post-create.sh` accepts).
+3. If you use a customer's private hub, also add `AH_CERTIFIED_URL` and/or
+   `AH_VALIDATED_URL` (the same overrides `post-create.sh` accepts). The kit
+   needs **both** Automation Hub endpoints: certified content
+   (`content/published/`) supplies `ansible.platform` and `ansible.controller`,
+   validated content (`content/validated/`) supplies the
+   `infra.aap_configuration*` roles.
 4. Scope the secret to this repository.
 
 Codespaces injects these into every codespace's environment, so `post-create.sh`
