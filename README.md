@@ -28,6 +28,8 @@ assistant** (GitHub Copilot or Claude Code) helping at every step.
        ├── dev   (auto on merge)
        ├── qa    (manual + approval)
        └── prod  (manual + approval)   on-prem AAP 2.7 containerized
+            ├── prod-active   (AAP_SITE_ROLE=active)
+            └── prod-passive  (AAP_SITE_ROLE=passive)
 ```
 
 ## Start here
