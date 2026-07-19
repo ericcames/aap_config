@@ -1,0 +1,31 @@
+---
+# ============================================================================
+# group_vars/prod/schedule_overrides.yml — example: site-aware schedules
+# ============================================================================
+# When curating exported schedules (runbook 03), use the aap_site_role variable
+# so work-triggers only fire on the active site. The same pattern applies to
+# notification templates, inventory source syncs, and project update schedules.
+#
+# Uncomment and adapt once you have real curated objects.
+# ============================================================================
+
+# controller_schedules_prod:
+#   - name: "Nightly compliance scan"
+#     unified_job_template: "Compliance - Full Scan"
+#     rrule: "DTSTART:20260101T060000Z RRULE:FREQ=DAILY;INTERVAL=1"
+#     enabled: "{{ aap_site_role == 'active' }}"
+#
+#   - name: "Weekly patching window"
+#     unified_job_template: "Patching - Rolling Update"
+#     rrule: "DTSTART:20260101T100000Z RRULE:FREQ=WEEKLY;BYDAY=SA"
+#     enabled: "{{ aap_site_role == 'active' }}"
+
+# controller_notification_templates_prod:
+#   - name: "Ops Slack alerts"
+#     notification_type: slack
+#     # Only the active site should send outbound notifications.
+#     notification_configuration:
+#       token: "{{ vaulted_slack_token }}"
+#       channels:
+#         - "#aap-ops"
+#     state: "{{ 'present' if aap_site_role == 'active' else 'absent' }}"

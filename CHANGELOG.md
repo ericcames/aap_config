@@ -31,6 +31,19 @@ All notable changes to this project are documented here. Format based on
   (self-hosted runner, per-environment secrets, required-reviewer gates on
   qa/prod). `docs/github-setup.md` admin checklist.
 
+- **Active/passive production topology.** Restructured `prod` inventory group
+  into `prod_active` and `prod_passive` child groups following the Red Hat COP
+  pattern. Config is pushed to both sides simultaneously; the `aap_site_role`
+  variable (from `AAP_SITE_ROLE` env var) controls whether schedules,
+  notifications, and webhooks are enabled. Failover is an env-var change. Added
+  `docs/references.md` with COP resource links. Updated `deploy-prod.yml` to
+  run two parallel jobs (one per side, each with its own GitHub Environment).
+- **Evolve-kit skill and runbook.** New `/evolve-kit` Claude Code skill and
+  `docs/runbooks/06-evolve-kit.md` documenting the full design-change workflow:
+  research COP recommendations → plan → implement → cross-reference updates →
+  lint → commit → push → PR → merge. Added matching AI prompts (rb06) and
+  Copilot instructions so both assistants follow the same cycle.
+
 ### Notes / decisions
 
 - **ansible-core pin (Risk 4 — CLOSED, measured).** Initial testing targets

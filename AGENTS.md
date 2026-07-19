@@ -35,7 +35,7 @@ prompt.
 | `exports/` | Raw `filetree_create` output, committed for review; `*_settings*` gitignored |
 | `playbooks/` | `export.yml`, `config.yml`, `validate.yml` |
 | `utilities/` | Secret-hygiene helper scripts run locally + in CI |
-| `docs/` | `runbooks/` teaching path, `ai/PROMPTS.md`, architecture, github-setup, images |
+| `docs/` | `runbooks/` teaching path, `ai/PROMPTS.md`, architecture, github-setup, `references.md` (COP links), images |
 | `.claude/` | Repo-shipped Claude Code skills mirroring the runbooks |
 
 ## Ansible standards — rules an AI MUST follow here
@@ -54,7 +54,10 @@ you see it.
    environment; `group_vars/<env>/` holds that env's deltas + encrypted secrets.
    Shared and per-env lists merge via `dispatch_include_wildcard_vars: true` and
    the `*_all` / `*_<env>` variable-suffix convention (e.g. `controller_projects_all`
-   + `controller_projects_dev`).
+   + `controller_projects_dev`). Production uses `--limit prod_active` /
+   `--limit prod_passive`; the `aap_site_role` variable (from `AAP_SITE_ROLE`
+   env var) controls whether schedules and notifications are enabled
+   ([COP pattern](https://www.redhat.com/en/blog/automation-controller-active-passive-architecture-cac)).
 3. **No project-local `ansible.cfg`.** It would shadow the user's `~/.ansible.cfg`
    (which holds their Automation Hub token). The dev container writes an
    `~/.ansible.cfg` **inside the container home** at post-create; set inventory
@@ -88,6 +91,11 @@ ansible-playbook playbooks/export.yml -i inventory --limit azure
 ansible-playbook playbooks/config.yml   -i inventory --limit dev --vault-id dev@prompt
 ansible-playbook playbooks/validate.yml -i inventory --limit dev --vault-id dev@prompt  # check mode
 
+# Production active/passive (COP-recommended pattern).
+# Both sides get the same config; AAP_SITE_ROLE controls schedules/notifications.
+AAP_SITE_ROLE=active  ansible-playbook playbooks/config.yml -i inventory --limit prod_active  --vault-id prod@prompt
+AAP_SITE_ROLE=passive ansible-playbook playbooks/config.yml -i inventory --limit prod_passive --vault-id prod@prompt
+
 # Lint exactly as CI does.
 yamllint .
 ansible-lint
@@ -105,4 +113,8 @@ anywhere else.
 
 One concern per PR (would you revert these changes together?). Additive only.
 Update `CHANGELOG.md` under `[Unreleased]` and `ROADMAP.md` phase status. Run
-`yamllint .` and `ansible-lint` before pushing — both gate every PR.
+`yamllint .` and `ansible-lint` before pushing — both gate every PR. For design
+changes (new conventions, architecture decisions), follow the full evolve-kit
+cycle in [`docs/runbooks/06-evolve-kit.md`](docs/runbooks/06-evolve-kit.md):
+research → plan → implement → cross-reference updates → lint → commit → PR →
+merge.

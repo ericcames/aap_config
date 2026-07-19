@@ -26,6 +26,16 @@ export CONTROLLER_PASSWORD=""
 export AAP_VALIDATE_CERTS="true"
 
 # ----------------------------------------------------------------------------
+# Active/passive production topology (COP-recommended pattern).
+# Set to "active" or "passive". Controls whether schedules, notifications,
+# and webhook receivers are enabled on the target instance.
+# Failover = change this variable (or the LB header), not Git.
+# Only meaningful when targeting prod_active or prod_passive (--limit).
+# See: docs/references.md → Active/passive CaC blog series.
+# ----------------------------------------------------------------------------
+# export AAP_SITE_ROLE="active"
+
+# ----------------------------------------------------------------------------
 # Automation Hub token (optional here) — normally provided to the dev container
 # via the AH_TOKEN host env var or the post-create prompt. Set it here only if
 # you prefer sourcing it. Get one at console.redhat.com -> Automation Hub -> API token.

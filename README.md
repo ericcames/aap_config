@@ -42,7 +42,8 @@ Work through the numbered runbooks in [`docs/runbooks/`](docs/runbooks/):
 | 03 | Curate into group_vars | `git status`/`diff`/`add`/`commit` |
 | 04 | Secrets & vault | why secrets never go in Git |
 | 05 | Branch → PR → merge | branches, pull requests, review |
-| 06+ | CI, deploy, approvals, drift | GitHub Actions end-to-end |
+| 06 | Evolve the kit | research → plan → implement → PR for design changes |
+| 07+ | CI, deploy, approvals, drift | GitHub Actions end-to-end |
 
 ## For AI assistants and contributors
 

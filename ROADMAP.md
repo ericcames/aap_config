@@ -59,3 +59,8 @@ Full design in **[`docs/phase-3-plan.md`](docs/phase-3-plan.md)**. Summary:
   creates nothing to leak or clean up.
 - **No 2.4→2.5 conversion.** Source and targets are all gateway-era (2.5+): initial
   testing on AAP 2.6, production on AAP 2.7. Same object model, no format transform.
+- **Active/passive prod via `aap_site_role` env var, not Git.** The Red Hat COP
+  recommends pushing identical config to both sides simultaneously and using an
+  environment variable to control schedules/notifications/webhooks. Failover is
+  an env-var change, not a commit. Two parallel CI jobs in `deploy-prod.yml`, two
+  GitHub Environments (`prod_active`, `prod_passive`). See `docs/references.md`.

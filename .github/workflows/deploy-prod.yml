@@ -1,14 +1,15 @@
 ---
 name: Deploy prod
-# Manual promotion to PRODUCTION (the enterprise active/passive topology).
-# workflow_dispatch only, and the "prod" GitHub Environment should have REQUIRED
-# REVIEWERS configured so a human approves before anything is applied.
-# AAP_HOSTNAME should be the gateway VIP / primary hostname of the active/passive
-# pair — the API-driven playbook is unaware of the topology behind it.
-# Environment "prod" holds:
-#   secrets:  AAP_USERNAME, AAP_PASSWORD, VAULT_PASSWORD
-#   variable: AAP_HOSTNAME
-# See docs/github-setup.md.
+# Manual promotion to PRODUCTION (enterprise active/passive topology).
+# workflow_dispatch only, and both GitHub Environments (prod_active, prod_passive)
+# should have REQUIRED REVIEWERS so a human approves before anything is applied.
+#
+# Both sides are deployed IN PARALLEL from the same commit — the COP-recommended
+# pattern. The AAP_SITE_ROLE env var controls whether schedules, notifications,
+# and webhooks are enabled on each side. Failover is an env-var change, not a
+# Git commit.
+#
+# See: docs/references.md → Active/passive CaC blog series.
 on:
   workflow_dispatch: {}
 
@@ -16,14 +17,15 @@ permissions:
   contents: read
 
 jobs:
-  deploy:
+  deploy-prod-active:
     runs-on: [self-hosted, linux, aap]
-    environment: prod
+    environment: prod_active
     env:
       CONTROLLER_HOST: ${{ vars.AAP_HOSTNAME }}
       CONTROLLER_USERNAME: ${{ secrets.AAP_USERNAME }}
       CONTROLLER_PASSWORD: ${{ secrets.AAP_PASSWORD }}
       AAP_VALIDATE_CERTS: "true"
+      AAP_SITE_ROLE: "active"
     steps:
       - uses: actions/checkout@v4
 
@@ -41,13 +43,52 @@ jobs:
       - name: Validate (check mode)
         run: >-
           ansible-playbook playbooks/validate.yml
-          -i inventory --limit prod
+          -i inventory --limit prod_active
           --vault-id prod@"$RUNNER_TEMP/vp"
 
       - name: Apply
         run: >-
           ansible-playbook playbooks/config.yml
-          -i inventory --limit prod
+          -i inventory --limit prod_active
+          --vault-id prod@"$RUNNER_TEMP/vp"
+
+      - name: Remove the vault password file
+        if: always()
+        run: rm -f "$RUNNER_TEMP/vp"
+
+  deploy-prod-passive:
+    runs-on: [self-hosted, linux, aap]
+    environment: prod_passive
+    env:
+      CONTROLLER_HOST: ${{ vars.AAP_HOSTNAME }}
+      CONTROLLER_USERNAME: ${{ secrets.AAP_USERNAME }}
+      CONTROLLER_PASSWORD: ${{ secrets.AAP_PASSWORD }}
+      AAP_VALIDATE_CERTS: "true"
+      AAP_SITE_ROLE: "passive"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ansible-core (AAP 2.6 test baseline; bump to 2.18 at 2.7 cutover)
+        run: pip install --user "ansible-core>=2.16,<2.17"
+
+      - name: Install pinned collections
+        run: ansible-galaxy collection install -r collections/requirements.yml
+
+      - name: Write the vault password to a temp file
+        run: |
+          umask 077
+          printf '%s' "${{ secrets.VAULT_PASSWORD }}" > "$RUNNER_TEMP/vp"
+
+      - name: Validate (check mode)
+        run: >-
+          ansible-playbook playbooks/validate.yml
+          -i inventory --limit prod_passive
+          --vault-id prod@"$RUNNER_TEMP/vp"
+
+      - name: Apply
+        run: >-
+          ansible-playbook playbooks/config.yml
+          -i inventory --limit prod_passive
           --vault-id prod@"$RUNNER_TEMP/vp"
 
       - name: Remove the vault password file

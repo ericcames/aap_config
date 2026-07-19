@@ -25,17 +25,27 @@ self-hosted runner gives the exact `./config.sh` command with a token.)
 
 ## 3. Environments + secrets
 
-Create three environments — **dev**, **qa**, **prod** — each with:
+Create four environments — **dev**, **qa**, **prod_active**, **prod_passive** —
+each with:
 
 | Kind | Name | Value |
 |------|------|-------|
-| Variable | `AAP_HOSTNAME` | that env's gateway URL (prod = active/passive VIP) |
+| Variable | `AAP_HOSTNAME` | that env's gateway URL (prod sides: the specific node, not a VIP) |
 | Secret | `AAP_USERNAME` | service account username |
 | Secret | `AAP_PASSWORD` | service account password |
 | Secret | `VAULT_PASSWORD` | the ansible-vault password for that env's `secrets.yml` |
 
-On **qa** and **prod**, add **required reviewers** so a deploy pauses for human
-approval. `dev` needs no reviewer (it deploys automatically on merge to `main`).
+> **Production active/passive:** `deploy-prod.yml` runs two parallel jobs — one
+> per side. Each job uses its own GitHub Environment (`prod_active`,
+> `prod_passive`) with its own `AAP_HOSTNAME` pointing at the specific node. The
+> `AAP_SITE_ROLE` env var is set by the workflow (`active` / `passive`) and
+> controls whether schedules and notifications are enabled. See
+> [`docs/references.md`](references.md) for the COP blog series that describes
+> this pattern.
+
+On **qa**, **prod_active**, and **prod_passive**, add **required reviewers** so
+a deploy pauses for human approval. `dev` needs no reviewer (it deploys
+automatically on merge to `main`).
 
 ## Optional: reproduce with `gh`
 
@@ -53,8 +63,8 @@ gh api -X PUT "repos/$ORG_REPO/branches/main/protection" \
   -F 'required_pull_request_reviews[required_approving_review_count]=1' \
   -F 'restrictions=null'
 
-# Environments (add reviewers to qa/prod in the UI or via the API).
-for env in dev qa prod; do
+# Environments (add reviewers to qa/prod_active/prod_passive in the UI or API).
+for env in dev qa prod_active prod_passive; do
   gh api -X PUT "repos/$ORG_REPO/environments/$env" >/dev/null
 done
 
@@ -63,6 +73,10 @@ gh variable set AAP_HOSTNAME  --env dev  --repo "$ORG_REPO" --body "https://aap-
 gh secret   set AAP_USERNAME  --env dev  --repo "$ORG_REPO"
 gh secret   set AAP_PASSWORD  --env dev  --repo "$ORG_REPO"
 gh secret   set VAULT_PASSWORD --env dev --repo "$ORG_REPO"
+
+# Production active/passive — each side has its own hostname + credentials.
+gh variable set AAP_HOSTNAME  --env prod_active  --repo "$ORG_REPO" --body "https://aap-prod-active.example.internal"
+gh variable set AAP_HOSTNAME  --env prod_passive --repo "$ORG_REPO" --body "https://aap-prod-passive.example.internal"
 ```
 
 ## Discovery checklist (before you build Phase 2)
