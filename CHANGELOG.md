@@ -130,6 +130,13 @@ All notable changes to this project are documented here. Format based on
 
 ### Notes / decisions
 
+- **`gh codespace ssh` does not work with this kit, by design of the base image.**
+  UBI9 ships no SSH server and the `sshd` dev container feature is apt-only, so it
+  cannot be added. The VS Code terminal is unaffected (it does not use SSH).
+  Documented in `docs/codespaces.md`, including the useful inverse: if
+  `gh codespace ssh` *succeeds* and drops you on Debian/Alpine, the dev container
+  failed to build and you are in a recovery container.
+
 - **ansible-core pin (Risk 4 — CLOSED, measured).** Initial testing targets
   **AAP 2.6**, whose `ee-supported-rhel9` image ships **ansible-core 2.16.17**
   (measured 2026-07-18). All pinned collections require only `>=2.16.0`, so the

@@ -82,3 +82,13 @@ from [runbook 02](runbooks/02-export.md).
 - **Collections failed to install** → check that the token has not expired (Red
   Hat SSO offline tokens expire after 30 days of no use). Re-run
   `bash .devcontainer/post-create.sh` after updating the secret and rebuilding.
+- **`gh codespace ssh` says "failed to start SSH server"** → expected, and not a
+  problem. This kit's container is built on UBI9, which ships no SSH server, and
+  the `sshd` dev container feature that would add one is apt-only so it cannot
+  install here. Use the VS Code terminal (browser or desktop) instead — it does
+  not go over SSH. `gh codespace logs` is unavailable for the same reason.
+
+  Useful side effect when debugging: that error actually *confirms* the real
+  image booted. A failed build falls back to a Debian-based recovery container,
+  which does have an SSH server — so if `gh codespace ssh` succeeds and you land
+  on Debian or Alpine, the dev container did **not** build.
