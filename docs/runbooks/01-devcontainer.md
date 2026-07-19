@@ -2,7 +2,9 @@
 
 ## You will need
 
-Runbook 00 complete (GitHub login, container runtime, VS Code).
+Runbook 00 complete (GitHub login, container runtime, VS Code). If you prefer a
+plain terminal without VS Code, see the **devcontainer CLI** alternative at the
+end of [runbook 00](00-prerequisites.md#alternative-no-vs-code-devcontainer-cli).
 
 ## You will learn
 

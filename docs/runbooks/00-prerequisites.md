@@ -53,4 +53,39 @@ seat details (not 404). Docker/Podman Desktop is running.
 - **Podman "cannot connect"** → ensure the Podman machine is started
   (`podman machine start`) and `dev.containers.dockerPath` is set to `podman`.
 
+## Alternative: no VS Code (devcontainer CLI)
+
+If you prefer a plain terminal over VS Code, you can build and enter the dev
+container using the **devcontainer CLI**. Everything works the same — you just
+won't get VS Code extensions (Ansible language server, Copilot inline
+completions). AI Assist prompts still work via Copilot Chat in the terminal
+(`gh copilot`) or Claude Code.
+
+1. **Install Node.js** (needed for the CLI):
+   ```powershell
+   winget install OpenJS.NodeJS
+   ```
+2. **Install the devcontainer CLI:**
+   ```powershell
+   npm install -g @devcontainers/cli
+   ```
+3. **Set your Automation Hub token** so it passes into the container:
+   ```powershell
+   setx AH_TOKEN "your-token-from-console.redhat.com"
+   ```
+   Restart your terminal after `setx`.
+4. **Clone and launch:**
+   ```powershell
+   gh repo clone <your-org>/aap_config
+   cd aap_config
+   devcontainer up --workspace-folder .
+   devcontainer exec --workspace-folder . bash
+   ```
+5. Inside the container, verify setup:
+   ```bash
+   ansible --version
+   ansible-galaxy collection list | grep infra.aap_configuration
+   ```
+   Then continue from [runbook 02](02-export.md).
+
 Next: [01-devcontainer.md](01-devcontainer.md).

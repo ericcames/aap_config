@@ -43,6 +43,10 @@ All notable changes to this project are documented here. Format based on
   research COP recommendations → plan → implement → cross-reference updates →
   lint → commit → push → PR → merge. Added matching AI prompts (rb06) and
   Copilot instructions so both assistants follow the same cycle.
+- **Windows workstation readiness.** Added preflight checks to `export.yml`
+  (CRLF line-ending detection, collection-installed assertion) and a Windows
+  workstation checklist to the export runbook. Added `devcontainer` CLI as a
+  VS-Code-free alternative in the prerequisites runbook.
 - **Azure managed AAP export.** Raw `filetree_create` snapshot of the Azure
   managed AAP 2.7 instance — controller and gateway objects across all orgs.
   Settings files excluded by `.gitignore`; `scan-exports.sh` confirms no
