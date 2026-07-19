@@ -76,6 +76,13 @@ All notable changes to this project are documented here. Format based on
   the WSL2 filesystem, or fall back to Codespaces / a shared Linux dev host).
   Includes a capturable PASS/FAIL summary block so a blocked desktop becomes a
   documented record rather than a verbal one.
+- **"Running on Fedora with Podman" (runbook 00).** Host setup for Fedora
+  workstations as a sibling to the Windows guidance: Podman CLI plus
+  `dev.containers.dockerPath`, exporting `AH_TOKEN` before launching VS Code,
+  SELinux bind-mount behaviour, and the rootless-Podman file-ownership caveat
+  (the container runs as `USER 1001`). The `--userns=keep-id` workaround is
+  documented as local, uncommitted guidance only — it errors under Docker, so it
+  must not go into the shared `devcontainer.json`.
 
 ### Notes / decisions
 

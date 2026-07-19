@@ -25,8 +25,9 @@ Run this check **first**, before installing a container engine. It takes two
 minutes and tells you whether this desktop can use the local dev-container path
 or needs the fallback further down.
 
-> Not on Windows? Skip this section — go straight to your platform's container
-> setup below.
+> Not on Windows? Skip this section — see
+> [Running on Fedora with Podman](#running-on-fedora-with-podman) (or your
+> platform's container setup) instead.
 
 ### Run the checks
 
@@ -148,6 +149,68 @@ seat details (not 404). Docker/Podman Desktop is running.
   Copilot Chat or Claude Code.
 - **Podman "cannot connect"** → ensure the Podman machine is started
   (`podman machine start`) and `dev.containers.dockerPath` is set to `podman`.
+
+## Running on Fedora with Podman
+
+The dev container runs the same on Fedora as on Windows — the export tooling
+lives inside the container, so the runbooks all apply unchanged. There are three
+one-time host setup steps and one thing to be aware of.
+
+### 1. Use Podman as the container engine
+
+Fedora Workstation usually ships Podman already. Confirm with `podman --version`;
+if it is missing, install it with `sudo dnf install -y podman`. You do not need
+Podman Desktop — the CLI is enough.
+
+Tell VS Code to use Podman instead of Docker. In *Settings* (JSON or UI), set:
+
+```json
+"dev.containers.dockerPath": "podman"
+```
+
+### 2. Export your Automation Hub token before opening the container
+
+[`.devcontainer/devcontainer.json`](../../.devcontainer/devcontainer.json) passes
+`AH_TOKEN` from your host shell into the container, and
+[`post-create.sh`](../../.devcontainer/post-create.sh) uses it to install the
+certified collections. If the token is not set, the setup script prompts for it —
+and if you leave the prompt blank, it skips the collections and you cannot run
+the export.
+
+Set it in the shell you launch VS Code from, then start VS Code from that same
+shell so it inherits the value:
+
+```bash
+export AH_TOKEN='paste-your-token-here'
+code .
+```
+
+Get a token at console.redhat.com → Automation Hub → API token. To avoid doing
+this every time, add the `export` line to your `~/.bashrc` (note: this stores the
+token in a plaintext dotfile — only do it on a machine you trust).
+
+### 3. SELinux and bind mounts
+
+Fedora runs SELinux in enforcing mode. Podman relabels the mounted repo
+automatically, so this normally just works. If the container cannot read the repo
+files, an SELinux mount label is the usual cause — check `podman` mount flags
+before anything else.
+
+### File ownership note
+
+Because the container runs as a non-root user (`USER 1001` in
+[`.devcontainer/Containerfile`](../../.devcontainer/Containerfile)), rootless
+Podman maps it into a high subuid range, and files it writes into the
+bind-mounted repo (for example under `exports/`) can end up owned by an
+unexpected UID on the host. If you hit that, add this to your **local,
+uncommitted** copy of `.devcontainer/devcontainer.json`:
+
+```json
+"runArgs": ["--userns=keep-id"]
+```
+
+Do not commit that line — it is Podman-specific and would break the Windows and
+Docker users this kit targets.
 
 ## Alternative: no VS Code (devcontainer CLI)
 
