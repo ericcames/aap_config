@@ -1,0 +1,24 @@
+---
+controller_schedules:
+  - name: "AMZL Daily Demo - Nightly Teardown (6 PM AZ)"
+    description: |-
+      {%- raw -%}
+      Destroy the demo EC2 instance every evening to avoid overnight costs
+      {%- endraw -%}
+    enabled: true
+    unified_job_template: "AMZL Daily Demo - Teardown (AWS)"
+    inventory: "amzl-dailydemo-control"
+    dtstart: "2026-07-07T01:00:00Z"
+    dtend: ""
+    timezone: "America/Phoenix"
+    rrule: "DTSTART;TZID=America/Phoenix:20260706T180000 RRULE:FREQ=DAILY;INTERVAL=1"
+    scm_branch: ""
+    forks: 0
+    job_slice_count: 0
+    timeout: 0
+    job_type: ""
+    job_tags: ""
+    skip_tags: ""
+    limit: ""
+    verbosity: 0
+...

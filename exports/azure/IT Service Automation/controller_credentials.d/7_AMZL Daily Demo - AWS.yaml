@@ -1,0 +1,10 @@
+---
+controller_credentials:
+  - name: "AMZL Daily Demo - AWS"
+    credential_type: "Amazon Web Services"
+    organization: "IT Service Automation"
+    inputs:
+      password: "{{ vaulted_controller_credentials_amzl_daily_demo___aws_password }}"
+      username: AKIA5BZP2TPJMKDOAUS4
+
+...

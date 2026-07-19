@@ -43,6 +43,10 @@ All notable changes to this project are documented here. Format based on
   research COP recommendations → plan → implement → cross-reference updates →
   lint → commit → push → PR → merge. Added matching AI prompts (rb06) and
   Copilot instructions so both assistants follow the same cycle.
+- **Azure managed AAP export.** Raw `filetree_create` snapshot of the Azure
+  managed AAP 2.7 instance — controller and gateway objects across all orgs.
+  Settings files excluded by `.gitignore`; `scan-exports.sh` confirms no
+  leaked secrets.
 - **Unified secrets under ansible-vault.** Consolidated the two-pattern secrets
   approach (env vars for connection + vault for CaC) into a single model: all
   secrets live in vault-encrypted `inventory/group_vars/<env>/secrets.yml`,
