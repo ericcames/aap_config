@@ -35,6 +35,24 @@ per-environment `secrets.yml`.
    Store that password safely — you'll add it to GitHub as the `dev` environment's
    `VAULT_PASSWORD` secret later (runbook 07).
 
+   > **Password files instead of typing.** `@prompt` is the default and the right
+   > choice for a person at a keyboard. For an unattended run — or a live demo,
+   > where a mistyped password stalls everything — put the password in a file
+   > **outside the repo** and point `--vault-id` at it:
+   >
+   > ```bash
+   > install -m 600 /dev/null ~/secrets/.vault_pass_dev
+   > printf '%s' 'the-password' > ~/secrets/.vault_pass_dev
+   > ansible-playbook playbooks/config.yml -i inventory --limit dev \
+   >   --vault-id dev@~/secrets/.vault_pass_dev
+   > ```
+   >
+   > One file per environment, mode `600`, kept in `~/secrets/` so it is never
+   > near the working tree. `.gitignore` also covers `*.vault_pass` /
+   > `.vault-password` patterns as a second line of defense, but the real
+   > protection is that the file lives outside the repo. This is the same secret
+   > you store as the environment's `VAULT_PASSWORD` in GitHub.
+
 4. **Verify the guard is happy:**
    ```bash
    bash utilities/check-vault-encrypted.sh      # "check-vault-encrypted: OK"

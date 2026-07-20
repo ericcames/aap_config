@@ -38,6 +38,28 @@ All notable changes to this project are documented here. Format based on
   reachable), a deliberate secret-commit that the pre-commit hook rejects, and
   answers to the questions the room actually asks. Linked from `README.md` →
   Start here.
+- **`qa` environment config.** `inventory/group_vars/qa/connection.yml` (gateway
+  URL) and a vault-encrypted `qa/secrets.yml`, so `qa` is a working apply target
+  for `validate.yml`/`config.yml` — matching what `azure/` already commits.
+- **Vault password files as an alternative to `@prompt`.**
+  `docs/runbooks/04-secrets.md` documents `~/secrets/.vault_pass_<env>` (mode
+  600, outside the repo) for unattended and demo runs. `@prompt` remains the
+  taught default.
+- **`exports/README.md` — re-export procedure.** `filetree_create` only writes,
+  so a re-export must be preceded by `rm -rf exports/<source>/` for upstream
+  deletions to appear in the diff.
+
+### Changed
+
+- **`DEMO.md` retargeted to a real environment.** Act 4 applies to `qa` instead
+  of `dev`; all runnable commands use `--vault-id <env>@~/secrets/.vault_pass_<env>`
+  so a demo never stalls on a mistyped password. Claude Code is now the assumed
+  assistant rather than a mid-setup choice, and a new "Where you run it" section
+  recommends the local dev container over Codespaces (which keeps its role as the
+  audience's on-ramp and as a cold backup). The Act 3 secret-guard demo stays on
+  `dev` deliberately — now that `qa/secrets.yml` is real, `dev/` is the only env
+  where the throwaway `>` cannot destroy anything. Adds a `hunter2` footnote and
+  a screenshot capture list.
 
 - **Cross-tool agent skills, and three new ones.** The repo's skills use the open
   `SKILL.md` format and already worked in **both** Claude Code and GitHub Copilot
