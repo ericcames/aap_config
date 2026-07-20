@@ -1,0 +1,31 @@
+---
+# ============================================================================
+# group_vars/aap/controller_projects.yml — projects shared by EVERY env
+# ============================================================================
+# Curated from:
+#   exports/azure/IT Service Automation/controller_projects.d/11_AMZL Daily Demo.yaml
+#
+# The top-level key is renamed `controller_projects` -> `controller_projects_all`
+# so dispatch merges it with any per-environment `controller_projects_<env>`.
+#
+# Depends on the "IT Service Automation" organization (aap_organizations.yml in
+# this directory). dispatch creates organizations before projects, so declaring
+# both here is enough — no ordering work required.
+#
+# The SCM URL is a public repository, so no credential is needed.
+# ============================================================================
+
+controller_projects_all:
+  - name: "AMZL Daily Demo"
+    organization: "IT Service Automation"
+    scm_type: "git"
+    scm_url: "https://github.com/ericcames/AMZL-dailydemo.git"
+    scm_branch: "main"
+    scm_clean: true
+    scm_delete_on_update: false
+    scm_update_on_launch: false
+    scm_update_cache_timeout: "0"
+    scm_refspec: ""
+    allow_override: false
+    update_project: false
+    timeout: "0"
