@@ -60,6 +60,19 @@ All notable changes to this project are documented here. Format based on
   `dev` deliberately — now that `qa/secrets.yml` is real, `dev/` is the only env
   where the throwaway `>` cannot destroy anything. Adds a `hunter2` footnote and
   a screenshot capture list.
+- **Per-environment sign-in badge — the repo's first `_<env>` variable.**
+  `inventory/group_vars/qa/gateway_settings.yml` sets `gateway_settings_qa.custom_logo`
+  to the official AAP lockup extended with a color-coded environment badge,
+  generated reproducibly by `utilities/make-env-logo.py` (amber qa, green dev,
+  red prod) from the committed `docs/images/aap-logo-white.svg`. It **merges**
+  with `gateway_settings_all` rather than replacing it, making the `_all` /
+  `_<env>` convention demonstrable instead of merely asserted. Verified
+  idempotent on qa.
+  **Scope, precisely:** `custom_logo` renders on the **sign-in page only**. It
+  does not change the post-login masthead, which is a bundled UI asset rather
+  than a setting — confirmed on qa with the setting stored and the masthead still
+  stock. AAP 2.7 exposes **no** way to mark the environment after login; all 43
+  gateway settings were enumerated. Recorded so nobody re-researches it.
 - **Pre-login banner as code.** `inventory/group_vars/aap/gateway_settings.yml`
   manages `custom_login_info` for every environment — the AAP sign-in banner,
   and the most visible object in the repo: proving an apply landed needs a

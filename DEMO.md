@@ -98,6 +98,29 @@ the setting simply does not work without both. Requires
 Do **not** curate `AUTOMATION_ANALYTICS_LAST_GATHER`, `LAST_ENTRIES`, `LICENSE.*`,
 or `INSTALL_UUID` — runtime state and subscription identifiers, not config.
 
+**Environment badge** — `inventory/group_vars/qa/gateway_settings.yml`. The only
+**per-environment** file in the repo, and the one place Act 2's `_all` / `_<env>`
+claim becomes something you can point at:
+
+```yaml
+gateway_settings_qa:
+  custom_logo: "data:image/png;base64,{{ lookup('ansible.builtin.file', inventory_dir + '/../docs/images/logo-qa.png.b64') }}"
+```
+
+`gateway_settings_all` (the banner, shared) and `gateway_settings_qa` (the logo,
+qa only) **merge** — dispatch combines mappings recursively. Show both files
+side by side: one definition set, one environment-specific delta, no duplicated
+copies. That is the whole argument for the suffix convention in ten seconds.
+
+The image extends the official product lockup with a color-coded badge —
+`utilities/make-env-logo.py --env QA`, amber for qa, green dev, red prod.
+
+**Be accurate about where it appears:** the **sign-in page**, not the masthead.
+`custom_logo` does not change the post-login header — that is a bundled UI asset,
+and AAP 2.7 has no setting that marks the environment after login. Say "you see
+which environment you are entering before you touch anything," and do not claim
+a persistent banner. Someone in the room will check.
+
 ### Preparing the target — required
 
 Two conditions must hold before you start: the **organization must exist**, and
