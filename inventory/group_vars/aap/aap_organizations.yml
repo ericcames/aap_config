@@ -1,0 +1,15 @@
+---
+# ============================================================================
+# group_vars/aap/aap_organizations.yml — organizations shared by EVERY env
+# ============================================================================
+# Curated from exports/azure/gateway_organizations.yaml (runbook 03).
+#
+# NOTE THE VARIABLE NAME. The export writes a top-level `gateway_organizations:`
+# key, but the dispatch role reads this object type from `aap_organizations`.
+# The rule is "rename the export's key to the variable dispatch expects, plus
+# the _all / _<env> suffix" — which is not always just the export's key + _all.
+# Check infra.aap_configuration/roles/dispatch/defaults/main.yml when in doubt.
+# ============================================================================
+
+aap_organizations_all:
+  - name: "IT Service Automation"

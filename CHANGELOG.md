@@ -60,6 +60,23 @@ All notable changes to this project are documented here. Format based on
   `dev` deliberately — now that `qa/secrets.yml` is real, `dev/` is the only env
   where the throwaway `>` cannot destroy anything. Adds a `hunter2` footnote and
   a screenshot capture list.
+- **First curated object: `aap_organizations_all`.**
+  `inventory/group_vars/aap/aap_organizations.yml` manages the
+  `IT Service Automation` organization as code, curated from
+  `exports/azure/gateway_organizations.yaml`. Note the rename: the export writes
+  `gateway_organizations:`, but the dispatch role reads `aap_organizations`, so
+  copy-plus-suffix would produce a file that loads and does nothing.
+  The organization is committed rather than curated live because
+  `validate.yml` runs in check mode, which cannot create it — and a project
+  referencing a missing organization fails the dry run.
+- **`DEMO.md` — Act 2 decided and rehearsed.** Documents the object to curate
+  (`AMZL Daily Demo` project, the only exported project not already present on
+  the target), the target-preparation steps, the check-mode dependency
+  limitation, and two optional extras: the pre-login banner
+  (`gateway_settings_all.custom_login_info`, visible on the sign-in page) and
+  Automation Analytics, whose credentials cannot come from the export because
+  AAP returns them as `$encrypted$` — the strongest case in the kit for the
+  vaulted-secrets model.
 - **`DEMO.md` troubleshooting.** Every playbook run now tees to `/tmp/demo-*.log`
   with `ANSIBLE_FORCE_COLOR=1` set in the pre-flight so color survives the pipe,
   plus an "If something breaks mid-demo" section covering how to grep the logs
