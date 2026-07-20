@@ -60,6 +60,21 @@ All notable changes to this project are documented here. Format based on
   `dev` deliberately — now that `qa/secrets.yml` is real, `dev/` is the only env
   where the throwaway `>` cannot destroy anything. Adds a `hunter2` footnote and
   a screenshot capture list.
+- **First three demo screenshots captured and embedded in `DEMO.md`.** All live
+  in `docs/images/`, committed so they render on GitHub and so the script still
+  lands when the environment is unreachable.
+  - `qa-signin-badge-banner.png` — the qa sign-in page showing the shared
+    `custom_login_info` banner and the qa-only `custom_logo` badge on one
+    screen: the `_all` / `_<env>` merge as evidence rather than assertion.
+    Embedded in "Two optional extras."
+  - `automation-calculator.png` — Automation Analytics → Automation Calculator
+    with real job-template data and a savings total, the executive payoff for
+    curating analytics. Embedded in Act 4.
+  - `lint-checks-green.png` — the Lint workflow's five jobs all green on a real
+    PR, the evidence behind Act 3's claim that the guardrails are the product.
+    Embedded in Act 3.
+  The "Screenshots to capture" table gains a status column; shot 1 (the created
+  object in the UI) is now the only outstanding shot that needs a live AAP.
 - **Per-environment sign-in badge — the repo's first `_<env>` variable.**
   `inventory/group_vars/qa/gateway_settings.yml` sets `gateway_settings_qa.custom_logo`
   to the official AAP lockup extended with a color-coded environment badge,
