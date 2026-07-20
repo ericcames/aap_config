@@ -60,6 +60,12 @@ All notable changes to this project are documented here. Format based on
   `dev` deliberately — now that `qa/secrets.yml` is real, `dev/` is the only env
   where the throwaway `>` cannot destroy anything. Adds a `hunter2` footnote and
   a screenshot capture list.
+- **`DEMO.md` troubleshooting.** Every playbook run now tees to `/tmp/demo-*.log`
+  with `ANSIBLE_FORCE_COLOR=1` set in the pre-flight so color survives the pipe,
+  plus an "If something breaks mid-demo" section covering how to grep the logs
+  and the three failures worth recognizing on sight. Fixes the pre-flight's
+  `ls -l ~/secrets/`, which listed nothing because the vault password files are
+  dotfiles — it now uses `ls -la`, so a missing file is actually caught.
 
 - **Cross-tool agent skills, and three new ones.** The repo's skills use the open
   `SKILL.md` format and already worked in **both** Claude Code and GitHub Copilot

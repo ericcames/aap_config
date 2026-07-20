@@ -60,17 +60,25 @@ will be typing vault passwords for that run.
 ansible --version                                              # ansible-core 2.16.x
 ansible-galaxy collection list | grep infra.aap_configuration  # 4.7.0
 gh auth status                                                 # logged in
-ls -l ~/secrets/                                               # .vault_pass_azure, .vault_pass_qa — both mode 600
+ls -la ~/secrets/                                              # .vault_pass_azure, .vault_pass_qa — both mode 600
 git switch -c demo-$(date +%m%d) && git status                 # clean tree, demo branch
+
+export ANSIBLE_FORCE_COLOR=1                                   # keep color through the tee below
 ```
+
+`ls -la`, not `ls -l` — the password files are dotfiles, so plain `ls -l` reports
+an empty directory whether they are there or not.
 
 Missing a vault password file? Create it once, outside the repo:
 
 ```bash
 install -m 600 /dev/null ~/secrets/.vault_pass_qa
-# then put the qa vault password in it — one line, no trailing newline issues:
-#   printf '%s' 'the-password' > ~/secrets/.vault_pass_qa
+printf '%s' 'the-password' > ~/secrets/.vault_pass_qa
 ```
+
+A trailing newline is harmless — Ansible strips it — so a here-doc or an editor
+works just as well. `printf` is only here to keep the password out of your shell
+history's `echo` habits.
 
 Have a second terminal open on the repo, and a browser tab on the repo's
 **Actions** tab. This script assumes **Claude Code** as the assistant — the
@@ -98,7 +106,8 @@ The point to land: **nobody hand-writes this**. You start from what is already
 running in production, and the export is read-only.
 
 ```bash
-ansible-playbook playbooks/export.yml -i inventory --limit azure --vault-id azure@~/secrets/.vault_pass_azure
+ansible-playbook playbooks/export.yml -i inventory --limit azure \
+  --vault-id azure@~/secrets/.vault_pass_azure 2>&1 | tee /tmp/demo-export.log
 ```
 
 > `<env>@<file>` reads the vault password from disk instead of prompting. The
@@ -242,7 +251,8 @@ Merge the PR.
 **Dry run first — always:**
 
 ```bash
-ansible-playbook playbooks/validate.yml -i inventory --limit qa --vault-id qa@~/secrets/.vault_pass_qa
+ansible-playbook playbooks/validate.yml -i inventory --limit qa \
+  --vault-id qa@~/secrets/.vault_pass_qa 2>&1 | tee /tmp/demo-validate.log
 ```
 
 `validate.yml` is `config.yml` in check mode. It reports what *would* change and
@@ -250,7 +260,8 @@ changes nothing. Read the intended changes out loud — this is the "no surprise
 promise, and it is what makes the pipeline safe to hand to someone junior.
 
 ```bash
-ansible-playbook playbooks/config.yml -i inventory --limit qa --vault-id qa@~/secrets/.vault_pass_qa
+ansible-playbook playbooks/config.yml -i inventory --limit qa \
+  --vault-id qa@~/secrets/.vault_pass_qa 2>&1 | tee /tmp/demo-config.log
 ```
 
 Now the payoff: **switch to the AAP UI and show the object**. Don't narrate it,
@@ -265,6 +276,37 @@ their GitHub Environments. Production is an active/passive pair that receives
 identical config, with one variable — `aap_site_role` — deciding which side's
 schedules and notifications are live. Failover is swapping that value, not
 re-running a migration.
+
+---
+
+## If something breaks mid-demo
+
+Every playbook run above is teed to a log, so a failure that scrolled off the
+screen is still recoverable without re-running anything in front of the room:
+
+```bash
+grep -nE 'FAILED|fatal:|unreachable' /tmp/demo-export.log   # or demo-validate / demo-config
+tail -40 /tmp/demo-export.log                               # the PLAY RECAP and what led to it
+```
+
+Read the recap out loud rather than hiding it. A technical audience has seen
+playbooks fail before; narrating the failure and pointing at the log is more
+credible than a demo that never breaks.
+
+The three failures worth recognizing on sight:
+
+| What you see | What it means |
+|---|---|
+| A **vault password prompt** | The `--vault-id` path is wrong or the file is missing. Nothing has run yet — `ls -la ~/secrets/` and retry. |
+| `infra.aap_configuration_extended is not installed` | `AH_TOKEN` was not set when the container started. `bash .devcontainer/post-create.sh` inside the container. |
+| `changed=N` but `git status` is clean | Not a failure. `filetree_create` rewrites files with identical content and still reports `changed` — git is the honest signal for whether anything actually moved. Useful to say out loud in Act 1. |
+
+> Because of the `| tee`, `$?` is tee's exit status, not the playbook's. If you
+> script anything around these, use `${PIPESTATUS[0]}`.
+
+The export playbook deletes its OAuth token in an `always:` block, so even a
+mid-run failure leaves nothing behind on the platform — worth saying if Act 1 is
+the thing that breaks.
 
 ---
 
