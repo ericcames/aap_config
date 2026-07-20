@@ -39,6 +39,98 @@ more honest — but you should have decided which object you are going to curate
 **Rehearse it once.** Run the whole thing start to finish the day before, against
 the same environment, with the same terminal. This script assumes you have.
 
+### Act 2's object
+
+Decided in advance, and chosen because it is the one project in the export that
+does **not** already exist on the target:
+
+| | |
+|---|---|
+| **Object** | `AMZL Daily Demo` project |
+| **From** | `exports/azure/IT Service Automation/controller_projects.d/11_AMZL Daily Demo.yaml` |
+| **To** | `inventory/group_vars/aap/controller_projects.yml`, key `controller_projects_all` |
+| **Why this one** | `Demo Project` and `Ansible Product Demos` already exist on the target with identical SCM URLs, so curating either gives Act 4 a `changed=0` anticlimax. Its SCM repo is public, so no credential is needed. |
+
+**Check the target before you rely on this.** Environments drift, and the whole
+point is that Act 4 creates something visible:
+
+```bash
+# Does the object already exist on the target? If yes, pick another.
+curl -sk -u "$AAP_USER" "$AAP_HOST/api/controller/v2/projects/" | jq -r '.results[].name'
+```
+
+### Two optional extras, if the room is engaged
+
+Both come from the **gitignored** `*_settings*` exports, so they are curated by
+hand, key by key — which is itself the point runbook 03 makes about settings.
+
+**Pre-login banner** — `inventory/group_vars/aap/gateway_settings.yml`:
+
+```yaml
+gateway_settings_all:
+  custom_login_info: >-
+    THIS SYSTEM IS PROVIDED FOR USE BY AUTHORIZED USERS ONLY. ...
+```
+
+The best payoff-per-second in the whole demo: it renders on the AAP **sign-in
+page**, so proving the apply landed needs no object page and no navigation. Log
+out and show them.
+
+**Automation analytics** — `inventory/group_vars/aap/controller_settings.yml`:
+
+```yaml
+controller_settings_all:
+  settings:
+    INSIGHTS_TRACKING_STATE: true
+    AUTOMATION_ANALYTICS_URL: "https://cloud.redhat.com/api/ingress/v1/upload"
+    AUTOMATION_ANALYTICS_GATHER_INTERVAL: 14400
+    SUBSCRIPTIONS_CLIENT_ID: "{{ vaulted_subscriptions_client_id }}"
+    SUBSCRIPTIONS_CLIENT_SECRET: "{{ vaulted_subscriptions_client_secret }}"
+```
+
+This is the strongest argument in the kit for the secrets model, because the
+credentials **cannot** come from the export — AAP returns them as `$encrypted$`,
+never in the clear. So the config is in Git and the secret is in the vault, and
+the setting simply does not work without both. Requires
+`vaulted_subscriptions_client_id` / `_client_secret` in the environment's
+`secrets.yml` (`ansible-vault edit`).
+
+Do **not** curate `AUTOMATION_ANALYTICS_LAST_GATHER`, `LAST_ENTRIES`, `LICENSE.*`,
+or `INSTALL_UUID` — runtime state and subscription identifiers, not config.
+
+### Preparing the target — required
+
+Two conditions must hold before you start: the **organization must exist**, and
+the **project must not**.
+
+The organization is committed config — `inventory/group_vars/aap/aap_organizations.yml`
+holds `aap_organizations_all`, so it is created by config-as-code like anything
+else. On a brand-new AAP, one apply establishes it:
+
+```bash
+# On a fresh target: creates IT Service Automation and nothing else.
+ansible-playbook playbooks/config.yml -i inventory --limit qa \
+  --vault-id qa@~/secrets/.vault_pass_qa 2>&1 | tee /tmp/demo-prep.log
+```
+
+Then make sure the project is absent, so Act 4 creates it in front of them:
+
+```bash
+curl -sk -X DELETE -u "$AAP_USER" "$AAP_HOST/api/controller/v2/projects/<id>/"
+```
+
+**Why the org must pre-exist.** `validate.yml` runs in **check mode**, which does
+not create anything. If the organization is missing, check mode cannot create it,
+so validating the project that references it **fails** — and your "dry run first,
+always" safety step becomes the thing that breaks on stage. Keeping the org in
+committed config means every environment gets it automatically and this never
+comes up. It is a real limitation of check mode with new dependent objects, not a
+bug in the config.
+
+During Act 4 the org reports no change (it is already there) and the project is
+created. That is the intended shape: standing config stays converged, and the
+thing you curated live is the thing that appears.
+
 ### Where you run it
 
 **Your laptop's dev container.** It already holds the two things this demo
@@ -151,20 +243,29 @@ Real objects, one file each, committed for review.
 Export is a snapshot; **config-as-code is a decision about what you intend to
 manage.** This is the step people underestimate.
 
-Pick one object — a project or a job template reads well — and move it:
+**The object to curate is decided in advance** — see [Act 2's object](#act-2s-object)
+below. Move it:
 
 ```bash
 # Shared by every environment:
-#   exports/azure/.../controller_projects.yaml
+#   exports/azure/IT Service Automation/controller_projects.d/11_AMZL Daily Demo.yaml
 #     -> inventory/group_vars/aap/controller_projects.yml
 #     and rename the top-level key to controller_projects_all
 ```
 
-Two things to call out while you edit:
+Three things to call out while you edit:
 
 - **The `_all` / `_<env>` suffix.** `controller_projects_all` is shared;
   `controller_projects_dev` is a dev-only delta. They merge at apply time. That
   is how one repo serves four environments without four copies.
+- **The export's key is not always the variable that gets read.** Projects are
+  easy — `controller_projects` → `controller_projects_all`. But the *organization*
+  export writes `gateway_organizations:`, while the role reads **`aap_organizations`**,
+  so the curated key is `aap_organizations_all`. Copy-plus-suffix would produce a
+  file that loads and silently does nothing. When in doubt, check
+  `infra.aap_configuration/roles/dispatch/defaults/main.yml` — the `var:` field
+  next to each role is the name that counts. This is a good place to let the
+  audience watch you check rather than assert.
 - **Variables load implicitly from `inventory/group_vars/`** — there is no
   `vars_files:` or `include_vars:` anywhere in this repo, by design. Environment
   is selected with `--limit`. This is the Red Hat Services standard, and it is
