@@ -1,0 +1,34 @@
+---
+# ============================================================================
+# group_vars/qa/gateway_settings.yml — qa-only gateway settings
+# ============================================================================
+# The first per-environment delta in this repo, and the worked example of the
+# other half of the suffix convention: `gateway_settings_all` (in group_vars/aap/)
+# holds the pre-login banner shared by every environment, and this file adds a
+# key only qa gets. dispatch MERGES them — see
+# infra.aap_configuration/roles/dispatch/tasks/include_wildcard_vars.yml, which
+# combines mappings with combine(recursive=true). This file does not replace the
+# shared one; the two set disjoint keys.
+#
+# custom_logo is the logo on the AAP SIGN-IN PAGE, shown next to
+# custom_login_info. It does NOT change the masthead after login — verified on
+# qa 2026-07-19: with custom_logo set and confirmed stored, the post-login
+# masthead still rendered the stock lockup, because the UI bundle imports its own
+# aap-logo-white.svg asset directly. AAP 2.7 has no setting that marks the
+# environment after login; all 43 gateway settings were enumerated.
+#
+# So this is a sign-in-time environment marker: you see which environment you are
+# entering before you touch anything, and nothing after. That is still the moment
+# the warning is most useful.
+#
+# The image extends the official product lockup rather than replacing it, so Red
+# Hat branding survives and only an environment badge is added. Regenerate with:
+#
+#   python3 utilities/make-env-logo.py --env QA
+#
+# The badge carries its own solid background so the environment stays legible in
+# both light and dark themes, even where the white wordmark does not.
+# ============================================================================
+
+gateway_settings_qa:
+  custom_logo: "data:image/png;base64,{{ lookup('ansible.builtin.file', inventory_dir + '/../docs/images/logo-qa.png.b64') }}"
