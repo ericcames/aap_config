@@ -1,0 +1,5 @@
+---
+# On-prem AAP 2.7 qa (standalone) — apply target for validate.yml/config.yml.
+# Credentials live in this directory's vault-encrypted secrets.yml.
+aap_hostname: "https://aap-aap.apps.cluster-xdl64-1.dyn.redhatworkshops.io"
+aap_validate_certs: true
