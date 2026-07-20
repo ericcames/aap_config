@@ -72,13 +72,21 @@ an empty directory whether they are there or not.
 Missing a vault password file? Create it once, outside the repo:
 
 ```bash
-install -m 600 /dev/null ~/secrets/.vault_pass_qa
-printf '%s' 'the-password' > ~/secrets/.vault_pass_qa
+# Prompts for the password; refuses to overwrite a file that already exists.
+( set -o noclobber
+  read -rsp 'qa vault password: ' PW && printf '%s' "$PW" > ~/secrets/.vault_pass_qa
+  unset PW; echo )
+chmod 600 ~/secrets/.vault_pass_qa
 ```
 
-A trailing newline is harmless — Ansible strips it — so a here-doc or an editor
-works just as well. `printf` is only here to keep the password out of your shell
-history's `echo` habits.
+`read -rs` keeps the password out of your shell history, and `noclobber` makes
+the `>` fail rather than destroy a password file you already had. **Never paste a
+literal password into a command in this file** — a rehearsal that pastes the
+whole block would otherwise overwrite a working key with whatever placeholder is
+printed here, and the vaulted file would then be unopenable.
+
+A trailing newline is harmless either way — Ansible strips it — so an editor
+works fine too.
 
 Have a second terminal open on the repo, and a browser tab on the repo's
 **Actions** tab. This script assumes **Claude Code** as the assistant — the

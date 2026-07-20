@@ -41,8 +41,11 @@ per-environment `secrets.yml`.
    > **outside the repo** and point `--vault-id` at it:
    >
    > ```bash
-   > install -m 600 /dev/null ~/secrets/.vault_pass_dev
-   > printf '%s' 'the-password' > ~/secrets/.vault_pass_dev
+   > # Prompts for the password; noclobber refuses to overwrite an existing file.
+   > ( set -o noclobber
+   >   read -rsp 'dev vault password: ' PW && printf '%s' "$PW" > ~/secrets/.vault_pass_dev
+   >   unset PW; echo )
+   > chmod 600 ~/secrets/.vault_pass_dev
    > ansible-playbook playbooks/config.yml -i inventory --limit dev \
    >   --vault-id dev@~/secrets/.vault_pass_dev
    > ```
@@ -52,6 +55,11 @@ per-environment `secrets.yml`.
    > `.vault-password` patterns as a second line of defense, but the real
    > protection is that the file lives outside the repo. This is the same secret
    > you store as the environment's `VAULT_PASSWORD` in GitHub.
+   >
+   > **Never write a literal password into a command in these docs.** Anyone
+   > running the block verbatim would overwrite a working key with a published
+   > placeholder — which both destroys access to the vaulted file and, worse,
+   > re-encrypts it under a password printed in this repo.
 
 4. **Verify the guard is happy:**
    ```bash
