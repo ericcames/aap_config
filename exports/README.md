@@ -19,6 +19,23 @@ Two guards keep it honest, in the pre-commit hook and in CI:
   secrets that are not templated out. Review those in `exports/` locally and
   curate the values by hand (runbook 03); they never reach Git.
 
+## Re-exporting: wipe first
+
+`filetree_create` only **writes** files — it never removes them. An object
+deleted upstream leaves a stale file here that survives every future export and
+silently misrepresents the source. So when you re-export a source that has
+changed, clear the tree first:
+
+```bash
+rm -rf exports/azure/
+ansible-playbook playbooks/export.yml -i inventory --limit azure --vault-id azure@prompt
+git status exports/          # deletions now show as deletions, and get reviewed
+```
+
+Object types with no instances come back as `key: []` files (e.g.
+`gateway_teams.yaml`). Those are correct output, not leftovers — they record
+that the type was exported and was empty. Leave them.
+
 ## What happens next
 
 The raw export is **not** what gets deployed. You **curate** the objects you want

@@ -39,20 +39,43 @@ more honest — but you should have decided which object you are going to curate
 **Rehearse it once.** Run the whole thing start to finish the day before, against
 the same environment, with the same terminal. This script assumes you have.
 
+### Where you run it
+
+**Your laptop's dev container.** It already holds the two things this demo
+depends on: the vault password files in `~/secrets/` and the Automation Hub
+token in `~/.ansible.cfg`. A codespace has neither, and putting them there means
+a Codespaces secret written to a file at container start — which undoes the
+reason for not typing passwords live. No image build to wait on, no idle
+timeout, one less network hop.
+
+Codespaces still earns its place in this demo twice: as the **audience's**
+on-ramp (the badge in the README — they can try the repo without installing
+anything), and as your **cold backup** if the laptop dies, accepting that you
+will be typing vault passwords for that run.
+
 ### Setup checklist
 
 ```bash
-# In the dev container or a codespace, from the repo root:
+# In the dev container, from the repo root:
 ansible --version                                              # ansible-core 2.16.x
 ansible-galaxy collection list | grep infra.aap_configuration  # 4.7.0
 gh auth status                                                 # logged in
+ls -l ~/secrets/                                               # .vault_pass_azure, .vault_pass_qa — both mode 600
 git switch -c demo-$(date +%m%d) && git status                 # clean tree, demo branch
 ```
 
+Missing a vault password file? Create it once, outside the repo:
+
+```bash
+install -m 600 /dev/null ~/secrets/.vault_pass_qa
+# then put the qa vault password in it — one line, no trailing newline issues:
+#   printf '%s' 'the-password' > ~/secrets/.vault_pass_qa
+```
+
 Have a second terminal open on the repo, and a browser tab on the repo's
-**Actions** tab. Decide up front whether you are demoing in Claude Code or
-Copilot CLI — the skills work in both, but switching mid-demo costs you a minute
-of explaining why.
+**Actions** tab. This script assumes **Claude Code** as the assistant — the
+skills also work in Copilot CLI, which is a point worth making in Act 2, but
+pick one before you start rather than switching mid-demo.
 
 ---
 
@@ -75,8 +98,13 @@ The point to land: **nobody hand-writes this**. You start from what is already
 running in production, and the export is read-only.
 
 ```bash
-ansible-playbook playbooks/export.yml -i inventory --limit azure --vault-id azure@prompt
+ansible-playbook playbooks/export.yml -i inventory --limit azure --vault-id azure@~/secrets/.vault_pass_azure
 ```
+
+> `<env>@<file>` reads the vault password from disk instead of prompting. The
+> runbooks teach `--vault-id azure@prompt`, and that is the right default for a
+> person at a keyboard — but a demo should never stall on a mistyped password.
+> If either playbook prompts you, the path is wrong.
 
 While it runs, say what it is doing: `filetree_create` walks the controller and
 gateway APIs and writes one file per object into `exports/`. It mints a
@@ -183,11 +211,18 @@ git restore --staged inventory/group_vars/dev/secrets.yml
 rm inventory/group_vars/dev/secrets.yml
 ```
 
-> Practice this bit. `dev/secrets.yml` normally does not exist — the `>` creates
-> it — which is why cleanup is `rm` and **not** `git checkout --`, which fails on
-> an untracked file. If your demo environment *does* have a real `dev/secrets.yml`,
-> pick a different env or you will overwrite it. Never type a real credential
-> here; `hunter2` is the joke, keep it.
+> Practice this bit. **Use `dev/` on purpose** — `dev/secrets.yml` does not
+> exist, so the `>` creates it and nothing real is at risk. Do **not** point this
+> at `qa/`, which now holds a real vault-encrypted `secrets.yml` that `>` would
+> destroy. Cleanup is `rm` and **not** `git checkout --`, which fails on an
+> untracked file.
+>
+> Never type a real credential here. `hunter2` is [bash.org quote
+> #244](https://bash-org-archive.com/?244) — a 2004 IRC log where a user whose
+> client masks passwords as `*******` concludes that everyone's password displays
+> that way, and helpfully types his real one. It has been the internet's
+> universal obviously-fake password ever since, which is exactly why it belongs
+> here: nobody in the room mistakes it for a live credential.
 
 The secrets model in one breath: everything sensitive lives in one
 vault-encrypted `secrets.yml` per environment — connection credentials *and*
@@ -207,7 +242,7 @@ Merge the PR.
 **Dry run first — always:**
 
 ```bash
-ansible-playbook playbooks/validate.yml -i inventory --limit dev --vault-id dev@prompt
+ansible-playbook playbooks/validate.yml -i inventory --limit qa --vault-id qa@~/secrets/.vault_pass_qa
 ```
 
 `validate.yml` is `config.yml` in check mode. It reports what *would* change and
@@ -215,7 +250,7 @@ changes nothing. Read the intended changes out loud — this is the "no surprise
 promise, and it is what makes the pipeline safe to hand to someone junior.
 
 ```bash
-ansible-playbook playbooks/config.yml -i inventory --limit dev --vault-id dev@prompt
+ansible-playbook playbooks/config.yml -i inventory --limit qa --vault-id qa@~/secrets/.vault_pass_qa
 ```
 
 Now the payoff: **switch to the AAP UI and show the object**. Don't narrate it,
@@ -278,6 +313,25 @@ from this demo:
 [`docs/going-to-production.md`](docs/going-to-production.md) lists the
 workstreams, and [`docs/tam-adoption-plan.md`](docs/tam-adoption-plan.md) is a
 one-page plan to fill in with their TAM. Good leave-behinds.
+
+---
+
+## Screenshots to capture
+
+Not yet captured — grab these during the next rehearsal. They go in
+[`docs/images/`](docs/images/), committed so they render on GitHub, and they turn
+this script into something that still lands when the environment is down.
+
+| # | Act | The moment |
+|---|-----|-----------|
+| 1 | 4 | The object in the AAP UI, right after `config.yml` — the payoff, and the shot you cannot recreate later |
+| 2 | 4 | The second apply reporting `changed=0` — idempotence in one frame |
+| 3 | 3 | The five green checks on the PR in the Actions tab |
+| 4 | 3 | The pre-commit hook refusing the `hunter2` commit |
+| 5 | 2 | `/curate-config` running in Claude Code |
+
+Shots 1 and 2 are the ones to prioritize: they are the only two that need a live
+AAP, so they are the ones you lose if the environment is unreachable on the day.
 
 ---
 
