@@ -19,6 +19,18 @@ Two guards keep it honest, in the pre-commit hook and in CI:
   secrets that are not templated out. Review those in `exports/` locally and
   curate the values by hand (runbook 03); they never reach Git.
 
+## Naming: "AMZL" is Amazon Linux
+
+Objects named `AMZL Daily Demo - *` and inventories named `amzl-dailydemo*` refer
+to **Amazon Linux, the operating system**. They are demo-org content — an OS
+lifecycle story (provision an EC2 instance, patch to release, harden, add a
+devops user, deploy a Docker webserver, tear it down nightly).
+
+Noted here because `AMZL` is also the common abbreviation for Amazon Logistics,
+so a reviewer auditing this public repo for customer data will reasonably stop on
+it. It is not a customer name. Real customer names must never appear in tracked
+files — see [`CONTRIBUTING.md`](../CONTRIBUTING.md).
+
 ## Re-exporting: wipe first
 
 `filetree_create` only **writes** files — it never removes them. An object

@@ -13,9 +13,9 @@ skim [`README.md`](README.md) and [`ROADMAP.md`](ROADMAP.md).
 **Never commit:**
 
 - AAP tokens, passwords, OAuth tokens, or vault passwords
-- Customer or company names, RHDP deployment URLs, cluster/instance IDs, or other
-  identifying details — use generic placeholders (e.g.
-  `controller-<id>.apps.<cluster>.rhdp.net`)
+- Customer or company names, or any hostname that identifies a customer's estate
+  — use generic placeholders (e.g. `controller-<id>.apps.<cluster>.rhdp.net`)
+  in `.example` files and docs
 - Real values in exported credential files — they must stay `{{ vaulted_* }}`
 
 All secrets — connection credentials AND CaC object values — go in
@@ -23,6 +23,11 @@ vault-encrypted `inventory/group_vars/<env>/secrets.yml`. Non-secret connection
 settings (hostname, cert validation) go in the committed `connection.yml` in the
 same directory. Audit every diff before pushing. The pre-commit hook and CI run
 `utilities/check-vault-encrypted.sh` + `utilities/scan-exports.sh`.
+
+**Ephemeral lab URLs are fine to commit.** RHDP `*.redhatworkshops.io` hostnames
+and their cluster IDs identify a short-lived demo environment, not a customer, so
+they live in the real `connection.yml` as above. The rule is about *customer*
+identity, not about URLs in general.
 
 ## The Ansible standard that trips people up
 
