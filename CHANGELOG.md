@@ -60,6 +60,11 @@ All notable changes to this project are documented here. Format based on
   `dev` deliberately — now that `qa/secrets.yml` is real, `dev/` is the only env
   where the throwaway `>` cannot destroy anything. Adds a `hunter2` footnote and
   a screenshot capture list.
+- **Pre-login banner as code.** `inventory/group_vars/aap/gateway_settings.yml`
+  manages `custom_login_info` for every environment — the AAP sign-in banner,
+  and the most visible object in the repo: proving an apply landed needs a
+  logout, not navigation. Verified idempotent on qa (two consecutive applies
+  report the analytics change only).
 - **Automation Analytics as code, for every environment.**
   `inventory/group_vars/aap/controller_settings.yml` sets
   `INSIGHTS_TRACKING_STATE`, `AUTOMATION_ANALYTICS_URL`, the gather interval, and
