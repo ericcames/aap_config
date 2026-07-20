@@ -376,8 +376,27 @@ ansible-playbook playbooks/config.yml -i inventory --limit qa \
 Now the payoff: **switch to the AAP UI and show the object**. Don't narrate it,
 just show it.
 
-Then run the apply a second time and show it reports no changes — idempotence is
-what makes this safe to run on a schedule rather than a ceremony.
+If analytics is curated, the stronger payoff is **Automation Analytics →
+Automation Calculator** — real job-template data and a savings figure. That is an
+executive artifact, not a sysadmin one, and it lands with people who do not care
+what a project is.
+
+Then run the apply a second time. **Expect `changed=1`, not `changed=0`** — and
+say why before anyone asks:
+
+> AAP returns `SUBSCRIPTIONS_CLIENT_SECRET` as `$encrypted$` and never in the
+> clear, so config-as-code cannot compare what it wants against what is there.
+> It rewrites the secret every run. That one change is the platform refusing to
+> hand back a secret — not drift.
+
+Verified: remove that one line and two consecutive runs both report `changed=0`;
+leave it in and every run reports `changed=1`.
+
+Handled well this is a *better* moment than a clean `changed=0`, because it sets
+up the real point: **counting changes is not drift detection.** That is what
+`object_diff` is for — see [`docs/phase-3-plan.md`](docs/phase-3-plan.md). If you
+want the clean `changed=0` instead, drop `controller_settings.yml` from the
+curated set for that run; everything else in the kit is genuinely idempotent.
 
 Close the loop: in the real flow, merging to `main` triggers `deploy-dev.yml`
 automatically; qa and prod are `workflow_dispatch` with required reviewers on
@@ -476,7 +495,7 @@ this script into something that still lands when the environment is down.
 | # | Act | The moment |
 |---|-----|-----------|
 | 1 | 4 | The object in the AAP UI, right after `config.yml` — the payoff, and the shot you cannot recreate later |
-| 2 | 4 | The second apply reporting `changed=0` — idempotence in one frame |
+| 2 | 4 | The Automation Calculator with real savings data — the executive payoff |
 | 3 | 3 | The five green checks on the PR in the Actions tab |
 | 4 | 3 | The pre-commit hook refusing the `hunter2` commit |
 | 5 | 2 | `/curate-config` running in Claude Code |

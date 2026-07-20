@@ -1,0 +1,44 @@
+---
+# ============================================================================
+# group_vars/aap/controller_settings.yml — controller settings, EVERY env
+# ============================================================================
+# Curated by hand from exports/azure/controller_settings.yaml, which is
+# GITIGNORED because settings exports can embed SSO/client secrets that
+# secrets_as_variables does not template out. Only the keys below are tracked.
+#
+# AUTOMATION ANALYTICS. Uploading to console.redhat.com needs a Red Hat service
+# account. AAP never returns those values through the API — the export shows
+# them as "$encrypted$" — so the credentials CANNOT come from the export. They
+# come from each environment's vault-encrypted secrets.yml.
+#
+# REQUIRED IN EVERY ENVIRONMENT YOU APPLY TO. Because this file lives in
+# group_vars/aap/, it loads for every env under the `aap` group. Any env whose
+# secrets.yml does not define both variables below will fail the apply with an
+# undefined-variable error. See each env's secrets.yml.example.
+#
+#   vaulted_subscriptions_client_id
+#   vaulted_subscriptions_client_secret
+#
+# EXPECTED: THIS FILE MAKES EVERY APPLY REPORT changed=1.
+# AAP returns SUBSCRIPTIONS_CLIENT_SECRET as "$encrypted$" and never in the
+# clear, so the role cannot compare desired vs actual and rewrites it on every
+# run. Verified against qa: with the secret line removed, two consecutive runs
+# both report changed=0; with it present, every run reports changed=1.
+# This is not drift and not a bug — it is the platform refusing to hand back a
+# secret. It does mean "re-run it and nothing changes" is not literally true
+# while this file is managed; see DEMO.md, Act 4.
+#
+# DELIBERATELY NOT CURATED from the export — runtime state and identifying data,
+# not configuration. Committing these would re-assert stale values every apply:
+#   AUTOMATION_ANALYTICS_LAST_GATHER / _LAST_ENTRIES   (timestamps)
+#   LICENSE.*  (subscription_id, pool_id, account_number)
+#   SUBSCRIPTION_USAGE_MODEL, INSTALL_UUID
+# ============================================================================
+
+controller_settings_all:
+  settings:
+    INSIGHTS_TRACKING_STATE: true
+    AUTOMATION_ANALYTICS_URL: "https://cloud.redhat.com/api/ingress/v1/upload"
+    AUTOMATION_ANALYTICS_GATHER_INTERVAL: 14400
+    SUBSCRIPTIONS_CLIENT_ID: "{{ vaulted_subscriptions_client_id }}"
+    SUBSCRIPTIONS_CLIENT_SECRET: "{{ vaulted_subscriptions_client_secret }}"
