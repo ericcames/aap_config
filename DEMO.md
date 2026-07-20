@@ -121,6 +121,11 @@ and AAP 2.7 has no setting that marks the environment after login. Say "you see
 which environment you are entering before you touch anything," and do not claim
 a persistent banner. Someone in the room will check.
 
+Both extras land on the same screen, which is why this one shot carries the
+section — the shared banner and the qa-only badge, from two files that merged:
+
+![AAP qa sign-in page: the product lockup with an amber QA badge, above the authorized-users pre-login banner](docs/images/qa-signin-badge-banner.png)
+
 ### Preparing the target — required
 
 Two conditions must hold before you start: the **organization must exist**, and
@@ -328,6 +333,12 @@ Switch to the Actions tab and let five checks run in front of them:
 | `agents-md-fresh` | Docs drifting from the directory layout |
 | `skills-frontmatter` | An AI skill that would silently stop loading |
 
+![GitHub Actions run summary for the Lint workflow: yamllint, ansible-lint, secret-guards, skills-frontmatter and agents-md-fresh all green](docs/images/lint-checks-green.png)
+
+Worth saying out loud while it is on screen: the whole gate finishes in well
+under a minute of job time. Guardrails that cost a coffee break get disabled;
+these do not.
+
 Then the line that usually lands hardest — **try to commit a secret in front of
 them**:
 
@@ -403,6 +414,13 @@ If analytics is curated, the stronger payoff is **Automation Analytics →
 Automation Calculator** — real job-template data and a savings figure. That is an
 executive artifact, not a sysadmin one, and it lands with people who do not care
 what a project is.
+
+![AAP Automation Calculator: a bar chart of job templates by host count beside a total savings figure](docs/images/automation-calculator.png)
+
+The two input boxes — manual cost per hour and automated process cost — are
+theirs to argue with, and letting them change the numbers on the spot is better
+than defending yours. The template names are the demo's own, so the shape of the
+chart is the honest part: a long tail of routine work, priced.
 
 Then run the apply a second time. **Expect `changed=1`, not `changed=0`** — and
 say why before anyone asks:
@@ -511,20 +529,23 @@ one-page plan to fill in with their TAM. Good leave-behinds.
 
 ## Screenshots to capture
 
-Not yet captured — grab these during the next rehearsal. They go in
-[`docs/images/`](docs/images/), committed so they render on GitHub, and they turn
-this script into something that still lands when the environment is down.
+Three captured and embedded above, in Acts 2, 3 and 4. Grab the rest during the
+next rehearsal. They go in [`docs/images/`](docs/images/), committed so they
+render on GitHub, and they turn this script into something that still lands when
+the environment is down.
 
-| # | Act | The moment |
-|---|-----|-----------|
-| 1 | 4 | The object in the AAP UI, right after `config.yml` — the payoff, and the shot you cannot recreate later |
-| 2 | 4 | The Automation Calculator with real savings data — the executive payoff |
-| 3 | 3 | The five green checks on the PR in the Actions tab |
-| 4 | 3 | The pre-commit hook refusing the `hunter2` commit |
-| 5 | 2 | `/curate-config` running in Claude Code |
+| # | Act | The moment | Status |
+|---|-----|-----------|--------|
+| 0 | 2 | The qa sign-in page — badge and banner together | ✅ `qa-signin-badge-banner.png` |
+| 1 | 4 | The object in the AAP UI, right after `config.yml` — the payoff, and the shot you cannot recreate later |  |
+| 2 | 4 | The Automation Calculator with real savings data — the executive payoff | ✅ `automation-calculator.png` |
+| 3 | 3 | The five green checks on the PR in the Actions tab | ✅ `lint-checks-green.png` |
+| 4 | 3 | The pre-commit hook refusing the `hunter2` commit |  |
+| 5 | 2 | `/curate-config` running in Claude Code |  |
 
-Shots 1 and 2 are the ones to prioritize: they are the only two that need a live
-AAP, so they are the ones you lose if the environment is unreachable on the day.
+Shot 1 is the priority — the only one left that needs a live AAP, so it is the
+one you lose if the environment is unreachable on the day. Shots 4 and 5 are
+local and can be grabbed any time.
 
 ---
 
