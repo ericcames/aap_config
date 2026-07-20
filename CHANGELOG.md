@@ -60,6 +60,19 @@ All notable changes to this project are documented here. Format based on
   `dev` deliberately — now that `qa/secrets.yml` is real, `dev/` is the only env
   where the throwaway `>` cannot destroy anything. Adds a `hunter2` footnote and
   a screenshot capture list.
+- **Automation Analytics as code, for every environment.**
+  `inventory/group_vars/aap/controller_settings.yml` sets
+  `INSIGHTS_TRACKING_STATE`, `AUTOMATION_ANALYTICS_URL`, the gather interval, and
+  the service-account credentials, which resolve from each environment's vault as
+  `vaulted_subscriptions_client_id` / `_client_secret`. Both variables are now
+  **required** entries in all four `secrets.yml.example` templates, because
+  `group_vars/aap/` loads for every environment. Verified on qa: the Automation
+  Calculator returns real job-template and savings data.
+  **Known and expected:** this file makes every apply report `changed=1`. AAP
+  returns `SUBSCRIPTIONS_CLIENT_SECRET` as `$encrypted$`, so the role cannot
+  compare desired against actual and rewrites it each run. Proven by removing
+  that single line — two consecutive runs then report `changed=0`. Documented in
+  the file header and in DEMO.md's Act 4.
 - **First curated object: `aap_organizations_all`.**
   `inventory/group_vars/aap/aap_organizations.yml` manages the
   `IT Service Automation` organization as code, curated from
