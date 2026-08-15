@@ -7,6 +7,13 @@ All notable changes to this project are documented here. Format based on
 
 ### Added
 
+- **`docs/corporate-windows-dev-environment.md` — corporate Windows dev
+  environment guide.** Step-by-step guide for sysadmins setting up a local
+  Windows dev environment with WSL2 + a container runtime when Codespaces
+  cannot reach internal PAH and AAP endpoints. Covers the Red Hat downstream
+  Ansible Dev Tools image, dual-hub `~/.ansible.cfg` (customer PAH + Red Hat
+  Automation Hub), and the first export from a corporate AAP 2.7 instance.
+  Linked from `README.md`.
 - **Phase 0 scaffold.** New greenfield config-as-code starter kit for AAP 2.7.
   - `AGENTS.md` canonical AI/standards guidance, with thin `CLAUDE.md` and
     `.github/copilot-instructions.md` shims.
