@@ -13,8 +13,11 @@
     "ANSIBLE_FORCE_COLOR": "1"
   },
   "remoteEnv": {
-    "AH_TOKEN": "${localEnv:AH_TOKEN}"
+    "AH_TOKEN": "${localEnv:AH_TOKEN}",
+    "PAH_TOKEN": "${localEnv:PAH_TOKEN}",
+    "PAH_URL": "${localEnv:PAH_URL}"
   },
+  "customizations": {
   "customizations": {
     "vscode": {
       "extensions": [
@@ -24,7 +27,8 @@
         "GitHub.copilot-chat"
       ],
       "settings": {
-        "files.eol": "\n"
+        "files.eol": "\n",
+        "dev.containers.dockerPath": "podman"
       }
     }
   }
