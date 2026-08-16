@@ -1,12 +1,12 @@
 ---
 name: setup-workstation
-description: Get a person's laptop ready to use this kit — run the Windows WSL2 and virtualization preflight, sign in with gh, confirm a Copilot seat, set AH_TOKEN, and get either the WSL-native environment (recommended, currently working) or the VS Code dev container (work in progress) running. Use when someone is brand new to this repo, cannot get their environment to build or open, or is missing the accounts and tools the runbooks assume. Mirrors docs/runbooks/00-prerequisites.md and docs/runbooks/01-devcontainer.md.
+description: Get a person's laptop ready to use this kit — run the Windows WSL2 and virtualization preflight, sign in with gh, confirm a Copilot seat, set AH_TOKEN, and get either the WSL-native environment (recommended, currently working) or the VS Code dev container (work in progress) running. Use when someone is brand new to this repo, cannot get their environment to build or open, or is missing the accounts and tools the runbooks assume. Mirrors docs/runbooks/00-prerequisites.md and docs/runbooks/01-dev-environment.md.
 ---
 
 # Set up a workstation for this kit
 
 Follow the standards in `AGENTS.md`. This mirrors
-`docs/runbooks/00-prerequisites.md` and `docs/runbooks/01-devcontainer.md`.
+`docs/runbooks/00-prerequisites.md` and `docs/runbooks/01-dev-environment.md`.
 
 > **Status:** the devcontainer path (step 3, and "Reopen in Container" in step 6)
 > is a work in progress — it has needed several recent fixes and isn't fully

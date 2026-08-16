@@ -136,4 +136,4 @@ EOF
 fi
 
 echo
-echo "==> Done. Next step: open docs/runbooks/01-devcontainer.md"
+echo "==> Done. Next step: open docs/runbooks/02-export.md"

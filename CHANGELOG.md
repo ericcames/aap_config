@@ -58,6 +58,18 @@ All notable changes to this project are documented here. Format based on
 
 ### Changed
 
+- **Runbook 01 renamed `01-devcontainer.md` → `01-dev-environment.md`, and
+  WSL-native is now the primary documented path, devcontainer the secondary
+  (work-in-progress) one.** The devcontainer ("Reopen in Container") path has
+  needed several recent fixes (`remoteUser`, registry auth) and isn't fully
+  validated end-to-end. WSL-native — VS Code connected via WSL Remote, tooling
+  installed directly in the WSL2 distro, secrets kept in the WSL home
+  directory — is confirmed working and is what's actually used day-to-day.
+  Previously WSL-native only existed as an "Alternative" subsection near the
+  bottom of the devcontainer runbook, easy to lose track of. All cross-references
+  updated: `00-prerequisites.md`, the `setup-workstation` and
+  `setup-registry-auth` skills, and `docs/ai/PROMPTS.md`'s `#rb01` prompt (now
+  demonstrates cloning inside WSL + WSL Remote instead of "Reopen in Container").
 - **Dev container now builds on the Red Hat Ansible Dev Tools image.**
   `.devcontainer/Containerfile` bases on
   `registry.redhat.io/ansible-automation-platform-27/ansible-dev-tools-rhel9`

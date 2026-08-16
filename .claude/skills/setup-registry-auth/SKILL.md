@@ -1,13 +1,15 @@
 ---
 name: setup-registry-auth
-description: Authenticate with registry.redhat.io to pull the Ansible Dev Tools container image. Use when the dev container build fails with "unauthorized" errors, or before opening the dev container for the first time. Mirrors docs/runbooks/01-devcontainer.md.
+description: Authenticate with registry.redhat.io to pull the Ansible Dev Tools container image. Use when the dev container build fails with "unauthorized" errors, or before opening the dev container for the first time. Mirrors docs/runbooks/01-dev-environment.md.
 ---
 
 # Set up registry.redhat.io authentication
 
-Follow the standards in `AGENTS.md`. This mirrors
-`docs/runbooks/01-devcontainer.md` — specifically the registry authentication
-steps needed before the dev container can build.
+Follow the standards in `AGENTS.md`. This mirrors the devcontainer path in
+`docs/runbooks/01-dev-environment.md` — specifically the registry authentication
+steps needed before the dev container can build. Only relevant if you're on that
+(currently work-in-progress) path; the WSL-native path doesn't pull a container
+image at all.
 
 ## What this does
 
