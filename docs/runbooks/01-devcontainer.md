@@ -11,9 +11,9 @@
 
 ## You will need
 
-Runbook 00 complete (GitHub login, container runtime, VS Code). If you prefer a
-plain terminal without VS Code, see the **devcontainer CLI** alternative at the
-end of [runbook 00](00-prerequisites.md#alternative-no-vs-code-devcontainer-cli).
+Runbook 00 complete (GitHub login, VS Code) — plus a container runtime if you're
+using the devcontainer path below, which isn't required for the
+[WSL-native path](#alternative-wsl-native-no-container).
 
 ## You will learn
 
@@ -47,8 +47,7 @@ you get the same toolchain Red Hat ships to customers — `ansible-core`,
    re-run `bash .devcontainer/post-create.sh` later, from either path.)*
 
    > No prompt appeared? That is the good case — it only asks when `AH_TOKEN` is
-   > unset. In [Codespaces](../codespaces.md) with the secret configured, or
-   > locally if you exported the variable before launching VS Code, the
+   > unset. If you exported the variable before launching VS Code, the
    > collections install unattended.
 
    The simple, single-token case (no customer Private Automation Hub — see

@@ -5,13 +5,20 @@
 
 ## You will need
 
+Needed either way:
 - A **GitHub account** with access to your enterprise organization, and **GitHub
   Copilot** (a seat — we check it below).
-- **Docker Desktop** *or* **Podman Desktop** on your Windows machine.
-- **VS Code** with the **Dev Containers** extension.
+- An **SSH key added to GitHub**, if you clone over SSH rather than HTTPS (see
+  step 3 below).
+- **VS Code**.
 - A **Red Hat login** for Automation Hub (or your org's private hub URL + token).
 - **AAP connection details** for the production (Azure) instance: URL, a service
   account username, and password.
+
+Needed only for the devcontainer path (currently work in progress — see
+[runbook 01](01-devcontainer.md)):
+- **Docker Desktop** *or* **Podman Desktop** on your Windows machine.
+- The VS Code **Dev Containers** extension.
 
 ## You will learn
 
@@ -28,9 +35,7 @@ Run this check **first**, before installing a container engine. It takes two
 minutes and tells you whether this desktop can use the local dev-container path
 or needs the fallback further down.
 
-> Not on Windows? Skip this section — see
-> [Running on Fedora with Podman](#running-on-fedora-with-podman) (or your
-> platform's container setup) instead.
+> Not on Windows? Skip this section — it's specific to Windows/WSL2.
 
 ### Run the checks
 
@@ -93,13 +98,8 @@ below.
 
 **WSL2 and Hyper-V are blocked by policy or firmware** → the local dev-container
 path will not work on this desktop. Do not invest in the local setup; switch to
-one of these instead:
-
-- **[GitHub Codespaces](../codespaces.md)** — the same `.devcontainer` runs in
-  the cloud with no local engine, WSL, or admin rights required. This is the
-  smoothest fallback because the kit's dev container config is reused as-is.
-- **A shared Linux dev host** — a jump host or VM (for example RHEL or Fedora)
-  where users run the dev container, or the tooling directly, over SSH.
+a **shared Linux dev host** instead — a jump host or VM (for example RHEL) where
+users run the dev container, or the tooling directly, over SSH.
 
 Decide this **before** building out the local runbook flow, so a desktop that
 can never run the container is caught at the start rather than midway through.
@@ -128,29 +128,38 @@ foreach ($f in $feat) { "  Feature $($f.FeatureName) : $($f.State)" }
 "  Admin rights      : $(if ($adm) { 'PASS' } else { 'NOT ELEVATED (re-run as admin to be sure)' })"
 ```
 
-Example output from a passing desktop (per-feature `Enabled`/`Disabled` lines
-appear between "Virtualization" and "WSL command" once both features report
-`Enabled`):
+Example output from a passing desktop:
 
 ```text
-aap_config dev-container preflight — 2026-08-16T07:04:59
+aap_config dev-container preflight — 2026-08-16T07:38:20
   OS                : Microsoft Windows 11 Pro build 26200
   Virtualization    : PASS (hypervisor present)
   WSL command       : PASS
+  Feature Microsoft-Windows-Subsystem-Linux : Disabled
+  Feature VirtualMachinePlatform : Enabled
   WSL group policy  : PASS (no policy block)
   Admin rights      : PASS
 ```
 
-Any `FAIL` on virtualization or the WSL policy key means this desktop needs
-Codespaces or a shared Linux host, not a local container engine. Send the block
-as-is — it says exactly which control is blocking, which is what IT needs to act
-on.
+Note the `Microsoft-Windows-Subsystem-Linux` optional feature can show
+`Disabled` even on a desktop where WSL2 is installed and working fine (`WSL
+command: PASS`, and you can be actively running a distro) — modern
+Store-distributed WSL doesn't always depend on that legacy optional feature the
+way older in-box WSL did. Treat `WSL command: PASS` plus a distro you can
+actually `wsl` into as the real signal; don't chase this specific `Disabled` if
+everything else already works.
+
+Any `FAIL` on virtualization or the WSL policy key means this desktop needs a
+shared Linux host, not a local container engine. Send the block as-is — it says
+exactly which control is blocking, which is what IT needs to act on.
 
 ## Steps
 
-1. **Install a container runtime.** Docker Desktop is simplest; Podman Desktop is
-   the license-free alternative. If you use Podman, set VS Code setting
-   `dev.containers.dockerPath` to `podman`.
+1. **(Devcontainer path only, currently WIP) Install a container runtime.**
+   Docker Desktop is simplest; Podman Desktop is the license-free alternative.
+   If you use Podman, set VS Code setting `dev.containers.dockerPath` to
+   `podman`. Skip this if you're going WSL-native (see runbook 01) — the
+   working path today.
 
    > The dev container is built on Red Hat's Ansible Dev Tools image from
    > `registry.redhat.io`, which pulls **without a login**. If your network
@@ -160,8 +169,10 @@ on.
    > podman login registry.redhat.io     # or: docker login registry.redhat.io
    > ```
 
-2. **Install VS Code + the Dev Containers extension** (and, when prompted later,
-   the GitHub Copilot extensions).
+2. **Install VS Code** (and, when prompted later, the GitHub Copilot
+   extensions). The **Dev Containers** extension is only needed for the
+   devcontainer path; the WSL-native path uses the built-in **WSL** extension
+   instead.
 
    ![VS Code Extensions panel showing GitHub Copilot Chat installed and enabled on "WSL: podman-AAP"; the WSL Remote indicator is also visible in the bottom-left status bar](../images/vscode-copilot-extension-wsl.png)
 
@@ -180,6 +191,19 @@ on.
 
    Pick **Login with a web browser** — it prints a one-time code and a URL to open,
    then finishes once you approve it in the browser.
+
+   **If you clone over SSH instead of HTTPS**, generate a key and add it to
+   GitHub. Do this **inside WSL** (not on the Windows side) — same reasoning as
+   keeping `~/.ansible.cfg` and vault passwords WSL-native: it stays local to
+   this machine, not synced anywhere:
+   ```bash
+   ssh-keygen -t ed25519 -C "you@example.com"   # accept the default path, set a passphrase
+   cat ~/.ssh/id_ed25519.pub
+   ```
+   Copy the printed line and paste it in at
+   [github.com/settings/keys](https://github.com/settings/keys) → **New SSH
+   key**. (Or skip the copy-paste: `gh ssh-key add ~/.ssh/id_ed25519.pub --title
+   "aap_config WSL"` does the same thing from the CLI.)
 
 4. **Check your Copilot seat:**
    ```bash
@@ -213,7 +237,8 @@ on.
 
 `gh auth status` shows you logged in. `gh api /user/copilot_billing` returning seat
 details confirms an org-assigned plan; a 404 is fine too if Copilot Chat/CLI work in
-practice (see step 4 above). Docker/Podman Desktop is running.
+practice (see step 4 above). Docker/Podman Desktop is running, if you're on the
+devcontainer path.
 
 ```text
 $ gh auth status
@@ -304,108 +329,5 @@ Why it is shaped that way:
 > never committed, and this repo ships **no project-local `ansible.cfg`** — that
 > would shadow the real one and break collection installs. See
 > [AGENTS.md](../../AGENTS.md).
-
-## Running on Fedora with Podman
-
-The dev container runs the same on Fedora as on Windows — the export tooling
-lives inside the container, so the runbooks all apply unchanged. There are three
-one-time host setup steps and one thing to be aware of.
-
-### 1. Use Podman as the container engine
-
-Fedora Workstation usually ships Podman already. Confirm with `podman --version`;
-if it is missing, install it with `sudo dnf install -y podman`. You do not need
-Podman Desktop — the CLI is enough.
-
-Tell VS Code to use Podman instead of Docker. In *Settings* (JSON or UI), set:
-
-```json
-"dev.containers.dockerPath": "podman"
-```
-
-### 2. Export your Automation Hub token before opening the container
-
-[`.devcontainer/devcontainer.json`](../../.devcontainer/devcontainer.json) passes
-`AH_TOKEN` from your host shell into the container, and
-[`post-create.sh`](../../.devcontainer/post-create.sh) uses it to install the
-certified collections. If the token is not set, the setup script prompts for it —
-and if you leave the prompt blank, it skips the collections and you cannot run
-the export.
-
-Set it in the shell you launch VS Code from, then start VS Code from that same
-shell so it inherits the value:
-
-```bash
-export AH_TOKEN='paste-your-token-here'
-code .
-```
-
-Get a token at console.redhat.com → Automation Hub → API token. To avoid doing
-this every time, add the `export` line to your `~/.bashrc` (note: this stores the
-token in a plaintext dotfile — only do it on a machine you trust).
-
-One token covers both Automation Hub endpoints the kit uses: certified content
-(`content/published/`, for `ansible.platform` and `ansible.controller`) and
-validated content (`content/validated/`, for the `infra.aap_configuration*`
-roles). If you point at a customer's private hub, override them with
-`AH_CERTIFIED_URL` and `AH_VALIDATED_URL` in the same shell.
-
-### 3. SELinux and bind mounts
-
-Fedora runs SELinux in enforcing mode. Podman relabels the mounted repo
-automatically, so this normally just works. If the container cannot read the repo
-files, an SELinux mount label is the usual cause — check `podman` mount flags
-before anything else.
-
-### File ownership note
-
-Because the container runs as a non-root user (`USER default`, uid 1001, in
-[`.devcontainer/Containerfile`](../../.devcontainer/Containerfile)), rootless
-Podman maps it into a high subuid range, and files it writes into the
-bind-mounted repo (for example under `exports/`) can end up owned by an
-unexpected UID on the host. If you hit that, add this to your **local,
-uncommitted** copy of `.devcontainer/devcontainer.json`:
-
-```json
-"runArgs": ["--userns=keep-id"]
-```
-
-Do not commit that line — it is Podman-specific and would break the Windows and
-Docker users this kit targets.
-
-## Alternative: no VS Code (devcontainer CLI)
-
-If you prefer a plain terminal over VS Code, you can build and enter the dev
-container using the **devcontainer CLI**. Everything works the same — you just
-won't get VS Code extensions (Ansible language server, Copilot inline
-completions). AI Assist prompts still work via Copilot Chat in the terminal
-(`gh copilot`) or Claude Code.
-
-1. **Install Node.js** (needed for the CLI):
-   ```powershell
-   winget install OpenJS.NodeJS
-   ```
-2. **Install the devcontainer CLI:**
-   ```powershell
-   npm install -g @devcontainers/cli
-   ```
-3. **Set your Automation Hub token** so it passes into the container:
-   ```powershell
-   setx AH_TOKEN "your-token-from-console.redhat.com"
-   ```
-   Restart your terminal after `setx`.
-4. **Clone and launch:**
-   ```powershell
-   gh repo clone <your-org>/aap_config
-   cd aap_config
-   devcontainer up --workspace-folder .
-   devcontainer exec --workspace-folder . bash
-   ```
-5. Inside the container, verify setup:
-   ```bash
-   ansible --version
-   ansible-galaxy collection list | grep infra.aap_configuration
-   ```
-   Then continue from [runbook 02](02-export.md).
 
 Next: [01-devcontainer.md](01-devcontainer.md).
