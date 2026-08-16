@@ -1,0 +1,10 @@
+---
+gateway_authenticators:
+  - name: "Local Database Authenticator"
+    enabled: true
+    create_objects: true
+    remove_users: false
+    configuration: "{'fallback_authentication': ['aap_gateway_api.authentication.fallbacks.controller']}"
+    type: "ansible_base.authentication.authenticator_plugins.local"
+    order: "1"
+...

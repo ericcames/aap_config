@@ -1,0 +1,10 @@
+---
+controller_inventories:
+  - name: "Sales Demo VMs - Control"
+    description: |-
+      {%- raw -%}
+      Control hosts only. Teardown runs here so it can delete VM hosts from Sales Demo VMs without AAP''s running-job lock.
+      {%- endraw -%}
+    organization: "IT Service Automation"
+    prevent_instance_group_fallback: false
+...

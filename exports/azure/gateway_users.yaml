@@ -1,0 +1,28 @@
+---
+aap_user_accounts:
+  - username: admin
+    email: test@example.com
+    first_name: ''
+    last_name: ''
+    password: '{{ vaulted_gateway_users_admin_password }}'
+    is_superuser: true
+    authenticators:
+      - 1
+    authenticator_uid: admin
+  - username: aap_operator_service_account
+    email: test@example.com
+    first_name: ''
+    last_name: ''
+    password: '{{ vaulted_gateway_users_aap_operator_service_account_password }}'
+    is_superuser: true
+    authenticators: []
+    authenticator_uid: ''
+  - username: apd-admin
+    email: apd-admin@example.com
+    first_name: ''
+    last_name: ''
+    password: '{{ vaulted_gateway_users_apd-admin_password }}'
+    is_superuser: false
+    authenticators: []
+    authenticator_uid: ''
+...

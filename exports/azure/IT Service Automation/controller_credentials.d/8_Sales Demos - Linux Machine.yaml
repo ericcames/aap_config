@@ -1,0 +1,14 @@
+---
+controller_credentials:
+  - name: "Sales Demos - Linux Machine"
+    description: |-
+      {%- raw -%}
+      SSH into demo RHEL VMs over in-cluster DNS. Private half of demo_ssh_public_key.
+      {%- endraw -%}
+    credential_type: "Machine"
+    organization: "IT Service Automation"
+    inputs:
+      username: cloud-user
+      ssh_key_data: "{{ vaulted_controller_credentials_sales_demos___linux_machine_ssh_key_data }}"
+
+...

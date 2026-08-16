@@ -1,0 +1,20 @@
+---
+controller_projects:
+  - name: "Sales Demos"
+    description: |-
+      {%- raw -%}
+      sales.demos — OpenShift Virtualization demo platform
+      {%- endraw -%}
+    organization: "IT Service Automation"
+    scm_type: "git"
+    scm_url: "https://github.com/ericcames/sales.demos.git"
+    scm_branch: "main"
+    scm_clean: true
+    scm_delete_on_update: false
+    scm_update_on_launch: false
+    scm_update_cache_timeout: "0"
+    scm_refspec: ""
+    allow_override: false
+    update_project: false
+    timeout: "0"
+...

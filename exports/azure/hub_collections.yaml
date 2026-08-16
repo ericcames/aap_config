@@ -1,0 +1,555 @@
+---
+hub_collections:
+  - name: zabbix
+    namespace: zabbix
+  - name: ziacloud
+    namespace: zscaler
+  - name: zpacloud
+    namespace: zscaler
+  - name: alb
+    namespace: vmware
+  - name: vyos
+    namespace: vyos
+  - name: remote
+    namespace: wti
+  - name: qingteng_host
+    namespace: verticetech
+  - name: vmware
+    namespace: vmware
+  - name: vmware_rest
+    namespace: vmware
+  - name: vsp
+    namespace: virsec
+  - name: machine_identity
+    namespace: venafi
+  - name: trilio_kubernetes
+    namespace: trilio
+  - name: deepsec
+    namespace: trendmicro
+  - name: ciphertrust
+    namespace: thalesgroup
+  - name: opa
+    namespace: styra
+  - name: itsi
+    namespace: splunk
+  - name: es
+    namespace: splunk
+  - name: itsm
+    namespace: servicenow
+  - name: enterprise
+    namespace: splunk
+  - name: sensu_go
+    namespace: sensu
+  - name: smartcs
+    namespace: seiko
+  - name: hypercore
+    namespace: scale_computing
+  - name: trusted_profile_analyzer
+    namespace: redhat
+  - name: satellite_operations
+    namespace: redhat
+  - name: sap_operations
+    namespace: sap
+  - name: sso
+    namespace: redhat
+  - name: sap_install
+    namespace: redhat
+  - name: satellite
+    namespace: redhat
+  - name: sap_infrastructure
+    namespace: redhat
+  - name: rhel_system_roles
+    namespace: redhat
+  - name: runtimes_common
+    namespace: redhat
+  - name: rhel_idm
+    namespace: redhat
+  - name: rhv
+    namespace: redhat
+  - name: redhat_csp_download
+    namespace: redhat
+  - name: rhbk
+    namespace: redhat
+  - name: leapp
+    namespace: redhat
+  - name: quarkus
+    namespace: redhat
+  - name: jws
+    namespace: redhat
+  - name: jbcs
+    namespace: redhat
+  - name: openshift_virtualization
+    namespace: redhat
+  - name: openshift
+    namespace: redhat
+  - name: radware_alteon
+    namespace: radware
+  - name: insights
+    namespace: redhat
+  - name: eap
+    namespace: redhat
+  - name: insights_eda
+    namespace: redhat
+  - name: edge_manager
+    namespace: redhat
+  - name: artifact_signer
+    namespace: redhat
+  - name: data_grid
+    namespace: redhat
+  - name: amq_broker
+    namespace: redhat
+  - name: amq_streams
+    namespace: redhat
+  - name: alteon
+    namespace: radware
+  - name: ai
+    namespace: redhat
+  - name: pure1
+    namespace: purestorage
+  - name: panos
+    namespace: paloaltonetworks
+  - name: flashblade
+    namespace: purestorage
+  - name: flasharray
+    namespace: purestorage
+  - name: bmc
+    namespace: phoenixnap
+  - name: os_migrate
+    namespace: os_migrate
+  - name: vmware_migration_kit
+    namespace: os_migrate
+  - name: cluster_v3
+    namespace: opensvc
+  - name: aap
+    namespace: neubird
+  - name: om
+    namespace: opengear
+  - name: ncp
+    namespace: nutanix
+  - name: nautobot
+    namespace: networktocode
+  - name: cluster
+    namespace: opensvc
+  - name: connect
+    namespace: onepassword
+  - name: srlinux
+    namespace: nokia
+  - name: nvue
+    namespace: nvidia
+  - name: adc
+    namespace: netscaler
+  - name: console
+    namespace: netscaler
+  - name: ontap
+    namespace: netapp
+  - name: netbox
+    namespace: netbox
+  - name: um_info
+    namespace: netapp
+  - name: azure
+    namespace: netapp
+  - name: wsl
+    namespace: microsoft
+  - name: storagegrid
+    namespace: netapp
+  - name: aws
+    namespace: netapp
+  - name: cloudmanager
+    namespace: netapp
+  - name: scom
+    namespace: microsoft
+  - name: sql
+    namespace: microsoft
+  - name: scvmm
+    namespace: microsoft
+  - name: iis
+    namespace: microsoft
+  - name: sdp_cloud
+    namespace: manageengine
+  - name: mecm
+    namespace: microsoft
+  - name: oob
+    namespace: lantronix
+  - name: ad
+    namespace: microsoft
+  - name: hyperv
+    namespace: microsoft
+  - name: integration
+    namespace: logicmonitor
+  - name: edwin_ai
+    namespace: logicmonitor
+  - name: universal_ddi
+    namespace: infoblox
+  - name: eda
+    namespace: juniper
+  - name: lmos
+    namespace: lantronix
+  - name: core
+    namespace: kubernetes
+  - name: device
+    namespace: juniper
+  - name: ispim
+    namespace: inspur
+  - name: apstra
+    namespace: juniper
+  - name: junos
+    namespace: junipernetworks
+  - name: ansible_eda
+    namespace: kentik
+  - name: nios_modules
+    namespace: infoblox
+  - name: turbonomic_eda
+    namespace: ibm
+  - name: storage_virtualize
+    namespace: ibm
+  - name: infinibox
+    namespace: infinidat
+  - name: spectrum_virtualize
+    namespace: ibm
+  - name: power_ibmi
+    namespace: ibm
+  - name: power_hmc
+    namespace: ibm
+  - name: qradar
+    namespace: ibm
+  - name: power_vios
+    namespace: ibm
+  - name: power_aix
+    namespace: ibm
+  - name: isam
+    namespace: ibm
+  - name: instana
+    namespace: ibm
+  - name: ibm_zosmf
+    namespace: ibm
+  - name: vspone_block
+    namespace: hitachivantara
+  - name: ibm_zos_sysauto
+    namespace: ibm
+  - name: ibm_zos_ims
+    namespace: ibm
+  - name: ibm_zhmc
+    namespace: ibm
+  - name: ibm_zos_cics
+    namespace: ibm
+  - name: ibm_zos_core
+    namespace: ibm
+  - name: oneview
+    namespace: hpe
+  - name: ilo
+    namespace: hpe
+  - name: vault
+    namespace: hashicorp
+  - name: vspone_object
+    namespace: hitachivantara
+  - name: comware
+    namespace: h3c_open
+  - name: cloud
+    namespace: google
+  - name: fortios
+    namespace: fortinet
+  - name: metricstream_grc
+    namespace: mlowcher61
+  - name: aap_as_code_start_kit
+    namespace: ericcames
+  - name: satellite_dailydemo
+    namespace: ericcames
+  - name: linux_daily_demo
+    namespace: ericcames
+  - name: panos_daily_demo
+    namespace: ericcames
+  - name: f5_daily_demo
+    namespace: ericcames
+  - name: windows_daily_demo
+    namespace: ericcames
+  - name: rapid7_vulnerability
+    namespace: mlowcher61
+  - name: netskope
+    namespace: mlowcher61
+  - name: ivanti_itsm
+    namespace: mlowcher61
+  - name: appviewx_certplus
+    namespace: mlowcher61
+  - name: aap_as_code
+    namespace: ericcames
+  - name: f5dailydemo
+    namespace: ericcames
+  - name: hashicorp_daily_demo
+    namespace: ericcames
+  - name: demo_datacenter
+    namespace: ericcames
+  - name: terraform
+    namespace: hashicorp
+  - name: control
+    namespace: gluware_inc
+  - name: fortimanager
+    namespace: fortinet
+  - name: fortiswitch
+    namespace: fortinet
+  - name: frr
+    namespace: frr
+  - name: fortisase
+    namespace: fortinet
+  - name: fmgdevice
+    namespace: fortinet
+  - name: fortianalyzer
+    namespace: fortinet
+  - name: f5os
+    namespace: f5networks
+  - name: flasharray
+    namespace: everpure
+  - name: crypto
+    namespace: entrust
+  - name: fortiflexvm
+    namespace: fortinet
+  - name: flashblade
+    namespace: everpure
+  - name: f5_modules
+    namespace: f5networks
+  - name: f5_bigip
+    namespace: f5networks
+  - name: next
+    namespace: f5networks
+  - name: pure1
+    namespace: everpure
+  - name: epas_postgresql
+    namespace: edb
+  - name: event_driven_ansible
+    namespace: dynatrace
+  - name: powerha_aix
+    namespace: enfence
+  - name: oneagent
+    namespace: dynatrace
+  - name: powerstore
+    namespace: dellemc
+  - name: unity
+    namespace: dellemc
+  - name: powerscale
+    namespace: dellemc
+  - name: powermax
+    namespace: dellemc
+  - name: vplex
+    namespace: dellemc
+  - name: powerflex
+    namespace: dellemc
+  - name: os10
+    namespace: dellemc
+  - name: enterprise_sonic
+    namespace: dellemc
+  - name: pas
+    namespace: delinea
+  - name: openmanage
+    namespace: dellemc
+  - name: ss
+    namespace: delinea
+  - name: conjur
+    namespace: cyberark
+  - name: pas
+    namespace: cyberark
+  - name: dd
+    namespace: datadog
+  - name: isp
+    namespace: cyberark
+  - name: platform
+    namespace: confluent
+  - name: falcon
+    namespace: crowdstrike
+  - name: nd
+    namespace: cisco
+  - name: adc
+    namespace: citrix
+  - name: dataprotect
+    namespace: cohesity
+  - name: terraform
+    namespace: cloud
+  - name: meraki
+    namespace: cisco
+  - name: nxos
+    namespace: cisco
+  - name: mso
+    namespace: cisco
+  - name: catalyst_center_iac
+    namespace: cisco
+  - name: common
+    namespace: cloud
+  - name: ise
+    namespace: cisco
+  - name: dnac
+    namespace: cisco
+  - name: iosxr
+    namespace: cisco
+  - name: intersight
+    namespace: cisco
+  - name: catalystcenter
+    namespace: cisco
+  - name: ios
+    namespace: cisco
+  - name: dcnm
+    namespace: cisco
+  - name: asa
+    namespace: cisco
+  - name: aci
+    namespace: cisco
+  - name: chocolatey
+    namespace: chocolatey
+  - name: azcollection
+    namespace: azure
+  - name: core
+    namespace: avantra
+  - name: gaia
+    namespace: check_point
+  - name: automatics
+    namespace: automatics_ai
+  - name: mgmt
+    namespace: check_point
+  - name: incident
+    namespace: bigpanda
+  - name: cvp
+    namespace: arista
+  - name: eos
+    namespace: arista
+  - name: aoscx
+    namespace: arubanetworks
+  - name: dmf
+    namespace: arista
+  - name: avd
+    namespace: arista
+  - name: yang
+    namespace: ansible
+  - name: windows
+    namespace: ansible
+  - name: utils
+    namespace: ansible
+  - name: tower
+    namespace: ansible
+  - name: mariadb
+    namespace: ansible
+  - name: snmp
+    namespace: ansible
+  - name: security
+    namespace: ansible
+  - name: scm
+    namespace: ansible
+  - name: posix
+    namespace: ansible
+  - name: receptor
+    namespace: ansible
+  - name: aap_snapshot
+    namespace: ansible
+  - name: network
+    namespace: ansible
+  - name: netcommon
+    namespace: ansible
+  - name: platform
+    namespace: ansible
+  - name: mcp
+    namespace: ansible
+  - name: mysql
+    namespace: ansible
+  - name: controller
+    namespace: ansible
+  - name: hub
+    namespace: ansible
+  - name: aws
+    namespace: amazon
+  - name: secrets_management
+    namespace: akeyless
+  - name: eda
+    namespace: ansible
+  - name: ai
+    namespace: amazon
+  - name: panos_policy_automation
+    namespace: paloaltonetworks
+  - name: vpn
+    namespace: network
+  - name: telemetry
+    namespace: network
+  - name: healthchecks
+    namespace: network
+  - name: meraki_ops
+    namespace: network
+  - name: ospf
+    namespace: network
+  - name: inventory_reports
+    namespace: network
+  - name: interfaces
+    namespace: network
+  - name: offline_migration_sdn_to_ovnk
+    namespace: network
+  - name: base
+    namespace: network
+  - name: openshift_virtualization_ops
+    namespace: infra
+  - name: support_assist
+    namespace: infra
+  - name: backup
+    namespace: network
+  - name: bgp
+    namespace: network
+  - name: windows_ops
+    namespace: infra
+  - name: acls
+    namespace: network
+  - name: rhacs_configuration
+    namespace: infra
+  - name: eda_configuration
+    namespace: infra
+  - name: satellite_configuration
+    namespace: infra
+  - name: middleware_ocpv
+    namespace: infra
+  - name: mecm_ops
+    namespace: infra
+  - name: terraform_ops
+    namespace: cloud
+  - name: osbuild
+    namespace: infra
+  - name: leapp
+    namespace: infra
+  - name: openshift_virtualization_migration
+    namespace: infra
+  - name: lvm_snapshots
+    namespace: infra
+  - name: f5_eda_security
+    namespace: f5networks
+  - name: ee_utilities
+    namespace: infra
+  - name: controller_configuration
+    namespace: infra
+  - name: ah_configuration
+    namespace: infra
+  - name: convert2rhel
+    namespace: infra
+  - name: aap_configuration_extended
+    namespace: infra
+  - name: aap_configuration
+    namespace: infra
+  - name: ibm_eda_zos
+    namespace: ibm
+  - name: ansible_rekey_variables
+    namespace: infra
+  - name: ai
+    namespace: infra
+  - name: splunk_otel_collector
+    namespace: cisco
+  - name: aap_utilities
+    namespace: infra
+  - name: azure_ops
+    namespace: cloud
+  - name: microshift
+    namespace: edge
+  - name: f5_platform_modernization
+    namespace: f5networks
+  - name: vmware_ops
+    namespace: cloud
+  - name: cvd_compute
+    namespace: cisco
+  - name: aws_troubleshooting
+    namespace: cloud
+  - name: gcp_ops
+    namespace: cloud
+  - name: aws_ops
+    namespace: cloud
+  - name: mcp_builder
+    namespace: ansible
+...

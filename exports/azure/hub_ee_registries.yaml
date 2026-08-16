@@ -1,0 +1,13 @@
+---
+hub_ee_registries:
+  - name: quay_io
+    url: https://quay.io
+    policy: immediate
+    tls_validation: true
+    client_cert: ""
+    ca_cert: ""
+    download_concurrency: ""
+    proxy_url: ""
+    rate_limit: ""
+    is_indexable: ""
+...

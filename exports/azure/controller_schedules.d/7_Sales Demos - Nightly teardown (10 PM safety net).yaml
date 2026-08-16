@@ -1,0 +1,24 @@
+---
+controller_schedules:
+  - name: "Sales Demos - Nightly teardown (10 PM safety net)"
+    description: |-
+      {%- raw -%}
+      Second sweep at 10 PM America/Phoenix — catches VMs created after the 6 PM run.
+      {%- endraw -%}
+    enabled: true
+    unified_job_template: "Sales Demos - Teardown VMs"
+    inventory: "Sales Demo VMs - Control"
+    dtstart: "2026-08-11T05:00:00Z"
+    dtend: ""
+    timezone: "America/Phoenix"
+    rrule: "DTSTART;TZID=America/Phoenix:20260810T220000 RRULE:FREQ=DAILY;INTERVAL=1"
+    scm_branch: ""
+    forks: 0
+    job_slice_count: 0
+    timeout: 0
+    job_type: ""
+    job_tags: ""
+    skip_tags: ""
+    limit: ""
+    verbosity: 0
+...
