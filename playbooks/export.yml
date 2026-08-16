@@ -80,19 +80,20 @@
 
         - name: Run filetree_create (controller + gateway scope only)
           vars:
-            aap_oauthtoken: "{{ aap_token.token }}"
+            aap_oauthtoken: "{{ export_token.token }}"
             output_path: "{{ playbook_dir }}/../exports/{{ export_name | default(env_name) }}"
-            # Aggregate tags — both are valid per the role's valid_tags. No
-            # hub/EDA in this kit's scope.
+            # Aggregate tags — include hub objects in exports.
             input_tag:
               - controller
               - gateway
+              - hub
             # Workaround: include_role evaluates tags: at parse time, before
             # the role's defaults load. Pass valid_tags explicitly.
             valid_tags:
               - all
               - controller
               - gateway
+              - hub
             # Emit {{ vaulted_* }} placeholders for secret fields, never values.
             secrets_as_variables: true
             # Keep the per-organization tree; it is easier to review than a flat
@@ -105,9 +106,9 @@
           ansible.platform.token:
             aap_hostname: "{{ aap_hostname }}"
             aap_validate_certs: "{{ aap_validate_certs }}"
-            existing_token: "{{ aap_token }}"
+            existing_token: "{{ export_token.token }}"
             state: absent
-          when: aap_token is defined
+          when: export_token is defined
 
     - name: Tell the trainee what to do next
       ansible.builtin.debug:
