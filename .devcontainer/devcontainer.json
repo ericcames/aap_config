@@ -1,13 +1,9 @@
 {
-  "name": "AAP Config-as-Code",
+  "name": "AAP Config-as-Code (Ansible Dev Tools)",
   "build": {
     "dockerfile": "Containerfile"
   },
-  "features": {
-    "ghcr.io/devcontainers/features/node:1": {
-      "version": "22"
-    }
-  },
+  "remoteUser": "podman",
   "postCreateCommand": "bash .devcontainer/post-create.sh",
   "containerEnv": {
     "ANSIBLE_FORCE_COLOR": "1"
@@ -17,7 +13,6 @@
     "PAH_TOKEN": "${localEnv:PAH_TOKEN}",
     "PAH_URL": "${localEnv:PAH_URL}"
   },
-  "customizations": {
   "customizations": {
     "vscode": {
       "extensions": [

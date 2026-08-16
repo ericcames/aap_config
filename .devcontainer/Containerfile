@@ -1,38 +1,59 @@
 # ============================================================================
 # .devcontainer/Containerfile — aap_config dev container
 # ============================================================================
-# A lightweight Ansible control node for running the export/config playbooks as
-# LOCAL API calls. Deliberately NOT an execution-environment and NOT
-# ansible-navigator: everything here is connection: local, and EE-in-container on
-# Docker/Podman Desktop for Windows is the #1 support burden for this audience.
-# Execution environments are introduced conceptually later (runbook 10).
+# Base: the Red Hat Ansible Automation Platform 2.7 Ansible Dev Tools image.
+# It already ships ansible-core, ansible-lint, yamllint, ansible-navigator,
+# ansible-creator, molecule, ansible-builder and the rest of the ADT set, so
+# this file only layers the handful of things ADT leaves out.
 #
-# Base: Red Hat UBI9 + Python 3.12 (matches the Red Hat platform story).
+# WHY THIS IMAGE, given the warning that used to live here. An earlier revision
+# of this file deliberately avoided ADT ("NOT an execution-environment, NOT
+# ansible-navigator") because EE-in-container on Docker/Podman Desktop for
+# Windows is the #1 support burden for this audience. That reasoning still
+# holds — and this change does not contradict it. ADT is used here as a plain
+# dev container: the playbooks remain connection: local, and nested/EE
+# execution is not enabled or taught. The burden that warning described came
+# from *running* EEs inside the container, which is still not something the
+# runbooks do. Execution environments are introduced conceptually in runbook 10.
+#
+# MEASURED (podman run --rm <image>, 2026-08-15):
+#   ansible-core 2.16.19, ansible-lint 26.6.0, yamllint 1.38.0,
+#   ansible-navigator 26.6.0
+#   UBI9-minimal base: microdnf, no dnf
+#   present: bash zsh git tar curl python3      missing: jq gh node npm
+#   user: uid=1000(podman), HOME=/home/podman, WORKDIR /workdir
+#
+# The shipped ansible-core (2.16.19) already sits inside the repo-wide
+# ">=2.16,<2.17" pin that the deploy workflows use, so the dev container and the
+# CI runners run the same stream with nothing to reconcile. If a future ADT
+# image moves to the 2.18 stream, bump the workflows in the same change.
+# The image is pullable anonymously — no registry.redhat.io login required.
 # ============================================================================
-FROM registry.access.redhat.com/ubi9/python-312:latest
+FROM registry.redhat.io/ansible-automation-platform-27/ansible-dev-tools-rhel9:latest
 
-# ansible-core is pinned to the 2.16 stream to match the AAP 2.6 execution
-# environment baseline (measured: the 2.6 ee-supported-rhel9 image ships
-# ansible-core 2.16.17), because initial testing targets AAP 2.6. All pinned
-# collections require only ">=2.16.0", so this satisfies them.
-# CUTOVER TO 2.7: bump to ">=2.18,<2.19" (the AAP 2.7 EE baseline) when the
-# on-prem environments move to 2.7. See CHANGELOG / ROADMAP.
-#   podman run --rm registry.redhat.io/ansible-automation-platform-26/ee-supported-rhel9 ansible --version
-ARG ANSIBLE_CORE_VERSION=">=2.16,<2.17"
-
-# The GitHub CLI is installed here from the official release tarball rather than
-# via ghcr.io/devcontainers/features/github-cli. That feature's install script is
-# apt-only, so on this UBI9 base it fails the build outright:
+# The GitHub CLI is installed from the official release tarball rather than via
+# ghcr.io/devcontainers/features/github-cli. That feature's install script is
+# apt-only, so it fails outright on this base:
 #   ./install.sh: line 101: apt-get: command not found   (exit 127)
-# Do NOT re-add the feature. (The node feature is fine — it supports dnf.)
-# Bump this pin the way ANSIBLE_CORE_VERSION is bumped; releases are at
-#   https://github.com/cli/cli/releases
+# Do NOT re-add the feature. Releases: https://github.com/cli/cli/releases
 ARG GH_VERSION=2.96.0
 
-USER 0
-RUN dnf -y install git openssh-clients jq tar && dnf clean all
+# Node is needed only for the Copilot CLI (npm install -g @github/copilot),
+# which requires Node >= 22. It comes from the official tarball because the UBI9
+# repos carry nodejs 16.20.2 — far too old. The ghcr.io/devcontainers/features/
+# node feature is not used either: this base has microdnf only, and the feature
+# expects a full package manager. The .tar.gz build is used rather than the
+# smaller .tar.xz because this base ships no xz binary, and pulling one in just
+# to unpack Node is not worth the layer. Releases: https://nodejs.org/dist/
+ARG NODE_VERSION=22.23.2
 
-# Arch-detected so an arm64 host doesn't silently get an x86_64 binary.
+USER 0
+
+# git, tar and curl are already in the base image; jq is not.
+RUN microdnf -y install jq && microdnf clean all
+
+# Both tarballs are arch-detected so an arm64 host doesn't silently get an
+# x86_64 binary.
 RUN set -eux; \
     case "$(uname -m)" in \
       x86_64)  gh_arch=amd64 ;; \
@@ -45,17 +66,28 @@ RUN set -eux; \
     rm -f /tmp/gh.tar.gz; \
     gh --version
 
-# Named, not numeric: dev container features receive this value as
-# _DEV_CONTAINERS_IMAGE_USER and pass it to usermod, which needs a real user
-# name. With "USER 1001" the node feature dies on "usermod: user '1001' does not
-# exist". "default" is UBI9's uid-1001 application user, so this is the same
-# account either way.
-USER default
-RUN python3 -m pip install --no-cache-dir --upgrade pip \
- && python3 -m pip install --no-cache-dir \
-      "ansible-core${ANSIBLE_CORE_VERSION}" \
-      ansible-lint \
-      yamllint
+RUN set -eux; \
+    case "$(uname -m)" in \
+      x86_64)  node_arch=x64 ;; \
+      aarch64) node_arch=arm64 ;; \
+      *) echo "unsupported arch: $(uname -m)" >&2; exit 1 ;; \
+    esac; \
+    curl -fsSL "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-${node_arch}.tar.gz" \
+      | tar -xz -C /usr/local --strip-components=1; \
+    node --version; \
+    npm --version
+
+# Give npm a global prefix the unprivileged user can actually write to. Without
+# this, post-create.sh's "npm install -g @github/copilot" fails with EACCES:
+# npm's default prefix is /usr/local, owned by uid 1001, while this image runs
+# as uid 1000 (podman) — and postCreateCommand runs as the remote user, not root.
+ENV NPM_CONFIG_PREFIX=/home/podman/.npm-global
+ENV PATH=/home/podman/.npm-global/bin:${PATH}
+RUN mkdir -p /home/podman/.npm-global && chown -R 1000:1000 /home/podman/.npm-global
+
+# Back to the image's own unprivileged account. Named, not numeric: dev container
+# tooling passes this value to usermod, which needs a real user name.
+USER podman
 
 # Collections are installed at post-create (not build time) so requirements.yml
 # bumps don't force an image rebuild, and because the Automation Hub token isn't
