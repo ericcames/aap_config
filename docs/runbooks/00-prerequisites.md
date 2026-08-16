@@ -5,12 +5,11 @@
 
 > **Decide this first, before anything else:** if **WSL2 and Hyper-V are
 > blocked by policy or firmware** on this Windows desktop, the local
-> dev-container path will not work here at all. Do not invest in the local
-> setup — switch to a **shared Linux dev host** instead (a jump host or VM,
-> for example RHEL, where you run the dev container or the tooling directly
-> over SSH). Run the [Preflight checks](#preflight-can-this-windows-desktop-run-the-dev-container)
-> below to find out which case you're in — it takes two minutes and catches
-> this at the start instead of midway through the runbook.
+> dev-container path will not work here at all — see
+> [Reading the result](#reading-the-result) below for what to do instead. Run
+> the [Preflight checks](#preflight-can-this-windows-desktop-run-the-dev-container)
+> first; it takes two minutes and catches this at the start instead of midway
+> through the runbook.
 
 ## You will need
 
@@ -277,71 +276,6 @@ github.com
 - **Podman "cannot connect"** → ensure the Podman machine is started
   (`podman machine start`) and `dev.containers.dockerPath` is set to `podman`.
 
-## Collections from a customer's Private Automation Hub
-
-Skip this unless you are working inside a customer environment that mirrors
-collections into its own Private Automation Hub (PAH). Everyone else only needs
-`AH_TOKEN`.
-
-In a corporate setting you usually want **two** sources: the customer's internal
-PAH first, with Red Hat's Automation Hub as the fallback.
-[`post-create.sh`](../../.devcontainer/post-create.sh) already handles this — you
-do not edit it. Export these on the host before opening the dev container and it
-writes the dual-hub config for you:
-
-```bash
-export AH_TOKEN='red-hat-automation-hub-token'   # console.redhat.com → Automation Hub → API token
-export PAH_TOKEN='private-automation-hub-token'  # your PAH UI → Settings → API Token
-export PAH_URL='https://pah.example.internal/api/galaxy'
-```
-
-On Windows use `setx AH_TOKEN "..."` and restart the terminal (or VS Code) so the
-values take effect. `devcontainer.json` passes all three through via `remoteEnv`.
-
-The resulting `~/.ansible.cfg` inside the container looks like this:
-
-```ini
-[galaxy]
-server_list = customer_certified, customer_validated, rh_certified, rh_validated, community
-
-[galaxy_server.customer_certified]
-url = https://pah.example.internal/api/galaxy/content/published/
-token = <customer-pah-token>
-
-[galaxy_server.customer_validated]
-url = https://pah.example.internal/api/galaxy/content/validated/
-token = <customer-pah-token>
-
-[galaxy_server.rh_certified]
-url = https://console.redhat.com/api/automation-hub/content/published/
-auth_url = https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token
-token = <rh-ah-token>
-
-[galaxy_server.rh_validated]
-url = https://console.redhat.com/api/automation-hub/content/validated/
-auth_url = https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token
-token = <rh-ah-token>
-
-[galaxy_server.community]
-url = https://galaxy.ansible.com/
-```
-
-Why it is shaped that way:
-
-- **Customer PAH entries come first** in `server_list`, so `ansible-galaxy`
-  prefers internal content and only falls back to Red Hat Automation Hub, then
-  community Galaxy.
-- **PAH uses a plain token** — no `auth_url`. Red Hat Automation Hub uses
-  SSO-based auth, which is what `auth_url` handles.
-- **One token per hub.** The same PAH token covers both its `content/published/`
-  (certified) and `content/validated/` endpoints; likewise for the Red Hat token.
-
-> **Hard rule:** this config lives at `~/.ansible.cfg` in your **home
-> directory** — your WSL home on the primary WSL-native path, or the
-> container's home on the [devcontainer path](01-dev-environment.md#devcontainer-path-work-in-progress)
-> (see [runbook 01](01-dev-environment.md) for both). It is never committed,
-> and this repo ships **no project-local `ansible.cfg`** — that would shadow
-> the real one and break collection installs. See
-> [AGENTS.md](../../AGENTS.md).
-
-Next: [01-dev-environment.md](01-dev-environment.md).
+Next: [01-dev-environment.md](01-dev-environment.md) — including how to set up
+a customer's Private Automation Hub (PAH) instead of just `AH_TOKEN`, if you
+need that.

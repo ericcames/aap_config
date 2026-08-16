@@ -88,8 +88,8 @@ build, no "Reopen in Container" prompt.
    > unattended.
 
    The simple, single-token case (no customer Private Automation Hub — see
-   [runbook 00](00-prerequisites.md#collections-from-a-customers-private-automation-hub)
-   if you need that) writes this:
+   [below](#collections-from-a-customers-private-automation-hub) if you need
+   that) writes this:
 
    ```ini
    [galaxy]
@@ -135,6 +135,69 @@ build, no "Reopen in Container" prompt.
    baked into a container image, build context, or anything that could leave
    the machine. See [04-secrets.md](04-secrets.md) for the vault/
    `connection.yml` setup itself.
+
+## Collections from a customer's Private Automation Hub
+
+Skip this unless you are working inside a customer environment that mirrors
+collections into its own Private Automation Hub (PAH). Everyone else only
+needs `AH_TOKEN` (step 3 above).
+
+In a corporate setting you usually want **two** sources: the customer's
+internal PAH first, with Red Hat's Automation Hub as the fallback.
+[`post-create.sh`](../../.devcontainer/post-create.sh) already handles this —
+you do not edit it. On the WSL-native path, set these before running it:
+
+```bash
+export AH_TOKEN='red-hat-automation-hub-token'   # console.redhat.com → Automation Hub → API token
+export PAH_TOKEN='private-automation-hub-token'  # your PAH UI → Settings → API Token
+export PAH_URL='https://pah.example.internal/api/galaxy'
+```
+
+On the devcontainer path, set these on the **Windows** host before launching
+VS Code instead (`setx AH_TOKEN "..."`, etc.) — `devcontainer.json` passes all
+three through via `remoteEnv`.
+
+The resulting `~/.ansible.cfg` looks like this:
+
+```ini
+[galaxy]
+server_list = customer_certified, customer_validated, rh_certified, rh_validated, community
+
+[galaxy_server.customer_certified]
+url = https://pah.example.internal/api/galaxy/content/published/
+token = <customer-pah-token>
+
+[galaxy_server.customer_validated]
+url = https://pah.example.internal/api/galaxy/content/validated/
+token = <customer-pah-token>
+
+[galaxy_server.rh_certified]
+url = https://console.redhat.com/api/automation-hub/content/published/
+auth_url = https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token
+token = <rh-ah-token>
+
+[galaxy_server.rh_validated]
+url = https://console.redhat.com/api/automation-hub/content/validated/
+auth_url = https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token
+token = <rh-ah-token>
+
+[galaxy_server.community]
+url = https://galaxy.ansible.com/
+```
+
+Why it is shaped that way:
+
+- **Customer PAH entries come first** in `server_list`, so `ansible-galaxy`
+  prefers internal content and only falls back to Red Hat Automation Hub, then
+  community Galaxy.
+- **PAH uses a plain token** — no `auth_url`. Red Hat Automation Hub uses
+  SSO-based auth, which is what `auth_url` handles.
+- **One token per hub.** The same PAH token covers both its `content/published/`
+  (certified) and `content/validated/` endpoints; likewise for the Red Hat token.
+
+> **Hard rule:** never commit this file or paste a real token into any doc/PR.
+> This repo ships **no project-local `ansible.cfg`** — that would shadow the
+> real one and break collection installs. See [AGENTS.md](../../AGENTS.md).
 
 ## How you know it worked
 
