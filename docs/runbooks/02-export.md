@@ -5,28 +5,32 @@
 
 ## You will need
 
-The dev container open (runbook 01), and connection details for the **Azure
-production AAP**: URL, service-account username, password.
+Your dev environment running (runbook 01 — WSL-native or the devcontainer), and
+connection details for the **Azure production AAP**: URL, service-account
+username, password.
 
 ### Windows workstation checklist
 
-Before running the export, confirm these on your **Windows host** (not inside the
-container):
+Before running the export, confirm these:
 
-1. **Container runtime is running.** Docker Desktop (WSL2 backend) or Podman
-   Desktop — look for the whale/podman icon in the system tray.
-2. **`AH_TOKEN` is set.** The Automation Hub token must be a Windows environment
-   variable so it passes into the container automatically:
-   ```powershell
-   setx AH_TOKEN "your-token-from-console.redhat.com"
-   ```
-   Then **restart your terminal** (or VS Code) so the variable takes effect.
-3. **Git line endings.** The repo's `.gitattributes` forces LF, but as a
+1. **`AH_TOKEN` is set, and collections are installed.**
+   - **WSL-native:** export it directly in the WSL shell you're working in —
+     `export AH_TOKEN='your-token-from-console.redhat.com'` — then re-run
+     `bash .devcontainer/post-create.sh` if collections aren't installed yet.
+   - **Devcontainer path:** the token must be a **Windows** environment
+     variable so it passes into the container automatically:
+     ```powershell
+     setx AH_TOKEN "your-token-from-console.redhat.com"
+     ```
+     Then **restart your terminal** (or VS Code) so the variable takes effect,
+     and confirm the **container runtime is running** (Docker Desktop or
+     Podman Desktop — look for the whale/podman icon in the system tray).
+2. **Git line endings.** The repo's `.gitattributes` forces LF, but as a
    safety net:
    ```powershell
    git config --global core.autocrlf input
    ```
-4. **Clone fresh.** Always `git clone` — never copy/paste files from a Windows
+3. **Clone fresh.** Always `git clone` — never copy/paste files from a Windows
    editor (Notepad, WordPad), as they may inject CRLF line endings that break
    YAML parsing.
 
