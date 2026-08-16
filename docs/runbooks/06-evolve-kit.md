@@ -5,9 +5,9 @@
 
 ## You will need
 
-A working dev container (runbook 01) and familiarity with branches and PRs
-(runbook 05). You should also be comfortable reading the repo's standards in
-`AGENTS.md`.
+A working dev environment (runbook 01 — WSL-native or the devcontainer) and
+familiarity with branches and PRs (runbook 05). You should also be comfortable
+reading the repo's standards in `AGENTS.md`.
 
 ## You will learn
 
