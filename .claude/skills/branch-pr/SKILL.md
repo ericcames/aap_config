@@ -49,6 +49,15 @@ after pushing.
    Fill in the template — summary, test plan, risk/rollback, and the
    secrets/standards checklist.
 
+   **Label it as agent-authored**, matching whichever assistant is driving this
+   skill (`claude` for Claude Code, `copilot` for GitHub Copilot CLI) — these
+   labels already exist in the repo but nothing applies them automatically:
+   ```
+   gh pr edit <number> --add-label claude      # or: --add-label copilot
+   ```
+   Skip this only if a human is running these steps by hand without an agent
+   driving — the label means "an AI opened this," not "AI-assisted."
+
 6. **Self-review the diff** with `gh pr diff` or the "Files changed" tab. Confirm
    no secrets, no customer identifiers, object changes in
    `inventory/group_vars/` only, and `CHANGELOG.md` updated if the change is
