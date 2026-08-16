@@ -176,6 +176,12 @@ exactly which control is blocking, which is what IT needs to act on.
 
    ![VS Code Extensions panel showing GitHub Copilot Chat installed and enabled on "WSL: podman-AAP"; the WSL Remote indicator is also visible in the bottom-left status bar](../images/vscode-copilot-extension-wsl.png)
 
+   Whichever path you're on, check the bottom-left status bar to confirm which
+   one you're actually connected to — `WSL: <distro>` for WSL-native,
+   `Dev Container: ...` for the container path:
+
+   ![VS Code bottom-left status bar showing the "WSL: podman-AAP" remote indicator](../images/vscode-wsl-remote-indicator.png)
+
 3. **Sign in to GitHub from the terminal:**
    ```bash
    gh auth login       # choose HTTPS, authenticate in the browser (device flow)
