@@ -27,8 +27,11 @@ collections:
 
   # Platform gateway modules + ansible.platform.token (preferred over
   # ansible.controller wherever a module exists).
+  # 2.7.20260604 shipped plugins/modules/token.py as an ansible-lint mock
+  # stub (empty DOCUMENTATION/argument_spec), breaking every ansible.platform.token
+  # task. Bumped to the next release, which ships the real module.
   - name: ansible.platform
-    version: "2.7.20260604"
+    version: "2.7.20260812"
 
   # Controller modules required by the infra controller_* roles.
   - name: ansible.controller
