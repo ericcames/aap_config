@@ -49,7 +49,7 @@ describe the task — both tools match on the `description`.
 
 | Skill | Mirrors | Use it to |
 |-------|---------|-----------|
-| `/setup-workstation` | runbooks 00–01 | Preflight a laptop, install tooling, `gh` login, clone, open the dev container |
+| `/setup-workstation` | runbooks 00–01 | Preflight a laptop, install tooling, `gh` login, clone, get WSL-native (recommended) or the dev container (WIP) running |
 | `/setup-registry-auth` | runbook 01 | Authenticate with registry.redhat.io to pull the Ansible Dev Tools image |
 | `/export-aap` | runbook 02 | Export controller + gateway objects into `exports/` |
 | `/curate-config` | runbook 03 | Promote exports into `inventory/group_vars/` with `_all` / `_<env>` keys |
