@@ -209,14 +209,6 @@ gh --version                            # the layered GitHub CLI, used by runboo
 ansible-galaxy collection list | grep infra.aap_configuration   # shows 4.7.0
 ```
 
-### If it went wrong
-
-- **Collections didn't install** → your Hub token was blank or wrong. Re-run
-  `bash .devcontainer/post-create.sh` and paste a fresh token.
-- **Line-ending weirdness / scripts fail** → the repo enforces LF via
-  `.gitattributes`; make sure you cloned fresh (don't copy files from a Windows
-  editor that rewrote them to CRLF).
-- **Copilot CLI missing** → optional; use Copilot Chat in VS Code or install the
-  `gh copilot` extension. AI Assist prompts work anywhere.
+Same "If it went wrong" fixes as the WSL-native path above apply here too.
 
 Next: [02-export.md](02-export.md).
