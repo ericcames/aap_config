@@ -9,7 +9,7 @@ Needed either way:
 - A **GitHub account** with access to your enterprise organization, and **GitHub
   Copilot** (a seat — we check it below).
 - An **SSH key added to GitHub**, if you clone over SSH rather than HTTPS (see
-  step 3 below).
+  step 2 below).
 - **VS Code**.
 - A **Red Hat login** for Automation Hub (or your org's private hub URL + token).
 - **AAP connection details** for the production (Azure) instance: URL, a service
@@ -34,8 +34,6 @@ policy or firmware — and if it is, the dev container will not start at all.
 Run this check **first**, before installing a container engine. It takes two
 minutes and tells you whether this desktop can use the local dev-container path
 or needs the fallback further down.
-
-> Not on Windows? Skip this section — it's specific to Windows/WSL2.
 
 ### Run the checks
 
@@ -155,21 +153,7 @@ exactly which control is blocking, which is what IT needs to act on.
 
 ## Steps
 
-1. **(Devcontainer path only, currently WIP) Install a container runtime.**
-   Docker Desktop is simplest; Podman Desktop is the license-free alternative.
-   If you use Podman, set VS Code setting `dev.containers.dockerPath` to
-   `podman`. Skip this if you're going WSL-native (see runbook 01) — the
-   working path today.
-
-   > The dev container is built on Red Hat's Ansible Dev Tools image from
-   > `registry.redhat.io`, which pulls **without a login**. If your network
-   > blocks it, or you see an authentication error during the build, log in once
-   > with your Red Hat account and rebuild:
-   > ```bash
-   > podman login registry.redhat.io     # or: docker login registry.redhat.io
-   > ```
-
-2. **Install VS Code** (and, when prompted later, the GitHub Copilot
+1. **Install VS Code** (and, when prompted later, the GitHub Copilot
    extensions). The **Dev Containers** extension is only needed for the
    devcontainer path; the WSL-native path uses the built-in **WSL** extension
    instead.
@@ -182,7 +166,7 @@ exactly which control is blocking, which is what IT needs to act on.
 
    ![VS Code bottom-left status bar showing the "WSL: podman-AAP" remote indicator](../images/vscode-wsl-remote-indicator.png)
 
-3. **Sign in to GitHub from the terminal:**
+2. **Sign in to GitHub from the terminal:**
    ```bash
    gh auth login       # choose HTTPS, authenticate in the browser (device flow)
    ```
@@ -211,7 +195,7 @@ exactly which control is blocking, which is what IT needs to act on.
    key**. (Or skip the copy-paste: `gh ssh-key add ~/.ssh/id_ed25519.pub --title
    "aap_config WSL"` does the same thing from the CLI.)
 
-4. **Check your Copilot seat:**
+3. **Check your Copilot seat:**
    ```bash
    gh api /user/copilot_billing
    ```
@@ -239,11 +223,25 @@ exactly which control is blocking, which is what IT needs to act on.
    > **AI Assist:** see [PROMPTS.md → rb00](../ai/PROMPTS.md#rb00) — paste the
    > 404 prompt if you hit that.
 
+4. **(Devcontainer path only, currently WIP) Install a container runtime.**
+   Docker Desktop is simplest; Podman Desktop is the license-free alternative.
+   If you use Podman, set VS Code setting `dev.containers.dockerPath` to
+   `podman`. Skip this if you're going WSL-native (see runbook 01) — the
+   working path today.
+
+   > The dev container is built on Red Hat's Ansible Dev Tools image from
+   > `registry.redhat.io`, which pulls **without a login**. If your network
+   > blocks it, or you see an authentication error during the build, log in once
+   > with your Red Hat account and rebuild:
+   > ```bash
+   > podman login registry.redhat.io     # or: docker login registry.redhat.io
+   > ```
+
 ## How you know it worked
 
 `gh auth status` shows you logged in. `gh api /user/copilot_billing` returning seat
 details confirms an org-assigned plan; a 404 is fine too if Copilot Chat/CLI work in
-practice (see step 4 above). Docker/Podman Desktop is running, if you're on the
+practice (see step 3 above). Docker/Podman Desktop is running, if you're on the
 devcontainer path.
 
 ```text
@@ -329,12 +327,12 @@ Why it is shaped that way:
 - **One token per hub.** The same PAH token covers both its `content/published/`
   (certified) and `content/validated/` endpoints; likewise for the Red Hat token.
 
-> **Hard rule:** this config lives at `~/.ansible.cfg` in your **home directory**
-> — your WSL home on the [WSL-native path](01-dev-environment.md) (the primary
-> one — see [runbook 01](01-dev-environment.md)), or the container's home on
-> the [devcontainer path](01-dev-environment.md#devcontainer-path-work-in-progress).
-> It is never committed, and this repo ships **no project-local `ansible.cfg`**
-> — that would shadow the real one and break collection installs. See
+> **Hard rule:** this config lives at `~/.ansible.cfg` in your **home
+> directory** — your WSL home on the primary WSL-native path, or the
+> container's home on the [devcontainer path](01-dev-environment.md#devcontainer-path-work-in-progress)
+> (see [runbook 01](01-dev-environment.md) for both). It is never committed,
+> and this repo ships **no project-local `ansible.cfg`** — that would shadow
+> the real one and break collection installs. See
 > [AGENTS.md](../../AGENTS.md).
 
 Next: [01-dev-environment.md](01-dev-environment.md).
