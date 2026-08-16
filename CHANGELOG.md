@@ -237,6 +237,14 @@ All notable changes to this project are documented here. Format based on
   collection currency), escalation paths, and success measures. Linked from the
   "Scale and adoption" workstream in `going-to-production.md`.
 
+### Removed
+
+- **Stale `exports/azure/` snapshot.** The RHDP lab those files were exported
+  from has been torn down and replaced, so the snapshot no longer described a
+  reachable instance. Cleared so the next `playbooks/export.yml` run against the
+  new deployment produces a clean, reviewable diff instead of one tangled with
+  dead objects. The old content remains in Git history if it is ever needed.
+
 ### Fixed
 
 - **Dev container image would not build.** `devcontainer.json` requested the
