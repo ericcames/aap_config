@@ -20,18 +20,13 @@ Copilot CLI — see
 
 ---
 
-## Runbook 00 — prerequisites {#rb00}
+## Runbook 00 — install WSL2 {#rb00}
 
 > Skill: `/setup-workstation` — runs the step instead of just explaining it.
 
 ```
-Explain what a VS Code Dev Container is and why a Windows user would run one
-instead of installing Ansible directly on Windows. Keep it to a short paragraph.
-```
-
-```
-I ran `gh api /user/copilot_billing` and got a 404. What does that mean about my
-GitHub Copilot access, and who do I ask to fix it?
+Explain what WSL2 is and why this repo's dev environment needs it instead of
+installing Ansible directly on Windows. Keep it to a short paragraph.
 ```
 
 ## Runbook 01 — dev environment {#rb01}
@@ -42,6 +37,11 @@ GitHub Copilot access, and who do I ask to fix it?
 I'm on Windows with WSL2 set up. Explain, step by step, how to clone a GitHub
 repo over HTTPS using `gh auth login` (device flow) inside my WSL2 distro, then
 open it in VS Code connected via WSL Remote (not "Reopen in Container").
+```
+
+```
+I ran `gh api /user/copilot_billing` and got a 404. What does that mean about my
+GitHub Copilot access, and who do I ask to fix it?
 ```
 
 ## Runbook 02 — export {#rb02}
