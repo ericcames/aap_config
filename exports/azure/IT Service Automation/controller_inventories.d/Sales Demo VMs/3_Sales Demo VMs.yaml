@@ -1,0 +1,10 @@
+---
+controller_inventories:
+  - name: "Sales Demo VMs"
+    description: |-
+      {%- raw -%}
+      Control hosts synced from inventory/hosts.yml, plus the demo VMs registered by playbooks/provision_vm.yml.
+      {%- endraw -%}
+    organization: "IT Service Automation"
+    prevent_instance_group_fallback: false
+...

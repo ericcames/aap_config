@@ -1,0 +1,16 @@
+---
+controller_inventory_sources:
+  - name: "sales.demos repo inventory"
+    description: |-
+      {%- raw -%}
+      Syncs inventory/hosts.yml from the Sales Demos project so group_vars resolve in AAP.
+      {%- endraw -%}
+    organization: "IT Service Automation"
+    source: "scm"
+    limit: ""
+    source_project: "Sales Demos"
+    source_path: "inventory/hosts.yml"
+    inventory: "Sales Demo VMs"
+    update_on_launch: true
+    overwrite: false
+...

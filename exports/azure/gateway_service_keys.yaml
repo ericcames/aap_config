@@ -1,0 +1,18 @@
+---
+gateway_service_keys:
+  - name: "controller - 2026-08-15 15:00:12.078783"
+    service_cluster: "2"
+    is_active: true
+    algorithm: "HS256"
+    mark_previous_inactive: false
+  - name: "hub - 2026-08-15 15:00:16.508649"
+    service_cluster: "3"
+    is_active: true
+    algorithm: "HS256"
+    mark_previous_inactive: false
+  - name: "eda - 2026-08-15 15:00:21.101435"
+    service_cluster: "4"
+    is_active: true
+    algorithm: "HS256"
+    mark_previous_inactive: false
+...

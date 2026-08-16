@@ -1,0 +1,28 @@
+---
+controller_execution_environments:
+  - name: "Sales Demos - OCP Virt EE"
+    description: |-
+      {%- raw -%}
+      sales.demos EE v1.0.0 (base ee-supported-rhel9, AAP 2.6) — Terraform 1.15.8 · cloud.terraform · kubernetes.core · redhat.openshift_virtualization · infra.aap_configuration
+      {%- endraw -%}
+    organization: "IT Service Automation"
+    image: "aap-aap.apps.cluster-k59xk-1.dyn.redhatworkshops.io/sales_demos_ee:v1.0.0"
+    pull: "missing"
+    credential: "Sales Demos - PAH Registry"
+  - name: "Minimal execution environment"
+    organization:  # Leave this empty organization to let the object_diff role to work properly
+    image: "registry.redhat.io/ansible-automation-platform-26/ee-minimal-rhel9@sha256:fece6795d24aed2d5a6d461a87f6a664cc630bfdd659cc535f4a0f8beaba57d5"
+    pull: ""
+  - name: "Default execution environment"
+    organization:  # Leave this empty organization to let the object_diff role to work properly
+    image: "registry.redhat.io/ansible-automation-platform-26/ee-supported-rhel9@sha256:0c3b74f2b6b9eb8f4a144e10b27208c53bc104fb548b0371f905150f75fe6861"
+    pull: ""
+  - name: "Control Plane Execution Environment"
+    organization:  # Leave this empty organization to let the object_diff role to work properly
+    image: "registry.redhat.io/ansible-automation-platform-26/ee-supported-rhel9@sha256:0c3b74f2b6b9eb8f4a144e10b27208c53bc104fb548b0371f905150f75fe6861"
+    pull: ""
+  - name: "Product Demos EE"
+    organization:  # Leave this empty organization to let the object_diff role to work properly
+    image: "quay.io/ansible-product-demos/apd-ee-25:latest"
+    pull: "missing"
+...

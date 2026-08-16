@@ -1,0 +1,73 @@
+---
+controller_workflows:
+  - name: "Sales Demos - Build Demo VM"
+    description: |-
+      {%- raw -%}
+      Provision a demo VM, register it to the Red Hat CDN, configure the web server, and verify it — one button, in the only order that works.
+      {%- endraw -%}
+    organization: "IT Service Automation"
+    simplified_workflow_nodes:
+      - identifier: "provision"
+        workflow_job_template: "Sales Demos - Build Demo VM"
+        unified_job_template: "Sales Demos - Provision VM"
+        limit: ""
+        organization: "IT Service Automation"
+        all_parents_must_converge: false
+        success_nodes:
+          - "register"
+      - identifier: "register"
+        workflow_job_template: "Sales Demos - Build Demo VM"
+        unified_job_template: "Sales Demos - Register VMs"
+        limit: ""
+        organization: "IT Service Automation"
+        all_parents_must_converge: false
+        success_nodes:
+          - "configure"
+      - identifier: "configure"
+        workflow_job_template: "Sales Demos - Build Demo VM"
+        unified_job_template: "Sales Demos - Configure VMs"
+        limit: ""
+        organization: "IT Service Automation"
+        all_parents_must_converge: false
+        success_nodes:
+          - "check"
+      - identifier: "check"
+        workflow_job_template: "Sales Demos - Build Demo VM"
+        unified_job_template: "Sales Demos - Check VMs"
+        limit: ""
+        organization: "IT Service Automation"
+        all_parents_must_converge: false
+    ask_variables_on_launch: false
+    allow_simultaneous: false
+    scm_branch: ""
+    limit: ""
+    ask_limit_on_launch: false
+    ask_inventory_on_launch: false
+    webhook_service: ""
+    extra_vars: ""
+    survey_enabled: true
+    survey_spec:
+      name: ""
+      spec:
+        - type: multiplechoice
+          choices:
+            - "{%- raw -%}linux{%- endraw -%}"
+            - "{%- raw -%}windows{%- endraw -%}"
+            - "{%- raw -%}both{%- endraw -%}"
+          default: "{%- raw -%}linux{%- endraw -%}"
+          required: true
+          variable: os_type
+          question_name: "{%- raw -%}Operating system{%- endraw -%}"
+          question_description: "{%- raw -%}Which guests to provision. Windows needs the golden image from Phase 2 (#3) and will not boot until that lands, so the configure steps only act on Linux.{%- endraw -%}"
+        - type: multiplechoice
+          choices:
+            - "{%- raw -%}small-1cpu-2gb{%- endraw -%}"
+            - "{%- raw -%}medium-1cpu-4gb{%- endraw -%}"
+            - "{%- raw -%}large-2cpu-6gb{%- endraw -%}"
+          default: "{%- raw -%}small-1cpu-2gb{%- endraw -%}"
+          required: true
+          variable: vm_size_tier
+          question_name: "{%- raw -%}VM size tier{%- endraw -%}"
+          question_description: "{%- raw -%}T-shirt size. Small tiers on purpose — these VMs share a node with AAP and CNV, and terraform/ocpvirt enforces a memory budget.{%- endraw -%}"
+      description: "Pick an OS and a VM size tier"
+...

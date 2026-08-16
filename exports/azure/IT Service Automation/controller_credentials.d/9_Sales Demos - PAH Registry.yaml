@@ -1,0 +1,16 @@
+---
+controller_credentials:
+  - name: "Sales Demos - PAH Registry"
+    description: |-
+      {%- raw -%}
+      Pull the execution environment from this environment''s Private Automation Hub.
+      {%- endraw -%}
+    credential_type: "Container Registry"
+    organization: "IT Service Automation"
+    inputs:
+      host: aap-aap.apps.cluster-k59xk-1.dyn.redhatworkshops.io
+      password: "{{ vaulted_controller_credentials_sales_demos___pah_registry_password }}"
+      username: admin
+      verify_ssl: true
+
+...

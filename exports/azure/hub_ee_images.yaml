@@ -1,0 +1,15 @@
+---
+hub_ee_images:
+  - base_path: sales_demos_ee
+    repository: /api/galaxy/pulp/api/v3/repositories/container/container/01a00833-b32a-7326-9bf4-0a935b55ea87/
+    content_guard: /api/galaxy/pulp/api/v3/contentguards/core/content_redirect/01a00833-b390-7421-95d3-1be1c8a35376/
+    pulp_labels: ""
+    hidden: ""
+    name: sales_demos_ee
+    repository_version: ""
+    registry_path: aap-aap.apps.cluster-k59xk-1.dyn.redhatworkshops.io/sales_demos_ee
+    remote: ""
+    namespace: /api/galaxy/pulp/api/v3/pulp_container/namespaces/01a00833-b39e-7cb8-b446-f28e9df0847d/
+    private: true
+    description: sales.demos EE — Terraform 1.15.8 · cloud.terraform · kubernetes.core · redhat.openshift_virtualization · infra.aap_configuration. Mirrored from quay.io/zigfreed/sales-demos-ee.
+...

@@ -1,0 +1,14 @@
+---
+controller_credentials:
+  - name: "Sales Demos - Vault"
+    description: |-
+      {%- raw -%}
+      Vault password for group_vars/aap/secrets.yml (vault_id: sales.demos)
+      {%- endraw -%}
+    credential_type: "Vault"
+    organization: "IT Service Automation"
+    inputs:
+      vault_id: sales.demos
+      vault_password: "{{ vaulted_controller_credentials_sales_demos___vault_vault_password }}"
+
+...

@@ -1,0 +1,16 @@
+---
+controller_inventory_sources:
+  - name: "sales.demos repo inventory (control)"
+    description: |-
+      {%- raw -%}
+      The same hosts.yml, synced into the control inventory so teardown has hosts to run on.
+      {%- endraw -%}
+    organization: "IT Service Automation"
+    source: "scm"
+    limit: ""
+    source_project: "Sales Demos"
+    source_path: "inventory/hosts.yml"
+    inventory: "Sales Demo VMs - Control"
+    update_on_launch: true
+    overwrite: true
+...
