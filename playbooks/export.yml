@@ -78,7 +78,7 @@
             state: present
           register: export_token
 
-        - name: Run filetree_create (controller + gateway scope only)
+        - name: Run filetree_create (controller + gateway + hub scope)
           vars:
             aap_oauthtoken: "{{ export_token.token }}"
             output_path: "{{ playbook_dir }}/../exports/{{ export_name | default(env_name) }}"
@@ -99,14 +99,27 @@
             # Keep the per-organization tree; it is easier to review than a flat
             # dump during curation (runbook 03).
             flatten_output: false
-          ansible.builtin.include_role:
-            name: infra.aap_configuration_extended.filetree_create
+          block:
+            - name: Filetree_create attempt
+              ansible.builtin.include_role:
+                name: infra.aap_configuration_extended.filetree_create
+          rescue:
+            # ansible.platform's gateway_api lookup (used for hub namespaces)
+            # spawns a short-lived subprocess per API call and always tears
+            # it down afterwards. Under real network latency it occasionally
+            # loses the race between the subprocess signaling ready and its
+            # parent checking in, failing with "PlatformService initialization
+            # timed out (>60s)" even though the subprocess itself succeeded.
+            # One retry clears it — filetree_create is safe to re-run.
+            - name: Filetree_create retry after ephemeral manager race
+              ansible.builtin.include_role:
+                name: infra.aap_configuration_extended.filetree_create
       always:
         - name: Delete the temporary token
           ansible.platform.token:
             aap_hostname: "{{ aap_hostname }}"
             aap_validate_certs: "{{ aap_validate_certs }}"
-            existing_token: "{{ export_token.token }}"
+            existing_token_id: "{{ export_token.id }}"
             state: absent
           when: export_token is defined
 
