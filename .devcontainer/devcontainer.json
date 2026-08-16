@@ -3,7 +3,7 @@
   "build": {
     "dockerfile": "Containerfile"
   },
-  "remoteUser": "podman",
+  "remoteUser": "root",
   "postCreateCommand": "bash .devcontainer/post-create.sh",
   "containerEnv": {
     "ANSIBLE_FORCE_COLOR": "1"
