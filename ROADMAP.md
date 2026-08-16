@@ -100,3 +100,16 @@ Full design in **[`docs/phase-3-plan.md`](docs/phase-3-plan.md)**. Summary:
   prod on Password Safe. Design in
   [`docs/secrets-beyondtrust.md`](docs/secrets-beyondtrust.md); implementation
   (including the collection pin) deferred until a live Password Safe exists.
+- **WSL-native is the primary dev-environment path; the devcontainer is
+  secondary and currently work-in-progress.** In practice the devcontainer
+  ("Reopen in Container") path has needed repeated fixes (`remoteUser`,
+  registry auth) and isn't reliably reproducible yet, while working directly
+  in WSL2 through VS Code's WSL Remote connection — with tooling installed via
+  `pip install ansible-dev-tools` and secrets kept in the WSL home directory,
+  never a container image or build context — is what's actually validated
+  working. `docs/runbooks/01-devcontainer.md` was renamed to
+  `01-dev-environment.md` and restructured so WSL-native is the top-level
+  content, not a buried "Alternative" subsection. The devcontainer path stays
+  documented (secrets-locality and portability work already went into it) and
+  is expected to become reliable again — this is a reordering by current
+  reality, not a decision to drop it.

@@ -16,7 +16,7 @@ Needed either way:
   account username, and password.
 
 Needed only for the devcontainer path (currently work in progress — see
-[runbook 01](01-devcontainer.md)):
+[runbook 01](01-dev-environment.md#devcontainer-path-work-in-progress)):
 - **Docker Desktop** *or* **Podman Desktop** on your Windows machine.
 - The VS Code **Dev Containers** extension.
 
@@ -330,10 +330,11 @@ Why it is shaped that way:
   (certified) and `content/validated/` endpoints; likewise for the Red Hat token.
 
 > **Hard rule:** this config lives at `~/.ansible.cfg` in your **home directory**
-> — inside the container's home on the devcontainer path, or your WSL home on the
-> [WSL-native path](01-devcontainer.md#alternative-wsl-native-no-container). It is
-> never committed, and this repo ships **no project-local `ansible.cfg`** — that
-> would shadow the real one and break collection installs. See
+> — your WSL home on the [WSL-native path](01-dev-environment.md) (the primary
+> one — see [runbook 01](01-dev-environment.md)), or the container's home on
+> the [devcontainer path](01-dev-environment.md#devcontainer-path-work-in-progress).
+> It is never committed, and this repo ships **no project-local `ansible.cfg`**
+> — that would shadow the real one and break collection installs. See
 > [AGENTS.md](../../AGENTS.md).
 
-Next: [01-devcontainer.md](01-devcontainer.md).
+Next: [01-dev-environment.md](01-dev-environment.md).

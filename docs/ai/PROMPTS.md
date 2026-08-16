@@ -34,13 +34,14 @@ I ran `gh api /user/copilot_billing` and got a 404. What does that mean about my
 GitHub Copilot access, and who do I ask to fix it?
 ```
 
-## Runbook 01 — dev container {#rb01}
+## Runbook 01 — dev environment {#rb01}
 
 > Skill: `/setup-workstation` — runs the step instead of just explaining it.
 
 ```
-I'm in VS Code on Windows. Explain, step by step, how to clone a GitHub repo over
-HTTPS using `gh auth login` (device flow) and then "Reopen in Container".
+I'm on Windows with WSL2 set up. Explain, step by step, how to clone a GitHub
+repo over HTTPS using `gh auth login` (device flow) inside my WSL2 distro, then
+open it in VS Code connected via WSL Remote (not "Reopen in Container").
 ```
 
 ## Runbook 02 — export {#rb02}
