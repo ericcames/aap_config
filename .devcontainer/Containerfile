@@ -6,6 +6,11 @@
 # ansible-creator, molecule, ansible-builder and the rest of the ADT set, so
 # this file only layers the handful of things ADT leaves out.
 #
+# FIRST TIME SETUP: registry.redhat.io requires authentication.
+# Before opening this repo in Dev Container, run:
+#   bash .devcontainer/registry-login.sh
+# For full instructions, see: .devcontainer/REGISTRY_AUTH.md
+#
 # WHY THIS IMAGE, given the warning that used to live here. An earlier revision
 # of this file deliberately avoided ADT ("NOT an execution-environment, NOT
 # ansible-navigator") because EE-in-container on Docker/Podman Desktop for
