@@ -28,7 +28,7 @@ prompt.
 
 | Path | What lives here |
 |------|-----------------|
-| `.devcontainer/` | Container definition + `post-create.sh` (tools, collections, galaxy auth, git hooks) |
+| `.devcontainer/` | Container definition (Red Hat Ansible Dev Tools image + `gh`/Node) + `post-create.sh` (collections, galaxy auth, git hooks) |
 | `.github/` | CI workflows, issue/PR templates, CODEOWNERS, SECURITY, this file's Copilot shim |
 | `collections/` | `requirements.yml` — the ONLY place collection versions are pinned |
 | `inventory/` | ONE inventory: `hosts.yml` + `group_vars/` (see standards below) |

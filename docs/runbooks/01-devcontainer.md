@@ -14,6 +14,11 @@ end of [runbook 00](00-prerequisites.md#alternative-no-vs-code-devcontainer-cli)
 What "clone" means, and how the dev container gives you Ansible + all tools with
 nothing installed on Windows directly.
 
+The container is built on **Red Hat's Ansible Dev Tools image** for AAP 2.7, so
+you get the same toolchain Red Hat ships to customers — `ansible-core`,
+`ansible-lint`, `yamllint`, `ansible-navigator`, `ansible-creator`, `molecule`,
+`ansible-builder` — plus the `gh` CLI and Node, which this repo layers on top.
+
 ## Steps
 
 1. **Clone the repo** (get your own copy on your machine):
@@ -45,6 +50,8 @@ nothing installed on Windows directly.
 Inside the container terminal:
 ```bash
 ansible --version                       # shows ansible-core 2.16.x
+ansible-navigator --version             # proves you are on the Dev Tools image
+gh --version                            # the layered GitHub CLI, used by runbook 05
 ansible-galaxy collection list | grep infra.aap_configuration   # shows 4.7.0
 ```
 

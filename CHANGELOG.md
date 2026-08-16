@@ -58,6 +58,32 @@ All notable changes to this project are documented here. Format based on
 
 ### Changed
 
+- **Dev container now builds on the Red Hat Ansible Dev Tools image.**
+  `.devcontainer/Containerfile` bases on
+  `registry.redhat.io/ansible-automation-platform-27/ansible-dev-tools-rhel9`
+  instead of hand-assembling UBI9 + pip. The kit now teaches on the same image
+  Red Hat ships to customers, and gains `ansible-navigator`, `ansible-creator`,
+  `molecule`, and `ansible-builder` at no maintenance cost. Only `jq`, the `gh`
+  CLI, and Node 22 are layered on, because ADT omits them (UBI's `nodejs` is
+  16.20.2, too old for the Copilot CLI, so Node comes from the official tarball
+  like `gh` does).
+  - **No ansible-core change.** The image ships **2.16.19**, already inside the
+    repo-wide `>=2.16,<2.17` pin, so the dev container and the CI runners stay on
+    one stream and the deploy workflows are untouched. The 2.18 bump remains
+    pending the AAP 2.7 EE cutover, as `ROADMAP.md` describes.
+  - The image pulls **anonymously** — no `registry.redhat.io` login and no
+    Codespaces registry secrets required.
+  - Removed the `ghcr.io/devcontainers/features/node:1` feature; the base has
+    `microdnf` only, which the feature does not support.
+- **Fixed: dev container VS Code customizations never applied.**
+  `devcontainer.json` had `"customizations"` nested inside itself, so the
+  `redhat.ansible`, `redhat.vscode-yaml`, and Copilot extensions and the
+  `dev.containers.dockerPath: podman` setting were silently ignored on every
+  container that has ever been opened.
+- **Fixed: Copilot CLI could not install in the container.** npm's global prefix
+  was `/usr/local` (owned by uid 1001) while the container runs as uid 1000, so
+  `npm install -g @github/copilot` failed with EACCES during `postCreateCommand`.
+  The Containerfile now sets a user-writable `NPM_CONFIG_PREFIX`.
 - **`DEMO.md` retargeted to a real environment.** Act 4 applies to `qa` instead
   of `dev`; all runnable commands use `--vault-id <env>@~/secrets/.vault_pass_<env>`
   so a demo never stalls on a mistyped password. Claude Code is now the assumed
@@ -239,6 +265,17 @@ All notable changes to this project are documented here. Format based on
 
 ### Removed
 
+- **`docs/corporate-windows-dev-environment.md`.** The guide existed to walk a
+  corporate Windows user through hand-rolling an Ansible Dev Tools dev container
+  and a dual-hub `~/.ansible.cfg` — both of which the repo now ships directly, so
+  most of it had become a parallel copy of runbooks 00-02. (It also pointed at
+  `ansible-automation-platform-2.7/ansible-dev-tools-rhel8`, an image path that
+  does not exist; the real one is `.../ansible-automation-platform-27/ansible-dev-tools-rhel9`.)
+  The two sections that were still load-bearing moved into
+  `docs/runbooks/00-prerequisites.md`: the `registry.redhat.io` login (now a
+  troubleshooting note, since the pull is anonymous) and the customer Private
+  Automation Hub dual-hub configuration, which documents the `PAH_TOKEN`/`PAH_URL`
+  support already implemented in `post-create.sh`.
 - **Stale `exports/azure/` snapshot.** The RHDP lab those files were exported
   from has been torn down and replaced, so the snapshot no longer described a
   reachable instance. Cleared so the next `playbooks/export.yml` run against the

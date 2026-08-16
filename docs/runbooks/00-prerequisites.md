@@ -120,6 +120,14 @@ on.
    the license-free alternative. If you use Podman, set VS Code setting
    `dev.containers.dockerPath` to `podman`.
 
+   > The dev container is built on Red Hat's Ansible Dev Tools image from
+   > `registry.redhat.io`, which pulls **without a login**. If your network
+   > blocks it, or you see an authentication error during the build, log in once
+   > with your Red Hat account and rebuild:
+   > ```bash
+   > podman login registry.redhat.io     # or: docker login registry.redhat.io
+   > ```
+
 2. **Install VS Code + the Dev Containers extension** (and, when prompted later,
    the GitHub Copilot extensions).
 
@@ -152,6 +160,70 @@ seat details (not 404). Docker/Podman Desktop is running.
   Copilot Chat or Claude Code.
 - **Podman "cannot connect"** → ensure the Podman machine is started
   (`podman machine start`) and `dev.containers.dockerPath` is set to `podman`.
+
+## Collections from a customer's Private Automation Hub
+
+Skip this unless you are working inside a customer environment that mirrors
+collections into its own Private Automation Hub (PAH). Everyone else only needs
+`AH_TOKEN`.
+
+In a corporate setting you usually want **two** sources: the customer's internal
+PAH first, with Red Hat's Automation Hub as the fallback.
+[`post-create.sh`](../../.devcontainer/post-create.sh) already handles this — you
+do not edit it. Export these on the host before opening the dev container and it
+writes the dual-hub config for you:
+
+```bash
+export AH_TOKEN='red-hat-automation-hub-token'   # console.redhat.com → Automation Hub → API token
+export PAH_TOKEN='private-automation-hub-token'  # your PAH UI → Settings → API Token
+export PAH_URL='https://pah.example.internal/api/galaxy'
+```
+
+On Windows use `setx AH_TOKEN "..."` and restart the terminal (or VS Code) so the
+values take effect. `devcontainer.json` passes all three through via `remoteEnv`.
+
+The resulting `~/.ansible.cfg` inside the container looks like this:
+
+```ini
+[galaxy]
+server_list = customer_certified, customer_validated, rh_certified, rh_validated, community
+
+[galaxy_server.customer_certified]
+url = https://pah.example.internal/api/galaxy/content/published/
+token = <customer-pah-token>
+
+[galaxy_server.customer_validated]
+url = https://pah.example.internal/api/galaxy/content/validated/
+token = <customer-pah-token>
+
+[galaxy_server.rh_certified]
+url = https://console.redhat.com/api/automation-hub/content/published/
+auth_url = https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token
+token = <rh-ah-token>
+
+[galaxy_server.rh_validated]
+url = https://console.redhat.com/api/automation-hub/content/validated/
+auth_url = https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token
+token = <rh-ah-token>
+
+[galaxy_server.community]
+url = https://galaxy.ansible.com/
+```
+
+Why it is shaped that way:
+
+- **Customer PAH entries come first** in `server_list`, so `ansible-galaxy`
+  prefers internal content and only falls back to Red Hat Automation Hub, then
+  community Galaxy.
+- **PAH uses a plain token** — no `auth_url`. Red Hat Automation Hub uses
+  SSO-based auth, which is what `auth_url` handles.
+- **One token per hub.** The same PAH token covers both its `content/published/`
+  (certified) and `content/validated/` endpoints; likewise for the Red Hat token.
+
+> **Hard rule:** this config lives at `~/.ansible.cfg` **inside the container**.
+> It is never committed, and this repo ships **no project-local `ansible.cfg`** —
+> that would shadow the real one and break collection installs. See
+> [AGENTS.md](../../AGENTS.md).
 
 ## Running on Fedora with Podman
 
