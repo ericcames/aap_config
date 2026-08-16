@@ -43,15 +43,34 @@ wsl --version                       # WSL app version — blank means not instal
 systeminfo | findstr /i "Hyper-V"   # virtualization / Hyper-V requirements
 ```
 
+![The Windows "About" dialog opened by winver, showing Windows 11 Pro Version 25H2](../images/winver-windows11.png)
+
 Then the two checks that decide it in a managed environment (the second needs an
 elevated / admin PowerShell):
 
 ```powershell
 # Are the required Windows features available and enabled?
-Get-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux, VirtualMachinePlatform
+# -FeatureName takes one name at a time — a comma-separated list becomes an
+# array and Get-WindowsOptionalFeature rejects it, so loop instead.
+foreach ($name in 'Microsoft-Windows-Subsystem-Linux', 'VirtualMachinePlatform') {
+  Get-WindowsOptionalFeature -Online -FeatureName $name
+}
 
 # Is WSL disabled by group policy? (no output / not-found = not policy-blocked)
 Get-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WSL" -ErrorAction SilentlyContinue
+```
+
+Example output — `State` is what to check; `Enabled` is good, `Disabled` needs
+`wsl --install` (elevated) plus a reboot:
+
+```text
+FeatureName      : Microsoft-Windows-Subsystem-Linux
+DisplayName      : Windows Subsystem for Linux
+State            : Disabled
+
+FeatureName      : VirtualMachinePlatform
+DisplayName      : Virtual Machine Platform
+State            : Enabled
 ```
 
 Also confirm you can run commands as **administrator** (or that IT can enable
@@ -96,7 +115,7 @@ send to whoever is helping you with the rollout:
 $os   = Get-CimInstance Win32_OperatingSystem
 $cs   = Get-CimInstance Win32_ComputerSystem
 $wsl  = (Get-Command wsl.exe -ErrorAction SilentlyContinue) -ne $null
-$feat = Get-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux, VirtualMachinePlatform -ErrorAction SilentlyContinue
+$feat = 'Microsoft-Windows-Subsystem-Linux', 'VirtualMachinePlatform' | ForEach-Object { Get-WindowsOptionalFeature -Online -FeatureName $_ -ErrorAction SilentlyContinue }
 $pol  = Get-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WSL" -ErrorAction SilentlyContinue
 $adm  = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 
@@ -107,6 +126,19 @@ $adm  = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentit
 foreach ($f in $feat) { "  Feature $($f.FeatureName) : $($f.State)" }
 "  WSL group policy  : $(if ($pol) { 'FAIL (policy key present — ask IT)' } else { 'PASS (no policy block)' })"
 "  Admin rights      : $(if ($adm) { 'PASS' } else { 'NOT ELEVATED (re-run as admin to be sure)' })"
+```
+
+Example output from a passing desktop (per-feature `Enabled`/`Disabled` lines
+appear between "Virtualization" and "WSL command" once both features report
+`Enabled`):
+
+```text
+aap_config dev-container preflight — 2026-08-16T07:04:59
+  OS                : Microsoft Windows 11 Pro build 26200
+  Virtualization    : PASS (hypervisor present)
+  WSL command       : PASS
+  WSL group policy  : PASS (no policy block)
+  Admin rights      : PASS
 ```
 
 Any `FAIL` on virtualization or the WSL policy key means this desktop needs
@@ -131,30 +163,76 @@ on.
 2. **Install VS Code + the Dev Containers extension** (and, when prompted later,
    the GitHub Copilot extensions).
 
+   ![VS Code Extensions panel showing GitHub Copilot Chat installed and enabled on "WSL: podman-AAP"; the WSL Remote indicator is also visible in the bottom-left status bar](../images/vscode-copilot-extension-wsl.png)
+
 3. **Sign in to GitHub from the terminal:**
    ```bash
    gh auth login       # choose HTTPS, authenticate in the browser (device flow)
    ```
 
+   ```text
+   ? Where do you use GitHub? GitHub.com
+   ? What is your preferred protocol for Git operations on this host? HTTPS
+   ? How would you like to authenticate GitHub CLI?  [Use arrows to move, type to filter]
+   > Login with a web browser
+     Paste an authentication token
+   ```
+
+   Pick **Login with a web browser** — it prints a one-time code and a URL to open,
+   then finishes once you approve it in the browser.
+
 4. **Check your Copilot seat:**
    ```bash
    gh api /user/copilot_billing
    ```
-   Seat details = you're good. A `404` = no seat; ask your GitHub org admin
-   (org Settings → Copilot → Access).
+   Seat details = you're on an org-assigned Copilot Business/Enterprise plan.
+
+   A `404` here does **not** necessarily mean Copilot is unavailable — this endpoint
+   only returns data for org-assigned seats. An individual **Copilot Free** account
+   (or Pro) legitimately 404s here while Copilot still works fine elsewhere (VS Code
+   extension, Copilot CLI), just under Free-tier usage limits:
+
+   ```text
+   $ gh api /user/copilot_billing
+   {
+     "message": "Not Found",
+     "documentation_url": "https://docs.github.com/rest",
+     "status": "404"
+   }
+   gh: Not Found (HTTP 404)
+   ```
+
+   If Copilot Chat / the Copilot CLI genuinely don't work at all (not just rate
+   limited), *that's* the real "no access" signal — ask your GitHub org admin (org
+   Settings → Copilot → Access) rather than reading this 404 alone as a problem.
 
    > **AI Assist:** see [PROMPTS.md → rb00](../ai/PROMPTS.md#rb00) — paste the
    > 404 prompt if you hit that.
 
 ## How you know it worked
 
-`gh auth status` shows you logged in, and `gh api /user/copilot_billing` returns
-seat details (not 404). Docker/Podman Desktop is running.
+`gh auth status` shows you logged in. `gh api /user/copilot_billing` returning seat
+details confirms an org-assigned plan; a 404 is fine too if Copilot Chat/CLI work in
+practice (see step 4 above). Docker/Podman Desktop is running.
+
+```text
+$ gh auth status
+github.com
+  ✓ Logged in to github.com account ericcames (/root/.config/gh/hosts.yml)
+  - Active account: true
+  - Git operations protocol: https
+  - Token: gho_************************************
+  - Token scopes: 'gist', 'read:org', 'repo', 'workflow'
+```
 
 ## If it went wrong
 
-- **404 on the Copilot check** → no seat; the runbooks still work with Copilot
-  Chat in VS Code or Claude Code, since every AI Assist prompt is plain text.
+- **404 on the Copilot check** → usually just means you're on individual Copilot
+  Free/Pro rather than an org-assigned seat — normal, not an error. Confirm Copilot
+  actually works (VS Code extension, Copilot CLI) before assuming there's a problem;
+  if it truly doesn't work, ask your GitHub org admin (org Settings → Copilot →
+  Access). Either way, the runbooks still work with Copilot Chat in VS Code or
+  Claude Code, since every AI Assist prompt is plain text.
 - **Corporate proxy blocks Copilot** → try `curl -v https://api.githubcopilot.com`
   to see if TLS is being intercepted; report it to your admin. Fall back to
   Copilot Chat or Claude Code.
@@ -220,9 +298,11 @@ Why it is shaped that way:
 - **One token per hub.** The same PAH token covers both its `content/published/`
   (certified) and `content/validated/` endpoints; likewise for the Red Hat token.
 
-> **Hard rule:** this config lives at `~/.ansible.cfg` **inside the container**.
-> It is never committed, and this repo ships **no project-local `ansible.cfg`** —
-> that would shadow the real one and break collection installs. See
+> **Hard rule:** this config lives at `~/.ansible.cfg` in your **home directory**
+> — inside the container's home on the devcontainer path, or your WSL home on the
+> [WSL-native path](01-devcontainer.md#alternative-wsl-native-no-container). It is
+> never committed, and this repo ships **no project-local `ansible.cfg`** — that
+> would shadow the real one and break collection installs. See
 > [AGENTS.md](../../AGENTS.md).
 
 ## Running on Fedora with Podman
