@@ -3,6 +3,15 @@
 > **Skill:** `/setup-workstation` runs this whole runbook (it covers runbooks 00–01) for you, in Claude Code or GitHub
 > Copilot CLI. Read the steps first, then let it drive.
 
+> **Decide this first, before anything else:** if **WSL2 and Hyper-V are
+> blocked by policy or firmware** on this Windows desktop, the local
+> dev-container path will not work here at all. Do not invest in the local
+> setup — switch to a **shared Linux dev host** instead (a jump host or VM,
+> for example RHEL, where you run the dev container or the tooling directly
+> over SSH). Run the [Preflight checks](#preflight-can-this-windows-desktop-run-the-dev-container)
+> below to find out which case you're in — it takes two minutes and catches
+> this at the start instead of midway through the runbook.
+
 ## You will need
 
 Needed either way:
